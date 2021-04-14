@@ -1,13 +1,13 @@
-!define APP_NAME "HTML & MD Viewer"
-!define EXE_NAME "html-md-viewer"
-!define PROGID_NAME "HTMLMDViewer"
-!define APP_ICON "icon.ico"
-!define LICENSE_FILE "LICENSE"
+!define APP_NAME "HTML Viewer"
+!define EXE_NAME "html-viewer"
+!define PROGID_NAME "HTMLViewer"
+!define APP_ICON "..\icon.ico"
+!define LICENSE_FILE "..\LICENSE"
 !define REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
 Name "${APP_NAME}"
 BrandingText " "
-OutFile "dist\${APP_NAME} Setup.exe"
+OutFile "..\dist\${APP_NAME} Setup.exe"
 Unicode True
 
 !define PRODUCT "${APP_NAME}"
@@ -19,7 +19,7 @@ Unicode True
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${REG_KEY}"
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallLocation"
 !define MULTIUSER_INSTALLMODE_INSTALL_REGISTRY_KEY "${APP_NAME}"
-!define MULTIUSER_INSTALLMODE_UNINSTALL_REGISTRY_KEY "${APP_NAME}" 
+!define MULTIUSER_INSTALLMODE_UNINSTALL_REGISTRY_KEY "${APP_NAME}"
 !define MULTIUSER_INSTALLMODE_ALLOW_ELEVATION
 !define MULTIUSER_INSTALLMODE_DEFAULT_ALLUSERS
 !define MUI_COMPONENTSPAGE_SMALLDESC
@@ -47,7 +47,7 @@ Unicode True
 !insertmacro MUI_LANGUAGE "English"
 
 InstallDir "$PROGRAMFILES\${APP_NAME}"
-  
+
 Function .onInit
 	!insertmacro MULTIUSER_INIT
 FunctionEnd
@@ -78,7 +78,7 @@ FunctionEnd
 Section "${APP_NAME}" S1
 	SectionIn RO
 	SetOutPath $INSTDIR
-	File /r "dist\win64\*"
+	File /r "..\dist\win64\*"
 
 	!insertmacro addProgID "html" "HTML File"
 	!insertmacro addProgID "svg" "SVG File"

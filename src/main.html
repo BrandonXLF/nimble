@@ -5,55 +5,108 @@
 		<link rel="stylesheet" type="text/css" href="main.css">
 	</head>
 	<body>
+		<svg style="display: none;">
+			<g id="minus" stroke-width="20" stroke-linecap="round">
+				<polyline points="90,50 10,50" stroke="currentColor"/>
+			</g>
+			<g id="plus" stroke-width="20" stroke-linecap="round">
+				<polyline points="50,90 50,10" stroke="currentColor"/>
+				<polyline points="90,50 10,50" stroke="currentColor"/>
+			</g>
+			<g id="window">
+				<rect x="5" y="25" width="70" height="70" fill="none" stroke-width="10" stroke="currentColor"/>
+				<rect x="20" y="0" width="80" height="20" fill="currentColor"/>
+				<rect x="80" y="0" width="20" height="80" fill="currentColor"/>
+			</g>
+			<g id="close" stroke-width="20" stroke-linecap="round">
+				<polyline points="90,10 10,90" stroke="currentColor"/>
+				<polyline points="90,90 10,10" stroke="currentColor"/>
+			</g>
+			<g id="prev" stroke-width="20" stroke-linejoin="round" stroke-linecap="round">
+				<polyline points="80,90 20,50 80,10" stroke="currentColor" fill="none"/>
+			</g>
+			<g id="next" stroke-width="20" stroke-linejoin="round" stroke-linecap="round">
+				<polyline points="20,90 80,50 20,10" stroke="currentColor" fill="none"/>
+			</g>
+			<g id="circle">
+				<circle cx="50" cy="50" r="50" fill="currentColor"/>
+			</g>
+		</svg>
 		<div id="top">
 			<div id="chrome">
 				<div id="options" class="top-btn">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-						<path fill="currentColor" d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"></path>
+					<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke="currentColor" fill="none">
+						<title>Menu</title>
+						<line x1="4" y1="6" x2="20" y2="6" />
+						<line x1="4" y1="12" x2="20" y2="12" />
+						<line x1="4" y1="18" x2="20" y2="18" />
 					</svg>
 				</div>
 				<div id="edit" class="top-btn">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+					<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" fill="none">
 						<title>Toggle editor</title>
-						<path fill="currentColor" d="M491.609 73.625l-53.861-53.839c-26.378-26.379-69.076-26.383-95.46-.001L24.91 335.089.329 484.085c-2.675 16.215 11.368 30.261 27.587 27.587l148.995-24.582 315.326-317.378c26.33-26.331 26.581-68.879-.628-96.087zM120.644 302l170.259-169.155 88.251 88.251L210 391.355V350h-48v-48h-41.356zM82.132 458.132l-28.263-28.263 12.14-73.587L84.409 338H126v48h48v41.59l-18.282 18.401-73.586 12.141zm378.985-319.533l-.051.051-.051.051-48.03 48.344-88.03-88.03 48.344-48.03.05-.05.05-.05c9.147-9.146 23.978-9.259 33.236-.001l53.854 53.854c9.878 9.877 9.939 24.549.628 33.861z"></path>
+						<path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3"/>
+						<path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3"/>
+						<line x1="16" y1="5" x2="19" y2="8"/>
 					</svg>
 				</div>
 				<div id="inspect" class="top-btn">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+					<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" fill="none">
 						<title>Toggle devtools</title>
-						<path fill="currentColor" d="M228.5 511.8l-25-7.1c-3.2-.9-5-4.2-4.1-7.4L340.1 4.4c.9-3.2 4.2-5 7.4-4.1l25 7.1c3.2.9 5 4.2 4.1 7.4L235.9 507.6c-.9 3.2-4.3 5.1-7.4 4.2zm-75.6-125.3l18.5-20.9c1.9-2.1 1.6-5.3-.5-7.1L49.9 256l121-102.5c2.1-1.8 2.4-5 .5-7.1l-18.5-20.9c-1.8-2.1-5-2.3-7.1-.4L1.7 252.3c-2.3 2-2.3 5.5 0 7.5L145.8 387c2.1 1.8 5.3 1.6 7.1-.5zm277.3.4l144.1-127.2c2.3-2 2.3-5.5 0-7.5L430.2 125.1c-2.1-1.8-5.2-1.6-7.1.4l-18.5 20.9c-1.9 2.1-1.6 5.3.5 7.1l121 102.5-121 102.5c-2.1 1.8-2.4 5-.5 7.1l18.5 20.9c1.8 2.1 5 2.3 7.1.4z"></path>
+						<path d="M3 21h4l13 -13a1.5 1.5 0 0 0 -4 -4l-13 13v4"/>
+						<line x1="14.5" y1="5.5" x2="18.5" y2="9.5"/>
+						<polyline points="12 8 7 3 3 7 8 12"/>
+						<line x1="7" y1="8" x2="5.5" y2="9.5"/>
+						<polyline points="16 12 21 17 17 21 12 16"/>
+						<line x1="16" y1="17" x2="14.5" y2="18.5" >
 					</svg>
 				</div>
 				<div id="run" class="top-btn">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+					<svg viewBox="0 0 100 100" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
 						<title>Preview editor</title>
-						<path fill="currentColor" d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6zM48 453.5v-395c0-4.6 5.1-7.5 9.1-5.2l334.2 197.5c3.9 2.3 3.9 8 0 10.3L57.1 458.7c-4 2.3-9.1-.6-9.1-5.2z"></path>
+						<polyline points="15,10 85,50 15,90 15,10" stroke="currentColor" fill="none"/>
 					</svg>
 				</div>
 				<div id="tabs"></div>
 				<div id="new" class="top-btn">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-						<path fill="currentColor" d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+					<title>New...</title>
+					<svg viewBox="0 0 24 24" stroke-width="4" stroke-linecap="round" stroke="currentColor" fill="none">
+						<line x1="12" y1="3" x2="12" y2="21" />
+						<line x1="3" y1="12" x2="21" y2="12" />
 					</svg>
 				</div>
 			</div>
 			<div class="osdrg"></div>
-			<div id="min">&minus;</div>
-			<div id="max">&#x2750;</div>
-			<div id="close">&times;</div>
+			<div id="min">
+				<svg viewBox="0 0 100 100" style="width: 10px;">
+					<use href="#minus"/>
+				</svg>
+			</div>
+			<div id="max">
+				<svg viewBox="0 0 100 100" style="width: 10px;">
+					<use href="#window"/>
+				</svg>
+			</div>
+			<div id="exit">
+				<svg viewBox="0 0 100 100" style="width: 10px;">
+					<use href="#close"/>
+				</svg>
+			</div>
 		</div>
 		<main id="content">
 			<div id="editor"></div>
-			<div id="dragbar"></div>
+			<div id="editor-resizer"></div>
 			<div id="viewer">
-				<webview id="preview" src="data:text/html," partition="trusted"></webview>
-				<div id="viewer-dragbar"></div>
+				<div id="preview-container">
+					<webview id="preview" src="data:text/html," partition="trusted"></webview>
+				</div>
+				<div id="devtools-resizer"></div>
 				<webview id="devtools" src="about:dev"></webview>
 			</div>
 		</main>
-		<script src="../node_modules/showdown/dist/showdown.min.js"></script>
-		<script src="../node_modules/ace-builds/src-min-noconflict/ace.js"></script>
-		<script src="../node_modules/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
+		<script src="/node_modules/showdown/dist/showdown.min.js"></script>
+		<script src="/node_modules/ace-builds/src-min-noconflict/ace.js"></script>
+		<script src="/node_modules/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
 		<script src="/src/tab.js"></script>
 		<script src="/src/main.js"></script>
 	</body>

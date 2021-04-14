@@ -1,19 +1,22 @@
 global.windowOrder = [];
-global.movingTab;
 
-function openApp() {
-	nw.Window.open('src/main.html', {
-		frame: false
-	}, win => {
-		win.on('closed', () => {
-			windowOrder.splice(windowOrder.indexOf(win), 1);
-		});
-		win.on('focus', () => {
-			windowOrder.splice(windowOrder.indexOf(win), 1);
-			windowOrder.unshift(win);
-		});
+async function openApp() {
+	let win = await new Promise(resolve => {
+		nw.Window.open('src/main.html', {frame: false}, resolve);
+	});
+
+	win.on('closed', () => {
+		windowOrder.splice(windowOrder.indexOf(win), 1);
+	});
+
+	win.on('focus', () => {
+		windowOrder.splice(windowOrder.indexOf(win), 1);
 		windowOrder.unshift(win);
 	});
+
+	windowOrder.unshift(win);
+
+	return win;
 }
 
 nw.App.on('open', argv => {

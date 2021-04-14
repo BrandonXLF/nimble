@@ -1,7 +1,7 @@
 {
-	"name": "html-md-viewer",
-	"productName": "HTML & MD Viewer",
-	"title": "HTML & MD Viewer",
+	"name": "html-viewer",
+	"productName": "HTML Viewer",
+	"title": "HTML Viewer",
 	"version": "1.0.0",
 	"description": "An program to view and edit HTML, SVG, and Markdown files.",
 	"main": "src/start.js",
@@ -38,7 +38,7 @@
 	"scripts": {
 		"build": "node scripts/build.js",
 		"start": "node scripts/run.js",
-		"open": "npm run build && dist\\win64\\html-md-viewer.exe",
-		"dist": "npm run build && makensis NSIS.nsi"
+		"open": "npm run build && dist/win64/html-md-viewer.exe",
+		"dist": "npm run build && makensis scripts/NSIS.nsi"
 	}
 }

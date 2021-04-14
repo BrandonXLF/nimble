@@ -1,324 +1,81 @@
-const fs = require('fs');
-const { fileURLToPath } = require('url');
-const { dirname } = require('path');
+const byId = document.getElementById.bind(document),
+	create =document.createElement.bind(document),
+	fs = require('fs/promises'),
+	{fileURLToPath} = require('url'),
+	editorElement = byId('editor'),
+	editor = ace.edit(editorElement),
+	settingsInfo = require('./settings.json'),
+	acceptedTypes = {
+		all: '.html,.htm,.md,.markdown,.svg',
+		svg: '.svg',
+		markdown: '.md,.markdown',
+		html: '.html,.htm'
+	},
+	fileTypes = {
+		html: 'html',
+		htm: 'html',
+		svg: 'svg',
+		markdown: 'markdown',
+		md: 'markdown'
+	},
+	zoomLevels = [0.25, 1/3, 0.5, 2/3, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5],
+	settings = JSON.parse(localStorage.getItem('settings') || '{}'),
+	preview = byId('preview'),
+	content = byId('content'),
+	previewContainer = byId('preview-container'),
+	devtools = byId('devtools'),
+	tabs = byId('tabs'),
+	darkQuery = matchMedia('(prefers-color-scheme: dark)');
 
-const fileTypes = {
-	html: 'html',
-	htm: 'html',
-	svg: 'svg',
-	markdown: 'markdown',
-	md: 'markdown'
-};
-const acceptedTypes = {
-	all: '.html,.htm,.md,.markdown,.svg',
-	svg: '.svg',
-	markdown: '.md,.markdown',
-	html: '.html,.htm'
-};
-const settingData = [
-	{
-		type: 'checkbox',
-		name: 'autopreview',
-		label: 'Preview changes automatically',
-		default: true
-	},
-	{
-		type: 'checkbox',
-		name: 'autosave',
-		label: 'Save changes automatically',
-		default: true
-	},
-	{
-		type: 'select',
-		name: 'theme',
-		label: 'Theme for UI and editor',
-		values: [
-			'Dark',
-			'Light',
-			'System'
-		],
-		default: 'System'
-	},
-	{
-		type: 'select',
-		name: 'previewtheme',
-		label: 'Theme for preview',
-		values: [
-			'Dark',
-			'Light',
-			'Inherit'
-		],
-		default: 'Inherit'
-	},
-	{
-		type: 'checkbox',
-		name: 'autoedit',
-		label: 'Show the editor by default',
-		default: false
-	},
-	{
-		type: 'checkbox',
-		name: 'softtabs',
-		label: 'Use spaces instead of tabs',
-		default: false
-	},
-	{
-		type: 'checkbox',
-		name: 'gutter',
-		label: 'Show line numbers while editing',
-		default: true
-	},
-	{
-		type: 'checkbox',
-		name: 'wordwrap',
-		label: 'Wrap long lines in the editor',
-		default: true
-	}
-];
-const zoomLevels = [0.25, 1/3, 0.5, 2/3, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5];
-const settings = JSON.parse(localStorage.getItem('settings') || '{}');
-const byClass = document.getElementsByClassName.bind(document);
-const byId = document.getElementById.bind(document);
-const create = document.createElement.bind(document);
-const tabs = byId('tabs');
-const preview = byId('preview');
-const devtools = byId('devtools');
-const dragbar = byId('dragbar');
-const viewerDragbar = byId('viewer-dragbar');
-const editorElement = byId('editor');
-const editor = ace.edit(editorElement);
-const converter = new showdown.Converter();
-const previewMenu = createMenu([
-	{
-		label: 'Print',
-		click: () => connPort.postMessage('print')
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Forward',
-		click: () => preview.forward()
-	},
-	{
-		label: 'Back',
-		click: () => preview.back()
-	},
-	{
-		label: 'Reload',
-		click: () => preview.reload()
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Zoom in',
-		click: () => {
-			preview.zoomIndex = Math.min((preview.zoomIndex || zoomLevels.indexOf(1)) + 1, zoomLevels.length - 1);
-			preview.setZoom(zoomLevels[preview.zoomIndex]);
-		}
-	},
-	{
-		label: 'Reset zoom',
-		click: () => {
-			preview.zoomIndex = zoomLevels.indexOf(1);
-			preview.setZoom(zoomLevels[preview.zoomIndex]);
-		}
-	},
-	{
-		label: 'Zoom out',
-		click: () => {
-			preview.zoomIndex = Math.max((preview.zoomIndex || zoomLevels.indexOf(1)) - 1, 0)
-			preview.setZoom(zoomLevels[preview.zoomIndex]);
-		}
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Inspect',
-		click: () => {
-			if (document.body.classList.contains('devtools')) {
-				devtools.terminate();
-				document.body.classList.remove('devtools');
-				return;
-			}
-			preview.showDevTools(true, devtools);
-			document.body.classList.add('devtools');
-		}
-	}
-]);
-const editorMenu = createMenu([
-	{
-		label: 'Run',
-		click: () => currentTab.preview(),
-		key: 'R',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Save',
-		click: () => currentTab.save(true),
-		key: 'S',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Save as',
-		click: () => currentTab.save(),
-		key: 'S',
-		modifiers: 'ctrl+shift'
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Undo',
-		click: () => document.execCommand('undo'),
-		key: 'Z',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Redo',
-		click: () => document.execCommand('redo'),
-		key: 'Y',
-		modifiers: 'ctrl'
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Cut',
-		click: () => document.execCommand('cut'),
-		key: 'X',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Copy',
-		click: () => document.execCommand('copy'),
-		key: 'C',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Paste',
-		click: () => document.execCommand('paste'),
-		key: 'V',
-		modifiers: 'ctrl'
-	},
-	{
-		label: 'Delete',
-		click: () => document.execCommand('delete'),
-		key: 'Delete'
-	},
-	{
-		type: 'separator'
-	},
-	{
-		label: 'Select all',
-		click: () => document.execCommand('selectAll'),
-		key: 'A',
-		modifiers: 'ctrl'
-	}
-]);
-const moreDropdown = [
-	{
-		label: 'Print',
-		click: () => connPort.postMessage('print')
-	},
-	{
-		label: 'Rotate',
-		click: () => {
-			document.body.classList.toggle('hoz');
-			editor.resize();
-		}
-	},
-	{
-		label: 'Save',
-		click: () => currentTab.save(true)
-	},
-	{
-		label: 'Save As',
-		click: () => currentTab.save()
-	},
-	{
-		label: 'Settings',
-		click: () => popup('Settings', settingData.map(setting => {
-			let el = create('label');
-			el.className = 'settingrow';
-			if (setting.type == 'checkbox') {
-				let checkbox = create('input');
-				checkbox.type = 'checkbox';
-				checkbox.checked = settings[setting.name];
-				checkbox.addEventListener('change', () => saveSetting(setting.name, !settings[setting.name]));
-				el.append(checkbox);
-			}
-			el.append(setting.label);
-			if (setting.type == 'select') {
-				let select = create('select');
-				select.addEventListener('change', () => saveSetting(setting.name, select.value));
-				setting.values.map(value => {
-					let option = create('option');
-					option.append(value);
-					option.selected = value == settings[setting.name];
-					select.append(option);
-				});
-				el.append(select);
-			}
-			return el;
-		}))
-	}
-];
-const newDropdown = [
-	{
-		label: 'Open file',
-		click: () => openFile()
-	},
-	{
-		label: 'New HTML',
-		click: () => Tab.create({
-			name: 'unnamed.html'
-		})
-	},
-	{
-		label: 'New SVG',
-		click: () => Tab.create({
-			name: 'unnamed.svg'
-		})
-	},
-	{
-		label: 'New MD',
-		click: () => Tab.create({
-			name: 'unnamed.md'
-		})
-	}
-];
-const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+let darkTheme,
+	connPort,
+	unresponsivePopup,
+	zoomPopup,
+	findPopup,
+	converter;
 
-let darkTheme;
-let connPort;
-let currentTab;
-let unresponsivePopup;
+function getConverter() {
+	if (converter) return converter;
+	return converter = new showdown.Converter()
+}
 
-function createMenu(items) {
+function createSVG(id, className) {
+	let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+		use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
+	svg.setAttributeNS(null, 'viewBox', '0 0 100 100');
+	svg.viewBox = '0 0 100 100';
+	svg.classList.add('icon');
+	className && svg.classList.add(className);
+	use.setAttributeNS(null, 'href', '#' + id);
+	svg.append(use);
+
+	return svg;
+}
+
+function createMenu(...items) {
 	let menu = new nw.Menu();
-	items.forEach(item => {
-		menu.append(new nw.MenuItem(item));
-	});
+	items.forEach(item => menu.append(new nw.MenuItem(item)));
 	return menu;
 }
 
-function createDropdown(id, items) {
-	let menu = create('div');
-	menu.className = 'menu';
-	byId(id).append(menu);
-	let menuItems = create('div');
+function createDropdown(id, ...items) {
+	let menu = create('div'),
+		menuItems = create('div');
+
 	menuItems.className = 'menuitems';
+	menu.className = 'menu';
+	byId(id).classList.add('menuparent');
+
 	menu.append(menuItems);
+	byId(id).append(menu);
+
 	items.forEach(item => {
 		let el = create('div');
 		el.addEventListener('click', item.click);
 		el.innerText = item.label;
 		menuItems.append(el);
 	});
-	byId(id).classList.add('menuparent');
 }
 
 function loadData(value, path) {
@@ -326,8 +83,8 @@ function loadData(value, path) {
 }
 
 function setTheme(initial) {
-	darkTheme = settings.theme == 'Light' ? false : settings.theme == 'Dark' ? true : darkQuery.matches;
-	let darkPreview = settings.previewtheme == 'Light' ? false : settings.previewtheme == 'Dark' ? true : darkTheme;
+	darkTheme = settings.theme === 'Light' ? false : settings.theme === 'Dark' ? true : darkQuery.matches;
+	let darkPreview = settings.previewtheme === 'Light' ? false : settings.previewtheme === 'Dark' ? true : darkTheme;
 	document.documentElement.classList.toggle('dark', darkTheme);
 	if (!initial) {
 		preview.removeContentScripts(['theme']);
@@ -348,35 +105,51 @@ function setTheme(initial) {
 	}
 }
 
-function popup(titleStr, msg, buttons = [{ text: 'OK' }]) {
-	let cnt = create('div');
+function popup(title, msg, buttons = [{text: 'OK'}], container = content, small = false) {
+	let cnt = create('div'),
+		popupElement = create('div'),
+		text = create('div'),
+		btnCnt = create('div');
+
 	cnt.className = 'popup-cnt';
 	cnt.style.cssText = '';
-	byId('content').append(cnt);
-	let popup = create('div');
-	popup.className = 'popup';
-	cnt.append(popup);
-	let title = create('h3');
-	title.style.cssText = 'margin: 0;';
-	title.innerText = titleStr;
-	popup.append(title);
-	let text = create('div');
-	text.style.cssText = 'padding-top: 1em;'
+
+	popupElement.className = 'popup';
+
+	if (!small) {
+		cnt.append(popupElement);
+		container.append(cnt);
+	} else {
+		popupElement.className += ' mini-popup';
+		container.append(popupElement);
+	}
+
+	if (title) {
+		let titleElement = create('h3');
+
+		titleElement.style.cssText = 'margin: 0;';
+		titleElement.innerText = title;
+		popupElement.append(titleElement);
+	}
+
 	Array.isArray(msg) ? text.append(...msg) : text.append(msg);
-	popup.append(text);
-	let btnCnt = create('div');
-	btnCnt.style.cssText = 'padding-top: 1em; text-align: right;'
-	popup.append(btnCnt);
+	popupElement.append(text);
+
+	btnCnt.style.textAlign = 'right';
+	popupElement.append(btnCnt);
+
 	buttons.forEach(button => {
 		let btn = create('button');
-		btn.innerText = button.text;
-		btn.addEventListener('click', e => {
+
+		btn.append(button.text);
+		btn.addEventListener('click', () => {
 			cnt.remove();
-			if (button.click) button.click();
+			button.click?.();
 		});
 		btnCnt.append(btn);
 	});
-	return popup;
+
+	return popupElement;
 }
 
 function saveSetting(key, value) {
@@ -388,83 +161,108 @@ function saveSetting(key, value) {
 
 function configAce() {
 	editor.setOptions({
-		enableBasicAutocompletion: true,
-		enableSnippets: true,
 		enableLiveAutocompletion: true,
-		useSoftTabs: settings.softtabs,
+		useSoftTabs: settings.softTabs,
 		wrap: settings.wordwrap ? 'free' : 'off',
-		tabSize: 4,
+		tabSize: settings.tabSize,
 		useWorker: true,
 		showGutter: settings.gutter,
 		showPrintMargin: false,
-		theme: `ace/theme/clouds${darkTheme ? '_midnight' : ''}`,
+		showInvisibles: settings.showInvisible,
+		theme: 'ace/theme/' + (darkTheme ? 'clouds_midnight' : 'clouds'),
 	});
 }
 
-function previewInject() {
-	let port = chrome.runtime.connect();
-	port.onMessage.addListener(() => window.print());
-	window.addEventListener('contextmenu', e => {
-		e.preventDefault();
-		port.postMessage([e.x, e.y]);
-	});
-	window.addEventListener('keydown', e => {
-		if (e.key == 'F12') e.preventDefault();
-	});
-}
-
-function devtoolsInject() {
-	window.addEventListener('keydown', e => {
-		if (e.key == 'F12') e.preventDefault();
-	});
-}
-
-function openPath(filePath) {
+async function openPath(filePath) {
 	let fileType = filePath.split('.').pop();
+
 	if (!fileTypes[fileType]) {
 		popup('Invalid filetype!', `'${fileType}' is an invalid filetype!`, [
-			{
-				text: 'Try again',
-				click: openFile
-			},
-			{
-				text: 'Cancel'
-			}
+			{text: 'Try again', click: openFile},
+			{text: 'Cancel'}
 		]);
 		return;
 	}
-	fs.readFile(filePath, (err, data) => {
-		if (err) {
-			popup(`Failed to read file: ${filePath}`, e.message);
-			return;
-		}
-		Tab.create({
-			path: filePath,
-			text: data.toString()
-		});
-	});
+
+	fs.readFile(filePath).then(
+		buffer => Tab.create({path: filePath, text: buffer.toString()}),
+		err => popup(`Failed to read file: ${filePath}`, err.message)
+	);
 }
 
 function openFile() {
-	var chooser = create('input');
+	let chooser = create('input');
+
 	chooser.setAttribute('accept', acceptedTypes.all);
 	chooser.type = 'file';
-	chooser.addEventListener('change', () => {
-		if (chooser.value) openPath(chooser.value);
-	});
+	chooser.addEventListener('change', () => chooser.value && openPath(chooser.value));
 	chooser.click();
+}
+
+function showSettings() {
+	popup('Settings', settingsInfo.map(setting => {
+		let el = create('label');
+		let input = create('input');
+		el.className = 'settingrow';
+
+		switch (setting.type) {
+			case 'checkbox':
+				input.type = 'checkbox';
+				input.checked = settings[setting.name];
+				input.addEventListener('change', () => saveSetting(setting.name, input.checked));
+				break;
+			case 'select':
+				input = create('select');
+				input.addEventListener('change', () => saveSetting(setting.name, input.value));
+				setting.values.map(value => {
+					let option = create('option');
+
+					option.append(value);
+					option.selected = value === settings[setting.name];
+					input.append(option);
+				});
+				break;
+			case 'text':
+			case 'number':
+				input.type = setting.type;
+				input.value = settings[setting.name];
+				input.addEventListener('change', () => saveSetting(setting.name, input.value));
+				break;
+		}
+
+		el.append(setting.label, input);
+
+		return el;
+	}));
+}
+
+function draggable(el, handle) {
+	el.addEventListener('mousedown', () => {
+		let dragArea = create('div');
+
+		dragArea.className = 'drag-area';
+		dragArea.style.cursor = getComputedStyle(el).cursor;
+
+		dragArea.addEventListener('mousemove', e => {
+			if (!e.buttons) {
+				dragArea.remove();
+				return;
+			}
+
+			e.preventDefault();
+			handle(e);
+		});
+
+		el.parentNode.append(dragArea);
+	});
 }
 
 preview.addEventListener('unresponsive', function() {
 	if (document.contains(unresponsivePopup)) return;
+
 	unresponsivePopup = popup('Unresponsive', 'The preview window has become unresponsive', [
-		{
-			text: 'Wait'
-		},
-		{
-			text: 'Terminate',
-			click: () => preview.terminate()
-		}
+		{text: 'Wait'},
+		{text: 'Terminate', click: () => preview.terminate()}
 	]);
 });
 
@@ -472,13 +270,27 @@ preview.addEventListener('responsive', function() {
 	unresponsivePopup?.remove();
 });
 
+preview.addEventListener('newwindow', e => {
+	let webview = create('webview'),
+		style = create('style');
+
+	e.window.attach(webview);
+	style.appendChild(new Text('body{display:flex;margin:0}webview{flex:1}'));
+
+	nw.Window.open('about:blank', {}, win => {
+		win.window.addEventListener('load', () => {
+			win.window.document.body.append(style, webview);
+		});
+	});
+});
+
 document.title = nw.App.manifest.productName;
 
-for (let i = 0; i < settingData.length; i++) {
-	if (settings[settingData[i].name] === undefined) {
-		settings[settingData[i].name] = settingData[i].default;
+settingsInfo.forEach(settingInfo => {
+	if (settings[settingInfo.name] === undefined) {
+		settings[settingInfo.name] = settingInfo.default;
 	}
-}
+});
 
 setTheme(true);
 configAce();
@@ -490,98 +302,177 @@ darkQuery.addEventListener('change', () => {
 
 chrome.runtime.onConnect.addListener(lPort => {
 	connPort = lPort;
+
 	connPort.onMessage.addListener(msg => {
-		let classes = document.body.classList;
-		let xOffset = !classes.contains('hoz') && classes.contains('editing') ? byId('editor').clientWidth : 0;
-		let yOffset = byId('chrome').clientHeight + (classes.contains('hoz') && classes.contains('editing') ? byId('editor').clientHeight : 0);
-		previewMenu.popup(xOffset + Math.trunc(msg[0]), yOffset + Math.trunc(msg[1]));
+		let rect = preview.getBoundingClientRect();
+
+		createMenu(
+			{label: 'Print', click: () => preview.print()},
+			{label: 'Find', click: () => {
+				if (findPopup) return;
+
+				let input = create('input'),
+					current = new Text('0'),
+					sep = new Text('/'),
+					total = new Text('0'),
+					findCallback = res => {
+						current.data = res.activeMatchOrdinal;
+						total.data = res.numberOfMatches;
+					};
+
+				input.style.marginRight = '4px';
+				input.addEventListener('input', () => {
+					preview.stopFinding('clear');
+					preview.find(input.value, findCallback);
+				});
+
+				findPopup = popup('', [input, current, sep, total], [
+					{text: createSVG('prev'), click: () => {
+						preview.find(input.value, {backward: true}, findCallback);
+					}},
+					{text: createSVG('next'), click: () => {
+						preview.find(input.value, {}, findCallback)
+					}},
+					{text: createSVG('close'), click: () => {
+						preview.stopFinding('clear');
+						findPopup.remove();
+						findPopup = undefined;
+					}},
+				], previewContainer, true);
+			}},
+			{label: 'Zoom', click: () => {
+				if (zoomPopup) return;
+
+				let zoomText = new Text('100%'),
+					zoomCallback = (zoom = zoomLevels[preview.zoomIndex]) => zoomText.data = Math.round(zoom * 100) + '%',
+					defaultIndex = zoomLevels.indexOf(1);
+
+				preview.getZoom(zoomCallback);
+
+				zoomPopup = popup('', zoomText, [
+					{text: createSVG('minus'), click: () => {
+						preview.zoomIndex = preview.zoomIndex || defaultIndex;
+						preview.zoomIndex = Math.max(preview.zoomIndex - 1, 0);
+						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+					}},
+					{text: createSVG('plus'), click: () => {
+						preview.zoomIndex = preview.zoomIndex || defaultIndex;
+						preview.zoomIndex = Math.min(preview.zoomIndex + 1, zoomLevels.length - 1);
+						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+					}},
+					{text: 'Reset', click: () => {
+						preview.zoomIndex = defaultIndex;
+						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+					}},
+					{text: createSVG('close'), click: () => {
+						zoomPopup.remove()
+						zoomPopup = undefined;
+					}},
+				], previewContainer, true);
+			}},
+			{type: 'separator'},
+			{label: 'Forward', click: () => preview.forward()},
+			{label: 'Back', click: () => preview.back()},
+			{label: 'Reload', click: () => preview.reload()},
+			{type: 'separator'},
+			{label: 'Inspect', click: () => {
+				preview.showDevTools(true, devtools);
+				document.body.classList.add('devtools');
+				preview.inspectElementAt(msg.x, msg.y);
+			}}
+		).popup(rect.x + msg.x, rect.y + msg.y);
 	});
 })
 
-createDropdown('options', moreDropdown);
-createDropdown('new', newDropdown);
+createDropdown(
+	'options',
+	{label: 'Print', click: () => connPort.postMessage('print')},
+	{label: 'Rotate', click: () => {
+		document.body.classList.toggle('hoz');
+		editor.resize();
+	}},
+	{label: 'Terminate', click: () => preview.terminate()},
+	{label: 'Save', click: () => Tab.current.save(true)},
+	{label: 'Save As', click: () => Tab.current.save()},
+	{label: 'Settings', click: () => showSettings()}
+);
+createDropdown(
+	'new',
+	{label: 'Open file', click: () => openFile()},
+	{label: 'New HTML', click: () => Tab.create({name: 'unnamed.html'})},
+	{label: 'New SVG', click: () => Tab.create({name: 'unnamed.svg'})},
+	{label: 'New MD', click: () => Tab.create({name: 'unnamed.md'})}
+);
 
 preview.addContentScripts([{
 	name: 'injected',
-	matches: [ '<all_urls>' ],
-	js: { code: '(' + previewInject.toString() + ')();' },
+	matches: ['<all_urls>'],
+	js: {
+		files: ['/src/preventF12.js', '/src/previewMenu.js']
+	},
 	run_at: 'document_start'
 }]);
 
 devtools.addContentScripts([{
 	name: 'injected',
-	matches: [ '<all_urls>' ],
-	js: { code: '(' + devtoolsInject.toString() + ')();' },
+	matches: ['<all_urls>'],
+	js: {
+		files: ['/src/preventF12.js']
+	},
 	run_at: 'document_start'
 }]);
 
 preview.addEventListener('dialog', e => {
 	e.preventDefault();
+
 	switch (e.messageType) {
 		case 'prompt':
-			var input = create('input');
+			let input = create('input');
 			input.style.cssText = 'display: block; margin-top: 1em';
-			popup('The preview says', [e.messageText, input], [
-				{
-					text: 'OK',
-					click: () => e.dialog.ok(input.value)
-				}, {
-					text: 'Cancel',
-					click: () => e.dialog.cancel()
-				}
-			]);
+			popup('', [e.messageText, input], [
+				{text: 'OK', click: () => e.dialog.ok(input.value)},
+				{text: 'Cancel', click: () => e.dialog.cancel()}
+			], previewContainer);
 			break;
 		case 'alert':
-			popup('The preview says', e.messageText, [
-				{
-					text: 'OK',
-					click: () => e.dialog.ok()
-				}
-			]);
+			popup('', e.messageText, [
+				{text: 'OK', click: () => e.dialog.ok()}
+			], previewContainer);
 			break;
 		case 'confirm':
-			popup('The preview says', e.messageText, [
-				{
-					text: 'OK',
-					click: () => e.dialog.ok()
-				},
-				{
-					text: 'Cancel',
-					click: () => e.dialog.cancel()
-				}
-			]);
+			popup('', e.messageText, [
+				{text: 'OK', click: () => e.dialog.ok()},
+				{text: 'Cancel', click: () => e.dialog.cancel()}
+			], previewContainer);
 	}
 });
 
+// TODO: What is this shit?
 preview.addEventListener('loadstart', e => {
 	if (e.isTopLevel && e.url.endsWith('.md')) {
 		if (e.url.startsWith('file:')) {
 			let path = fileURLToPath(e.url).toString();
-			fs.readFile(path, (err, data) => {
-				if (err) throw err;
-				loadData(converter.makeHtml(data.toString()), path);
-			});
+
+			fs.readFile(path).then(buffer => loadData(getConverter().makeHtml(buffer.toString()), path));
 		} else {
 			fetch(e.url).then(r => r.text()).then(value => loadData(value, e.url));
 		}
 	}
 });
 
-if (global.movingTab) {
-	Tab.create(global.movingTab);
-	global.movingTab = undefined;
-} else {
-	Tab.create({
-		name: 'unnamed.html'
-	});
-}
-
+Tab.create(global.movingTab || {name: 'unnamed.html'});
 nw.App.argv.forEach(openPath);
+global.movingTab = undefined;
 
 editor.on('change', () => {
-	currentTab.saved = false;
-	if (settings.autopreview) currentTab.preview();
-	if (settings.autosave && currentTab.path) currentTab.save(true);
+	if (!editor.curOp?.command?.name) return;
+	settings.autoPreview && Tab.current.preview();
+
+	if (settings.autoSave && Tab.current.path) {
+		Tab.current.save(true);
+	} else {
+		Tab.current.setSaved(false);
+	}
 });
 
 byId('edit').addEventListener('click', () => {
@@ -590,16 +481,13 @@ byId('edit').addEventListener('click', () => {
 });
 
 byId('inspect').addEventListener('click', () => {
-	if (document.body.classList.contains('devtools')) {
-		devtools.terminate();
-		document.body.classList.remove('devtools');
-	} else {
-		preview.showDevTools(true, devtools);
-		document.body.classList.add('devtools');
-	}
+	let show = !document.body.classList.contains('devtools');
+
+	preview.showDevTools(show, devtools);
+	document.body.classList.toggle('devtools', show);
 });
 
-byId('run').addEventListener('click', () => currentTab.preview());
+byId('run').addEventListener('click', () => Tab.current.preview());
 
 if (settings.autoedit) {
 	document.body.classList.toggle('editing');
@@ -608,78 +496,70 @@ if (settings.autoedit) {
 
 byId('min').addEventListener('click', () => nw.Window.get().minimize() );
 byId('max').addEventListener('click', e => {
-	let maximized = nw.Window.get().cWindow.state == 'maximized';
+	let maximized = nw.Window.get().cWindow.state === 'maximized';
+
 	e.target.classList.toggle('maximized', maximized);
 	nw.Window.get()[maximized ? 'restore' : 'maximize']();
 });
-byId('close').addEventListener('click', () => nw.Window.get().close() );
+byId('exit').addEventListener('click', () => nw.Window.get().close());
 
 editor.commands.addCommand({
 	name: 'save',
 	bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
-	exec: () => currentTab.save(true)
+	exec: () => Tab.current.save(true)
 });
 
 editor.commands.addCommand({
 	name: 'saveas',
 	bindKey: {win: 'Ctrl-Shift-S', mac: 'Command-Shift-S'},
-	exec: () => saveEditor()
+	exec: () => Tab.current.save()
 });
 
 editor.commands.addCommand({
 	name: 'run',
 	bindKey: {win: 'Ctrl-R', mac: 'Command-R'},
-	exec: () => currentTab.preview()
+	exec: () => Tab.current.preview()
 });
 
 byId('editor').addEventListener('contextmenu', e => {
 	e.preventDefault();
-	editorMenu.popup(e.x, e.y);
+	createMenu(
+		{label: 'Run', key: 'R', modifiers: 'ctrl', click: () => Tab.current.preview()},
+		{label: 'Save', key: 'S', modifiers: 'ctrl', click: () => Tab.current.save(true)},
+		{label: 'Save as',key: 'S', modifiers: 'ctrl+shift', click: () => Tab.current.save(),},
+		{type: 'separator'},
+		{label: 'Undo', key: 'Z', modifiers: 'ctrl', click: () => document.execCommand('undo')},
+		{label: 'Redo', key: 'Y', modifiers: 'ctrl', click: () => document.execCommand('redo')},
+		{type: 'separator'},
+		{label: 'Cut', key: 'X', modifiers: 'ctrl', click: () => document.execCommand('cut')},
+		{label: 'Copy', key: 'C', modifiers: 'ctrl', click: () => document.execCommand('copy')},
+		{label: 'Paste',  key: 'V', modifiers: 'ctrl', click: () => document.execCommand('paste')},
+		{label: 'Delete', key: 'Delete', click: () => document.execCommand('delete'),},
+		{type: 'separator'},
+		{label: 'Select all', key: 'A', modifiers: 'ctrl', click: () => document.execCommand('selectAll')}
+	).popup(e.x, e.y);
 });
 
-function drag(e) {
-	if (e.target != dragbar) return;
-	if(document.body.classList.contains('hoz')) {
-		editorElement.style.height = Math.min(95, Math.max(5, e.offsetY / e.target.parentNode.offsetHeight * 100)) + '%';
+draggable(byId('editor-resizer'), e => {
+	if (document.body.classList.contains('hoz')) {
+		editorElement.style.height = e.offsetY / e.target.parentNode.offsetHeight * 100 + '%';
 	} else {
-		editorElement.style.width = Math.min(95, Math.max(5, e.offsetX / e.target.parentNode.offsetWidth * 100)) + '%'
+		editorElement.style.width = e.offsetX / e.target.parentNode.offsetWidth * 100 + '%'
 	}
 	editor.resize();
-}
-
-dragbar.addEventListener('mousedown', () => {
-	document.body.classList.add('dragging');
-	document.addEventListener('mousemove', drag);
-	document.body.addEventListener('mouseup', () => {
-		document.body.classList.remove('dragging');
-		document.removeEventListener('mousemove', drag);
-	}, { once: true });
 });
 
-function viewDrag(e) {
-	if (e.target != viewerDragbar) return;
-	devtools.style.width = Math.min(95, Math.max(5, (1 - (e.offsetX / e.target.parentNode.offsetWidth)) * 100)) + '%'
-}
-
-viewerDragbar.addEventListener('mousedown', () => {
-	document.body.classList.add('view-dragging');
-	document.addEventListener('mousemove', viewDrag);
-	document.body.addEventListener('mouseup', () => {
-		document.body.classList.remove('view-dragging');
-		document.removeEventListener('mousemove', viewDrag);
-	}, { once: true });
+draggable(byId('devtools-resizer'), e => {
+	devtools.style.width = 100 - (e.offsetX / e.target.parentNode.offsetWidth * 100) + '%';
 });
 
 window.addEventListener('keydown', e => {
-	if (e.key == 'F12') {
+	if (e.key === 'F12') {
 		e.preventDefault();
+
 		popup('App devtools', 'Are you sure you want to open the devtools for this app?', [
-			{
-				text: 'Yes',
-				click: () => nw.Window.get().showDevTools()
-			}, {
-				text: 'No'
-			}
+			{text: 'Yes', click: () => nw.Window.get().showDevTools()},
+			{text: 'No'}
 		]);
 	}
 });

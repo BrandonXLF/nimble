@@ -27,10 +27,10 @@ update().then(ver => {
         output.on('close', function() {
             rcedit('dist/win64/nw.exe', {
                 'version-string': {
-                    FileDescription: 'HTML & MD Viewer',
-                    ProductName: 'HTML & MD Viewer',
+                    FileDescription: 'HTML Viewer',
+                    ProductName: 'HTML Viewer',
                     LegalCopyright: 'Copyright ' + new Date().getFullYear(),
-                    OriginalFilename: 'html-md-viewer.exe'
+                    OriginalFilename: 'html-viewer.exe'
                 },
                 'product-version': '1.0.0',
                 'file-version': '1'
@@ -62,7 +62,7 @@ update().then(ver => {
                                 })
                             )
 
-                            fs.rename('dist/win64/nw.exe', 'dist/win64/html-md-viewer.exe', () => {});
+                            fs.rename('dist/win64/nw.exe', 'dist/win64/html-viewer.exe', () => {});
                             // fs.unlinkSync('dist/win64/app.nw');
                         });
                     });

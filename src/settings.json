@@ -1,0 +1,72 @@
+[
+	{
+		"type": "checkbox",
+		"name": "autoPreview",
+		"label": "Preview changes automatically",
+		"default": true
+	},
+	{
+		"type": "checkbox",
+		"name": "autoSave",
+		"label": "Save changes automatically",
+		"default": true
+	},
+	{
+		"type": "select",
+		"name": "theme",
+		"label": "Theme for UI and editor",
+		"values": [
+			"Dark",
+			"Light",
+			"System"
+		],
+		"default": "System"
+	},
+	{
+		"type": "select",
+		"name": "previewtheme",
+		"label": "Theme for preview",
+		"values": [
+			"Dark",
+			"Light",
+			"Inherit"
+		],
+		"default": "Inherit"
+	},
+	{
+		"type": "checkbox",
+		"name": "autoedit",
+		"label": "Show the editor by default",
+		"default": false
+	},
+	{
+		"type": "checkbox",
+		"name": "softTabs",
+		"label": "Use spaces instead of tabs",
+		"default": false
+	},
+	{
+		"type": "number",
+		"name": "tabSize",
+		"label": "Length of tabs",
+		"default": 4
+	},
+	{
+		"type": "checkbox",
+		"name": "showInvisible",
+		"label": "Show invisible characters",
+		"default": false
+	},
+	{
+		"type": "checkbox",
+		"name": "gutter",
+		"label": "Show line numbers while editing",
+		"default": true
+	},
+	{
+		"type": "checkbox",
+		"name": "wordwrap",
+		"label": "Wrap long lines in the editor",
+		"default": true
+	}
+]
