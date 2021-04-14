@@ -1,0 +1,444 @@
+// Body
+
+body {
+	color: var(--txt-color);
+	background: var(--bg-color);
+	margin: 0;
+	font-family: sans-serif;
+	flex-direction: column;
+}
+
+html, body {
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+// General
+
+button, select, input {
+	background: var(--button-color);
+	color: var(--txt-color);
+	border: 1px solid var(--border-color);
+}
+
+button:hover {
+	background: var(--button-hover-color);
+}
+
+.icon {
+	width: 10px;
+}
+
+.fill() {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+// Scrollbar
+
+::-webkit-scrollbar {
+	width: 7px;
+	height: 7px;
+}
+
+::-webkit-scrollbar-corner, ::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--scroll-color);
+	border-radius: 0;
+}
+
+// Split sections
+
+body, #content, #viewer, #preview-container {
+	position: relative;
+	display: flex;
+}
+
+#content, #viewer, #preview, #preview-container {
+	flex: 1;
+}
+
+#editor, #viewer, #preview-container, #devtools {
+	min-width: 5%;
+}
+
+#viewer, #preview-container {
+	width: 100%;
+	height: 100%;
+}
+
+#editor-resizer, #devtools-resizer {
+	z-index: 2;
+}
+
+.drag-area {
+	.fill();
+	width: 100% !important;
+	height: 100% !important;
+}
+
+// Resizers
+
+.vertical-resizer() {
+	cursor: ew-resize;
+	width: 4px;
+	height: 100%;
+}
+
+.horizontal-resizer() {
+	cursor: ns-resize;
+	width: 100%;
+	height: 4px;
+}
+
+// Editor resizer
+
+body:not(.editing) {
+	#editor, #editor-resizer {
+		display: none;
+	}
+}
+
+body.editing {
+	&:not(.hoz) {
+		#editor {
+			width: 50%;
+			height: 100% !important;
+			margin-right: -2px;
+			border-right: 1px solid var(--border-color);
+		}
+
+		#viewer {
+			margin-left: -2px;
+		}
+
+		#editor-resizer {
+			.vertical-resizer();
+		}
+	}
+
+	&.hoz {
+		#content {
+			flex-direction: column;
+		}
+
+		#editor {
+			width: 100% !important;
+			height: 50%;
+			margin-bottom: -2px;
+			border-bottom: 1px solid var(--border-color);
+		}
+
+		#viewer {
+			margin-top: -2px;
+		}
+
+		#editor-resizer {
+			.horizontal-resizer();
+		}
+	}
+}
+
+// Devtools resizer
+
+body:not(.devtools) {
+	#devtools, #devtools-resizer {
+		display: none;
+	}
+}
+
+body.devtools {
+	#preview-container {
+		width: 50%;
+		margin-right: -2px;
+		border-right: 1px solid var(--border-color);
+	}
+
+	#devtools {
+		margin-left: -2px;
+	}
+
+	#devtools-resizer {
+		.vertical-resizer();
+	}
+}
+
+// Top bar
+
+#top {
+	-webkit-app-region: drag;
+	display: flex;
+	align-items: center;
+	background: var(--top-color);
+}
+
+#chrome {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+
+	> * {
+		-webkit-app-region: no-drag;
+	}
+}
+
+.os-drag {
+	width: 1em;
+	height: 100%;
+}
+
+// Top buttons
+
+.top-button {
+	width: 20px;
+	height: 20px;
+	padding: 5px;
+	margin-left: 5px;
+	flex-shrink: 0;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--button-color);
+	}
+
+	> svg {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+.window-button {
+	height: 30px;
+	display: flex;
+	padding: 0 10px;
+	user-select: none;
+	-webkit-app-region: no-drag;
+	cursor: pointer;
+	transition: color .25s, background .25s;
+}
+
+#exit:hover {
+	background-color: var(--close-color);
+	color: #fff;
+}
+
+#min:hover, #max:hover {
+	background-color: var(--button-color);
+}
+
+.dark #min:hover, .dark #max:hover {
+	color: #fff;
+}
+
+.editing #edit, .devtools #inspect {
+	background: var(--bg-color);
+}
+
+// Tabs
+
+#tabs {
+	display: flex;
+	white-space: nowrap;
+	overflow: hidden;
+
+	&:empty {
+		display: none;
+	}
+
+	> * {
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		padding: 0 5px;
+		margin-left: 5px;
+		user-select: none;
+
+		&.unsaved .indicator {
+			display: none;
+		}
+
+		&:not(.unsaved) .indicator {
+			padding-right: 5px;
+		}
+
+		.title {
+			overflow: hidden;
+		}
+
+		.close {
+			padding-left: 5px;
+		}
+
+		&.active {
+			background: var(--bg-color);
+		}
+
+		&:hover {
+			background: var(--button-color);
+		}
+	}
+}
+
+// Top menus
+
+.menu-items > * {
+	display: block;
+	padding: 3px 5px;
+	cursor: pointer;
+}
+
+.menu-items > *:hover {
+	background: var(--button-color);
+}
+
+.menu {
+	position: absolute;
+	display: none;
+	z-index: 5;
+	min-width: 5.75em;
+}
+
+.menu-parent:hover .menu, .menu:hover {
+	display: block;
+}
+
+.menu-items {
+	position: relative;
+	right: 5px;
+	top: 1px;
+	background: var(--top-color);
+}
+
+// Settings
+
+.setting-row {
+	display: block;
+	padding: .25em 0;
+
+	select {
+		margin-left: .5em;
+	}
+
+	input:not([type="checkbox"]) {
+		margin-left: .5em;
+		width: 70px;
+	}
+}
+
+// Popup
+
+.popup-container {
+	.fill();
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	background: rgba(0,0,0,0.1);
+}
+
+.popup {
+	background: var(--top-color);
+	padding: 1em;
+	margin: 1em;
+	max-height: calc(100% - 4em);
+	max-width: calc(100% - 4em);
+	overflow: auto;
+	border: 1px solid var(--border-color);
+
+	button {
+		padding: 0.5em 1em;
+		margin-left: 1em;
+		cursor: pointer;
+	}
+
+	> :not(:first-child) {
+		padding-top: 1em;
+	}
+}
+
+.mini-popup {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-width: 0 0 1px 1px;
+	padding: 4px;
+	margin: 0;
+	max-width: calc(100% - 16px);
+
+	> * {
+		display: inline-block;
+		padding-top: 0 !important;
+	}
+
+	button {
+		border: 0;
+		background: none;
+		margin-left: 4px;
+		padding: 4px;
+	}
+
+	button:hover {
+		background: var(--button-hover-color);
+	}
+}
+
+// Ace find & replace
+
+.ace_search {
+	background-color: var(--top-color);
+	border-color: var(--border-color);
+}
+
+.ace_search_field, .ace_searchbutton {
+	background-color: var(--button-color);
+	border-color: var(--border-color) !important;
+}
+
+.ace_search {
+	&, * {
+		color: var(--txt-color);
+		border-radius: 0 !important;
+	}
+}
+
+.dark .ace_searchbutton_close {
+	filter: brightness(1.75);
+}
+
+.ace_searchbutton:hover, .ace_search .ace_button:hover, .ace_searchbutton_close:hover {
+	background-color: var(--button-hover-color);
+}
+
+// Theme
+
+html {
+	&:not(.dark) {
+		--bg-color: #fff;
+		--top-color: #ccc;
+		--border-color: #d0d0d0;
+		--txt-color: #444;
+		--scroll-color: #d0d0d0;
+		--close-color: #E81123;
+		--button-color: #bbb;
+		--button-hover-color: #a8a8a8;
+	}
+
+	&.dark {
+		--bg-color: #222;
+		--top-color: #444;
+		--border-color: #525252;
+		--txt-color: #ccc;
+		--scroll-color: #525252;
+		--close-color: #c40c0c;
+		--button-color: #333;
+		--button-hover-color: #383838;
+	}
+}

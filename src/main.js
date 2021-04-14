@@ -63,9 +63,9 @@ function createDropdown(id, ...items) {
 	let menu = create('div'),
 		menuItems = create('div');
 
-	menuItems.className = 'menuitems';
+	menuItems.className = 'menu-items';
 	menu.className = 'menu';
-	byId(id).classList.add('menuparent');
+	byId(id).classList.add('menu-parent');
 
 	menu.append(menuItems);
 	byId(id).append(menu);
@@ -106,19 +106,19 @@ function setTheme(initial) {
 }
 
 function popup(title, msg, buttons = [{text: 'OK'}], container = content, small = false) {
-	let cnt = create('div'),
+	let container = create('div'),
 		popupElement = create('div'),
 		text = create('div'),
-		btnCnt = create('div');
+		buttonCnt = create('div');
 
-	cnt.className = 'popup-cnt';
-	cnt.style.cssText = '';
+	container.className = 'popup-container';
+	container.style.cssText = '';
 
 	popupElement.className = 'popup';
 
 	if (!small) {
-		cnt.append(popupElement);
-		container.append(cnt);
+		container.append(popupElement);
+		container.append(container);
 	} else {
 		popupElement.className += ' mini-popup';
 		container.append(popupElement);
@@ -135,18 +135,18 @@ function popup(title, msg, buttons = [{text: 'OK'}], container = content, small 
 	Array.isArray(msg) ? text.append(...msg) : text.append(msg);
 	popupElement.append(text);
 
-	btnCnt.style.textAlign = 'right';
-	popupElement.append(btnCnt);
+	buttonCnt.style.textAlign = 'right';
+	popupElement.append(buttonCnt);
 
 	buttons.forEach(button => {
-		let btn = create('button');
+		let buttonElement = create('button');
 
-		btn.append(button.text);
-		btn.addEventListener('click', () => {
-			cnt.remove();
+		buttonElement.append(button.text);
+		buttonElement.addEventListener('click', () => {
+			container.remove();
 			button.click?.();
 		});
-		btnCnt.append(btn);
+		buttonCnt.append(buttonElement);
 	});
 
 	return popupElement;
@@ -203,7 +203,7 @@ function showSettings() {
 	popup('Settings', settingsInfo.map(setting => {
 		let el = create('label');
 		let input = create('input');
-		el.className = 'settingrow';
+		el.className = 'setting-row';
 
 		switch (setting.type) {
 			case 'checkbox':

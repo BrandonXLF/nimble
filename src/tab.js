@@ -12,7 +12,6 @@ class Tab {
 		this.session = data.session || ace.createEditSession(data.text || '', `ace/mode/${this.mode}`);
 
 		this.element.tabData = this;
-		this.element.className = 'tab';
 		this.element.draggable = true;
 
 		this.element.addEventListener('dragstart', () => {
