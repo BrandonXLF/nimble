@@ -1,15 +1,27 @@
-class Tab {
-	static current;
+class Tab implements TransferableTabInfo {
+	static current: Tab;
+	public element: TabElement;
+	public name: string;
+	public titleElement: HTMLElement;
+	public closeElement: SVGElement;
+	public unsavedIndicator: SVGElement;
+	public mode: string;
+	public path: string;
+	public session: AceAjax.IEditSession;
+	public aborter: AbortController;
+	public watcher: any;
+	public saved: boolean;
+	public text: string;
 
-	constructor(data) {
-		this.element = create('div');
+	constructor(data: TransferableTabInfo) {
+		this.element = create('div') as TabElement;
 		this.name = data.name || data.path.split(/\/|\\/).pop();
 		this.titleElement = create('span');
 		this.closeElement = createSVG('close', 'close');
 		this.unsavedIndicator = createSVG('circle', 'indicator');
 		this.mode = fileTypes[(data.path || data.name).split('.').pop()] || 'text';
 		this.path = data.path || undefined;
-		this.session = data.session || ace.createEditSession(data.text || '', `ace/mode/${this.mode}`);
+		this.session = data.session || ace.createEditSession(data.text || '', `ace/mode/${this.mode}` as unknown as AceAjax.TextMode);
 
 		this.element.tabData = this;
 		this.element.draggable = true;
@@ -42,7 +54,7 @@ class Tab {
 		this.element.addEventListener('drop', e => {
 			e.preventDefault();
 
-			for (let i = 0; i < e.dataTransfer.files.length; i++) openPath(e.dataTransfer.files[i].path);
+			for (let i = 0; i < e.dataTransfer.files.length; i++) openPath((e.dataTransfer.files[i] as NW_File).path);
 			if (global.movingTab) global.movingTab = undefined;
 		});
 
@@ -83,24 +95,17 @@ class Tab {
 		this.setSaved(data.saved ?? true);
 	}
 
-	static create(data) {
+	static create(data: TransferableTabInfo) {
 		if (data.path) {
-			let match = [...tabs.children[0]].find(tab => tab.tabData.path === data.path);
+			let match = [...(tabs.children as unknown as TabElement[])].find(tab => tab.tabData.path === data.path);
 
 			if (match) {
 				match.tabData.select();
-				return match;
+				return match.tabData;
 			}
 		}
 
 		return new Tab(data);
-	}
-
-	positionDrag(e, el) {
-		let box = this.element.getBoundingClientRect(),
-			func = Math.abs(e.clientX - box.left) < Math.abs(e.clientX - box.right) ? 'before' : 'after';
-
-		this.element[func](el);
 	}
 
 	select() {
@@ -115,14 +120,15 @@ class Tab {
 
 	close() {
 		if (this.element.classList.contains('active')) {
-			let nTab = (
-				this.element.nextElementSibling ||
-				this.element.previousElementSibling ||
-				tabs.children[0]
-			)?.tabData;
+			let sibling = (
+					this.element.nextElementSibling ||
+					this.element.previousElementSibling ||
+					tabs.children[0]
+				) as TabElement,
+				siblingTab = sibling?.tabData;
 
-			if (!nTab || nTab === this) nw.Window.get().close();
-			nTab.select();
+			if (!siblingTab || siblingTab === this) nw.Window.get().close();
+			siblingTab.select();
 		}
 
 		this.element.remove();
@@ -153,7 +159,7 @@ class Tab {
 	async checkForUnsaved() {
 		if (this.saved) return;
 
-		await new Promise(resolve => {
+		await new Promise<void>(resolve => {
 			popup('Unsaved changes!', 'You have unsaved changes, would you like to save them now?', [
 				{text: 'Yes', click: () => this.save().then(resolve)},
 				{text: 'No', click: () => resolve()},
@@ -166,10 +172,13 @@ class Tab {
 		try {
 			await fs.writeFile(path, this.session.getValue());
 		} catch (err) {
-			popup('Could not save file!', 'An error occurred while saving your changes, would you like to try again?', [
-				{text: 'Yes', click: () => this.writeToFile(path).then(resolve)},
-				{text: 'No', click: () => resolve()}
-			]);
+			await new Promise<void>(resolve => {
+				popup('Could not save file!', 'An error occurred while saving your changes, would you like to try again?', [
+					{text: 'Yes', click: () => this.writeToFile(path).then(resolve)},
+					{text: 'No', click: () => resolve()}
+				]);
+			});
+
 			return;
 		}
 
@@ -196,11 +205,11 @@ class Tab {
 			text = buffer.toString();
 
 		if (text === this.session.getValue()) return;
-		this.session.setValue(text, 1);
+		this.session.setValue(text);
 		if (settings.autoPreview) this.preview();
 	}
 
-	async save(useCurrent) {
+	async save(useCurrent = false) {
 		if (useCurrent && this.path) {
 			await this.writeToFile(this.path);
 			return;

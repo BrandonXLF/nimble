@@ -222,19 +222,23 @@ body.devtools {
 	-webkit-app-region: no-drag;
 	cursor: pointer;
 	transition: color .25s, background .25s;
+
+	&:not(#exit):hover {
+		background-color: var(--button-color);
+	}
+
+	.dark &:not(#exit):hover {
+		color: #fff;
+	}
+
+	&#exit:hover {
+		background-color: var(--close-color);
+		color: #fff;
+	}
 }
 
-#exit:hover {
-	background-color: var(--close-color);
-	color: #fff;
-}
-
-#min:hover, #max:hover {
-	background-color: var(--button-color);
-}
-
-.dark #min:hover, .dark #max:hover {
-	color: #fff;
+body.maximized #maximize, body:not(.maximized) #restore {
+	display: none;
 }
 
 .editing #edit, .devtools #inspect {
@@ -261,11 +265,11 @@ body.devtools {
 		margin-left: 5px;
 		user-select: none;
 
-		&.unsaved .indicator {
+		&:not(.unsaved) .indicator {
 			display: none;
 		}
 
-		&:not(.unsaved) .indicator {
+		&.unsaved .indicator {
 			padding-right: 5px;
 		}
 
@@ -277,12 +281,12 @@ body.devtools {
 			padding-left: 5px;
 		}
 
-		&.active {
-			background: var(--bg-color);
-		}
-
 		&:hover {
 			background: var(--button-color);
+		}
+
+		&.active {
+			background: var(--bg-color);
 		}
 	}
 }

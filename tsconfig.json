@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"strictBindCallApply": true,
+		"target": "ESNext",
+		"outDir": "out"
+	},
+	"files": [
+		"src/types.d.ts",
+		"src/main.ts",
+		"src/tab.ts",
+		"src/PreventF12.ts",
+		"src/previewMenu.ts",
+		"src/start.ts"
+	]
+}

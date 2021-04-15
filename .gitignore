@@ -1,5 +1,6 @@
 .vscode
 node_modules
 cache
-desktop.ini
 dist
+out
+desktop.ini

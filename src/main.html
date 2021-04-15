@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
+		<title>HTML Viewer</title>
 		<meta charset="UTF-8">
 		<link rel="stylesheet" type="text/css" href="main.css">
 	</head>
@@ -13,8 +14,11 @@
 				<polyline points="50,90 50,10" stroke="currentColor"/>
 				<polyline points="90,50 10,50" stroke="currentColor"/>
 			</g>
-			<g id="window">
-				<rect x="5" y="25" width="70" height="70" fill="none" stroke-width="10" stroke="currentColor"/>
+			<g id="full-window" stroke-width="15">
+				<rect x="10" y="10" width="80" height="80" fill="none" stroke="currentColor"/>
+			</g>
+			<g id="window" stroke-width="10">
+				<rect x="5" y="25" width="70" height="70" fill="none" stroke="currentColor"/>
 				<rect x="20" y="0" width="80" height="20" fill="currentColor"/>
 				<rect x="80" y="0" width="20" height="80" fill="currentColor"/>
 			</g>
@@ -77,14 +81,19 @@
 				</div>
 			</div>
 			<div class="os-drag"></div>
-			<div id="min" class="window-button">
+			<div id="minimize" class="window-button">
 				<svg viewBox="0 0 100 100" style="width: 10px;">
 					<use href="#minus"/>
 				</svg>
 			</div>
-			<div id="max" class="window-button">
+			<div id="restore" class="window-button">
 				<svg viewBox="0 0 100 100" style="width: 10px;">
 					<use href="#window"/>
+				</svg>
+			</div>
+			<div id="maximize" class="window-button">
+				<svg viewBox="0 0 100 100" style="width: 10px;">
+					<use href="#full-window"/>
 				</svg>
 			</div>
 			<div id="exit" class="window-button">
@@ -104,10 +113,10 @@
 				<webview id="devtools" src="about:dev"></webview>
 			</div>
 		</main>
-		<script src="/node_modules/showdown/dist/showdown.min.js"></script>
-		<script src="/node_modules/ace-builds/src-min-noconflict/ace.js"></script>
-		<script src="/node_modules/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
-		<script src="/src/tab.js"></script>
-		<script src="/src/main.js"></script>
+		<script src="/node_modules/showdown/dist/showdown.js"></script>
+		<script src="/node_modules/ace-builds/src-noconflict/ace.js"></script>
+		<script src="/node_modules/ace-builds/src-noconflict/ext-language_tools.js"></script>
+		<script src="tab.js"></script>
+		<script src="main.js"></script>
 	</body>
 </html>

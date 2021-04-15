@@ -1,10 +1,13 @@
 const byId = document.getElementById.bind(document),
-	create =document.createElement.bind(document),
-	fs = require('fs/promises'),
-	{fileURLToPath} = require('url'),
+	create = document.createElement.bind(document),
 	editorElement = byId('editor'),
 	editor = ace.edit(editorElement),
-	settingsInfo = require('./settings.json'),
+	fs = require('fs/promises'),
+	{fileURLToPath} = require('url'),
+	{dirname} = require('path'),
+	settingsInfo: {
+		type: string, name: string, label: string, values?: string[], default: any
+	}[] = require('./settings.json'),
 	acceptedTypes = {
 		all: '.html,.htm,.md,.markdown,.svg',
 		svg: '.svg',
@@ -20,31 +23,32 @@ const byId = document.getElementById.bind(document),
 	},
 	zoomLevels = [0.25, 1/3, 0.5, 2/3, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5],
 	settings = JSON.parse(localStorage.getItem('settings') || '{}'),
-	preview = byId('preview'),
+	preview = byId('preview') as NW_HTMLWebViewElement,
 	content = byId('content'),
 	previewContainer = byId('preview-container'),
-	devtools = byId('devtools'),
+	devtools = byId('devtools') as NW_HTMLWebViewElement,
 	tabs = byId('tabs'),
-	darkQuery = matchMedia('(prefers-color-scheme: dark)');
+	darkQuery = matchMedia('(prefers-color-scheme: dark)'),
+	nwWindow = nw.Window.get();
 
-let darkTheme,
-	connPort,
-	unresponsivePopup,
-	zoomPopup,
-	findPopup,
-	converter;
+let darkTheme: boolean,
+	connPort: chrome.runtime.Port,
+	unresponsivePopup: HTMLElement,
+	zoomPopup: HTMLElement,
+	findPopup: HTMLElement,
+	converter: showdown.Converter,
+	zoomIndex: number;
 
 function getConverter() {
 	if (converter) return converter;
 	return converter = new showdown.Converter()
 }
 
-function createSVG(id, className) {
+function createSVG(id: string, className?: string) {
 	let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
 		use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
 
 	svg.setAttributeNS(null, 'viewBox', '0 0 100 100');
-	svg.viewBox = '0 0 100 100';
 	svg.classList.add('icon');
 	className && svg.classList.add(className);
 	use.setAttributeNS(null, 'href', '#' + id);
@@ -53,13 +57,13 @@ function createSVG(id, className) {
 	return svg;
 }
 
-function createMenu(...items) {
+function createMenu(...items: NWJS_Helpers.MenuItemOption[]) {
 	let menu = new nw.Menu();
 	items.forEach(item => menu.append(new nw.MenuItem(item)));
 	return menu;
 }
 
-function createDropdown(id, ...items) {
+function createDropdown(id: string, ...items: {label: string, click: (e: MouseEvent) => any}[]) {
 	let menu = create('div'),
 		menuItems = create('div');
 
@@ -78,34 +82,45 @@ function createDropdown(id, ...items) {
 	});
 }
 
-function loadData(value, path) {
+function loadData(value: string, path: string) {
 	preview.loadDataWithBaseUrl('data:text/html,' + encodeURIComponent(value), path, 'about:blank');
 }
 
-function setTheme(initial) {
+function setTheme(initial = false) {
 	darkTheme = settings.theme === 'Light' ? false : settings.theme === 'Dark' ? true : darkQuery.matches;
-	let darkPreview = settings.previewtheme === 'Light' ? false : settings.previewtheme === 'Dark' ? true : darkTheme;
 	document.documentElement.classList.toggle('dark', darkTheme);
+
+	let previewTheme = settings.previewTheme,
+		darkPreview = previewTheme === 'Light' ? false : previewTheme === 'Dark' ? true : darkTheme;
+
 	if (!initial) {
 		preview.removeContentScripts(['theme']);
 		preview.insertCSS({
 			code: darkPreview
 				? '@media not print{:root{background:#222;color:#fff}a:link{color:#31c3f7}}'
-				: '@media not print{:root{background:unset;color:unset}a:link{color:unset}}',
-			matchAboutBlank: true
+				: '@media not print{:root{background:unset;color:unset}a:link{color:unset}}'
 		});
 	}
+
 	if (darkPreview) {
 		preview.addContentScripts([{
 			name: 'theme',
-			matches: [ '<all_urls>' ],
-			css: { code: '@media not print{:root{background:#222;color:#fff}a:link{color:#31c3f7}}' },
+			matches: ['<all_urls>'],
+			css: {
+				code: '@media not print{:root{background:#222;color:#fff}a:link{color:#31c3f7}}'
+			},
 			run_at: 'document_start'
 		}]);
 	}
 }
 
-function popup(title, msg, buttons = [{text: 'OK'}], container = content, small = false) {
+function popup(
+	title: string,
+	msg: string|Node|(string|Node)[],
+	buttons: {text: string|Node, click?: () => any}[] = [{text: 'OK'}],
+	parent = content,
+	small = false
+) {
 	let container = create('div'),
 		popupElement = create('div'),
 		text = create('div'),
@@ -118,7 +133,7 @@ function popup(title, msg, buttons = [{text: 'OK'}], container = content, small 
 
 	if (!small) {
 		container.append(popupElement);
-		container.append(container);
+		parent.append(container);
 	} else {
 		popupElement.className += ' mini-popup';
 		container.append(popupElement);
@@ -152,7 +167,7 @@ function popup(title, msg, buttons = [{text: 'OK'}], container = content, small 
 	return popupElement;
 }
 
-function saveSetting(key, value) {
+function saveSetting(key: string, value: any) {
 	settings[key] = value;
 	localStorage.setItem('settings', JSON.stringify(settings));
 	setTheme();
@@ -163,7 +178,7 @@ function configAce() {
 	editor.setOptions({
 		enableLiveAutocompletion: true,
 		useSoftTabs: settings.softTabs,
-		wrap: settings.wordwrap ? 'free' : 'off',
+		wrap: settings.wordWrap ? 'free' : 'off',
 		tabSize: settings.tabSize,
 		useWorker: true,
 		showGutter: settings.gutter,
@@ -173,7 +188,7 @@ function configAce() {
 	});
 }
 
-async function openPath(filePath) {
+async function openPath(filePath: string) {
 	let fileType = filePath.split('.').pop();
 
 	if (!fileTypes[fileType]) {
@@ -202,41 +217,43 @@ function openFile() {
 function showSettings() {
 	popup('Settings', settingsInfo.map(setting => {
 		let el = create('label');
-		let input = create('input');
 		el.className = 'setting-row';
 
 		switch (setting.type) {
 			case 'checkbox':
-				input.type = 'checkbox';
-				input.checked = settings[setting.name];
-				input.addEventListener('change', () => saveSetting(setting.name, input.checked));
+				let checkbox = create('input');
+				checkbox.type = 'checkbox';
+				checkbox.checked = settings[setting.name];
+				checkbox.addEventListener('change', () => saveSetting(setting.name, checkbox.checked));
+				el.append(setting.label, checkbox);
 				break;
 			case 'select':
-				input = create('select');
-				input.addEventListener('change', () => saveSetting(setting.name, input.value));
-				setting.values.map(value => {
+				let select = create('select');
+				select.addEventListener('change', () => saveSetting(setting.name, select.value));
+				setting.values.forEach(value => {
 					let option = create('option');
 
 					option.append(value);
 					option.selected = value === settings[setting.name];
-					input.append(option);
+					select.append(option);
 				});
+				el.append(setting.label, select);
 				break;
 			case 'text':
 			case 'number':
+				let input = create('input');
 				input.type = setting.type;
 				input.value = settings[setting.name];
 				input.addEventListener('change', () => saveSetting(setting.name, input.value));
+				el.append(setting.label, input);
 				break;
 		}
-
-		el.append(setting.label, input);
 
 		return el;
 	}));
 }
 
-function draggable(el, handle) {
+function draggable(el: HTMLElement, handle: (e: MouseEvent) => any) {
 	el.addEventListener('mousedown', () => {
 		let dragArea = create('div');
 
@@ -323,7 +340,7 @@ chrome.runtime.onConnect.addListener(lPort => {
 				input.style.marginRight = '4px';
 				input.addEventListener('input', () => {
 					preview.stopFinding('clear');
-					preview.find(input.value, findCallback);
+					preview.find(input.value, {}, findCallback);
 				});
 
 				findPopup = popup('', [input, current, sep, total], [
@@ -344,25 +361,25 @@ chrome.runtime.onConnect.addListener(lPort => {
 				if (zoomPopup) return;
 
 				let zoomText = new Text('100%'),
-					zoomCallback = (zoom = zoomLevels[preview.zoomIndex]) => zoomText.data = Math.round(zoom * 100) + '%',
+					zoomCallback = (zoom = zoomLevels[zoomIndex]) => zoomText.data = Math.round(zoom * 100) + '%',
 					defaultIndex = zoomLevels.indexOf(1);
 
 				preview.getZoom(zoomCallback);
 
 				zoomPopup = popup('', zoomText, [
 					{text: createSVG('minus'), click: () => {
-						preview.zoomIndex = preview.zoomIndex || defaultIndex;
-						preview.zoomIndex = Math.max(preview.zoomIndex - 1, 0);
-						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+						zoomIndex = zoomIndex || defaultIndex;
+						zoomIndex = Math.max(zoomIndex - 1, 0);
+						preview.setZoom(zoomLevels[zoomIndex], zoomCallback);
 					}},
 					{text: createSVG('plus'), click: () => {
-						preview.zoomIndex = preview.zoomIndex || defaultIndex;
-						preview.zoomIndex = Math.min(preview.zoomIndex + 1, zoomLevels.length - 1);
-						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+						zoomIndex = zoomIndex || defaultIndex;
+						zoomIndex = Math.min(zoomIndex + 1, zoomLevels.length - 1);
+						preview.setZoom(zoomLevels[zoomIndex], zoomCallback);
 					}},
 					{text: 'Reset', click: () => {
-						preview.zoomIndex = defaultIndex;
-						preview.setZoom(zoomLevels[preview.zoomIndex], zoomCallback);
+						zoomIndex = defaultIndex;
+						preview.setZoom(zoomLevels[zoomIndex], zoomCallback);
 					}},
 					{text: createSVG('close'), click: () => {
 						zoomPopup.remove()
@@ -408,7 +425,7 @@ preview.addContentScripts([{
 	name: 'injected',
 	matches: ['<all_urls>'],
 	js: {
-		files: ['/src/preventF12.js', '/src/previewMenu.js']
+		files: ['/out/preventF12.js', '/out/previewMenu.js']
 	},
 	run_at: 'document_start'
 }]);
@@ -417,7 +434,7 @@ devtools.addContentScripts([{
 	name: 'injected',
 	matches: ['<all_urls>'],
 	js: {
-		files: ['/src/preventF12.js']
+		files: ['/out/preventF12.js']
 	},
 	run_at: 'document_start'
 }]);
@@ -465,13 +482,14 @@ nw.App.argv.forEach(openPath);
 global.movingTab = undefined;
 
 editor.on('change', () => {
+	// @ts-ignore curOp is defined here
 	if (!editor.curOp?.command?.name) return;
 	settings.autoPreview && Tab.current.preview();
 
 	if (settings.autoSave && Tab.current.path) {
 		Tab.current.save(true);
 	} else {
-		Tab.current.setSaved(false);
+		Tab.current.setSaved(editor.getValue() == '' && !Tab.current.path);
 	}
 });
 
@@ -489,19 +507,18 @@ byId('inspect').addEventListener('click', () => {
 
 byId('run').addEventListener('click', () => Tab.current.preview());
 
-if (settings.autoedit) {
+if (settings.autoEdit) {
 	document.body.classList.toggle('editing');
 	editor.resize();
 }
 
-byId('min').addEventListener('click', () => nw.Window.get().minimize() );
-byId('max').addEventListener('click', e => {
-	let maximized = nw.Window.get().cWindow.state === 'maximized';
+nwWindow.on('maximize', () => document.body.classList.add('maximized'));
+nwWindow.on('restore', () => document.body.classList.remove('maximized'));
 
-	e.target.classList.toggle('maximized', maximized);
-	nw.Window.get()[maximized ? 'restore' : 'maximize']();
-});
-byId('exit').addEventListener('click', () => nw.Window.get().close());
+byId('minimize').addEventListener('click', () => nwWindow.minimize());
+byId('maximize').addEventListener('click', () => nwWindow.maximize());
+byId('restore').addEventListener('click', () => nwWindow.restore());
+byId('exit').addEventListener('click', () => nwWindow.close());
 
 editor.commands.addCommand({
 	name: 'save',
@@ -541,16 +558,21 @@ byId('editor').addEventListener('contextmenu', e => {
 });
 
 draggable(byId('editor-resizer'), e => {
+	let parent = (e.target as HTMLElement).parentNode as HTMLElement;
+
 	if (document.body.classList.contains('hoz')) {
-		editorElement.style.height = e.offsetY / e.target.parentNode.offsetHeight * 100 + '%';
+		editorElement.style.height = e.offsetY / parent.offsetHeight * 100 + '%';
 	} else {
-		editorElement.style.width = e.offsetX / e.target.parentNode.offsetWidth * 100 + '%'
+		editorElement.style.width = e.offsetX / parent.offsetWidth * 100 + '%'
 	}
+
 	editor.resize();
 });
 
 draggable(byId('devtools-resizer'), e => {
-	devtools.style.width = 100 - (e.offsetX / e.target.parentNode.offsetWidth * 100) + '%';
+	let parent = (e.target as HTMLElement).parentNode as HTMLElement;
+
+	devtools.style.width = 100 - (e.offsetX / parent.offsetWidth * 100) + '%';
 });
 
 window.addEventListener('keydown', e => {
@@ -558,7 +580,7 @@ window.addEventListener('keydown', e => {
 		e.preventDefault();
 
 		popup('App devtools', 'Are you sure you want to open the devtools for this app?', [
-			{text: 'Yes', click: () => nw.Window.get().showDevTools()},
+			{text: 'Yes', click: () => nwWindow.showDevTools()},
 			{text: 'No'}
 		]);
 	}

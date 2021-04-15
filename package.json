@@ -4,9 +4,9 @@
 	"title": "HTML Viewer",
 	"version": "1.0.0",
 	"description": "An program to view and edit HTML, SVG, and Markdown files.",
-	"main": "src/start.js",
+	"main": "out/start.js",
 	"window": {
-		"icon": "src/icon.png"
+		"icon": "out/icon.png"
 	},
 	"repository": "https://github.com/brandonxlf/html-md-viewer",
 	"author": "Brandon Fowler",
@@ -22,24 +22,27 @@
 		]
 	},
 	"dependencies": {
+		"@types/ace": "^0.0.45",
+		"@types/chrome-apps": "^0.0.13",
+		"@types/nw.js": "^0.13.12",
+		"@types/showdown": "^1.9.3",
 		"ace-builds": "^1.4.12",
-		"less": "^4.1.1",
-		"showdown": "^1.9.1"
-	},
-	"devDependencies": {
-		"@types/chrome": "0.0.124",
 		"archiver": "^5.0.2",
 		"empty-folder": "^2.0.4",
+		"less": "^4.1.1",
 		"ncp": "^2.0.0",
-		"nwjs-types": "^1.0.0",
 		"rcedit": "^2.2.0",
+		"showdown": "^1.9.1",
+		"typescript": "^4.2.4",
 		"unzipper": "^0.10.11",
 		"winresourcer": "^0.9.0"
 	},
 	"scripts": {
-		"build": "node scripts/build.js",
-		"start": "node scripts/run.js",
-		"open": "npm run build && dist/win64/html-md-viewer.exe",
+		"build": "npm run compile && node scripts/build.js",
+		"update": "node scripts/update.js && npm update",
+		"compile": "tsc && lessc src/main.less out/main.css && ncp src/icon.png out/icon.png && ncp src/settings.json out/settings.json && ncp src/main.html out/main.html",
+		"start": "npm run compile && node scripts/run.js",
+		"open": "npm run build && dist/win64/html-viewer.exe",
 		"dist": "npm run build && makensis scripts/NSIS.nsi"
 	}
 }

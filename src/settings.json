@@ -24,7 +24,7 @@
 	},
 	{
 		"type": "select",
-		"name": "previewtheme",
+		"name": "previewTheme",
 		"label": "Theme for preview",
 		"values": [
 			"Dark",
@@ -35,7 +35,7 @@
 	},
 	{
 		"type": "checkbox",
-		"name": "autoedit",
+		"name": "autoEdit",
 		"label": "Show the editor by default",
 		"default": false
 	},
@@ -65,7 +65,7 @@
 	},
 	{
 		"type": "checkbox",
-		"name": "wordwrap",
+		"name": "wordWrap",
 		"label": "Wrap long lines in the editor",
 		"default": true
 	}
