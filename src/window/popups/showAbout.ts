@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import * as npmPackage from '../package.json';
+import * as npmPackage from '../../../package.json';
 import { popup } from './popup';
 
 export default function showAbout() {

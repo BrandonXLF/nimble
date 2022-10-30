@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { extname } from 'path';
-import { getFileType } from './fileTypes';
-import { popup } from './popup';
+import { getFileType } from '../utils/fileTypes';
+import { popup } from './popups/popup';
 import Tabs from './Tabs';
 
 export default async function openFile(tabs: Tabs) {

@@ -1,6 +1,6 @@
 import { session } from 'electron';
 import { fileURLToPath } from 'url';
-import markdownToHTML from './mdConverter';
+import markdownToHTML from '../utils/mdConverter';
 import fs from 'fs/promises';
 
 export default function interceptFileProtocol(e: Electron.IpcMainEvent, partition: string, file: string, text: string) {

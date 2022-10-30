@@ -1,14 +1,14 @@
 import { ipcRenderer } from 'electron';
-import showAbout from './aboutPopup';
-import { showFindPopup, showZoomPopup } from './miniPopups';
+import showAbout from './popups/showAbout';
+import { showFindPopup, showZoomPopup } from './popups/miniPopups';
 import openFile from './openFile';
-import SettingPopup from './SettingPopup';
+import UserSettingsPopup from './popups/UserSettingsPopup';
 import SettingStore from './SettingStore';
 import SplitElement from './SplitElement';
 import Tabs from './Tabs';
-import { AskForPath } from './types';
+import { AskForPath } from '../types';
 
-export default function menuActionProcessorFactory(
+export default function menuActionFactory(
 	tabs: Tabs,
 	mainSplit: SplitElement,
 	viewerSplit: SplitElement,
@@ -56,7 +56,7 @@ export default function menuActionProcessorFactory(
 		}
 		
 		if (action === 'settings') {
-			new SettingPopup(settings).show();
+			new UserSettingsPopup(settings).show();
 			return;
 		}
 		

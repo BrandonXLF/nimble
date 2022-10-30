@@ -1,0 +1,135 @@
+header {
+	-webkit-app-region: drag;
+	display: flex;
+	user-select: none;
+	background: var(--top-color);
+	white-space: nowrap;
+	
+	button {
+		-webkit-app-region: no-drag;
+		border: none;
+		background: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 20px;
+		padding: 5px;
+		transition: color 0.25s, background 0.25s;
+		box-sizing: content-box;
+		cursor: pointer;
+	}
+}
+
+.tab {
+	padding: 0 4px;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	
+	.tab-unsaved {
+		display: none;
+	}
+	
+	.tab-favicon[src] {
+		margin-right: 5px;
+		max-height: 20px;
+	}
+	
+	.tab-title {
+		overflow: hidden;
+		max-width: 10em;
+	}
+	
+	.tab-close {
+		width: 10px;
+		height: 10px;
+		padding: 2px;
+		margin-left: 5px;
+	}
+	
+	&.unsaved {
+		.tab-unsaved {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 10px;
+			height: 10px;
+			padding: 2px;
+			margin-right: 5px;
+		}
+	}
+	
+
+	&:hover {
+		background: var(--button-color);
+	}
+
+	&.current {
+		background: var(--bg-color);
+	}
+}
+
+#chrome {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
+.top-button {
+	margin-left: 5px;
+	
+	&:hover {
+		background: var(--button-color);
+	}
+	
+	> svg {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+#tabs {
+	-webkit-app-region: no-drag;
+	display: flex;
+	overflow: hidden;
+	margin-left: 5px;
+}
+
+#os-drag {
+	width: 1em;
+	height: 100%;
+}
+
+.window-button {
+	height: 30px;
+	padding: 0 10px;
+	user-select: none;
+	-webkit-app-region: no-drag;
+	transition: color 0.25s, background 0.25s;
+	
+	&:not(#exit):hover {
+		background-color: var(--button-color);
+	}
+	
+	&#close:hover {
+		background-color: var(--close-color);
+		color: #fff;
+	}
+}
+
+body.maximized {
+	#maximize {
+		display: none;
+	}
+}
+
+body:not(.maximized) {
+	#unmaximize {
+		display: none;
+	}
+}
+
+[data-editor] #edit,
+[data-devtools] #inspect {
+	background: var(--bg-color);
+}

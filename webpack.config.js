@@ -4,8 +4,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
 	entry: {
-		main: './src/main.ts',
-		index: './src/index.ts',
+		main: './src/main/main.ts',
+		window: './src/window/window.ts',
 		preload: './src/preload.ts'
 	},
 	output: {
@@ -18,12 +18,12 @@ module.exports = {
 		new CopyPlugin({
 			patterns: [
 				{
-					from: './src/*.html',
-					to: './[name].html'
+					from: './src/window/window.html',
+					to: './window.html'
 				},
 				{
-					from: './src/*.ico',
-					to: './[name].ico'
+					from: './src/icon.ico',
+					to: './icon.ico'
 				}
 			]
 		}),

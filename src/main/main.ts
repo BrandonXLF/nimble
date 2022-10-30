@@ -1,8 +1,8 @@
-import { app, BrowserWindow, ipcMain, webContents, dialog, screen, session, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme } from 'electron';
 import { join } from 'path';
-import { getOpenFilters, getSaveFilters } from './fileTypes';
+import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
-import * as npmPackage from '../package.json';
+import * as npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 
@@ -28,7 +28,7 @@ function createWindow(point?: Electron.Point) {
 	
 	const win = new BrowserWindow(options);
 
-	win.loadFile(join(__dirname, 'index.html'));
+	win.loadFile(join(__dirname, 'window.html'));
 
 	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
 	
@@ -142,4 +142,4 @@ ipcMain.on('update-native-theme', (_, theme: 'system' | 'light' | 'dark') => {
 });
 
 ipcMain.on('intercept-file', interceptFileProtocol);
-ipcMain.on('show-menu', showTopMenu)
+ipcMain.on('show-menu', showTopMenu);
