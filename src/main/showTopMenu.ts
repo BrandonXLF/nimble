@@ -26,11 +26,7 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		},
 		{
 			label: 'Rotate Editor',
-			id: 'rotate-editor'
-		},
-		{
-			label: 'Rotate Devtools',
-			id: 'rotate-devtools'
+			id: 'rotate'
 		},
 		{
 			type: 'separator'

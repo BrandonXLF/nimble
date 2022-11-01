@@ -11,12 +11,11 @@ import { pathToFileURL, fileURLToPath } from 'url';
 import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
+import crypto from 'crypto';
 
 export default class Tab {
-	webview = document.createElement('webview');
 	partition = crypto.randomUUID();
 	faviconElement = document.createElement('img');
-	webviewReady = emittedOnce(this.webview, 'dom-ready');
 	tabElement = document.createElement('div');
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
@@ -30,18 +29,20 @@ export default class Tab {
 	tabId: string;
 	unsaved: boolean;
 	savedText: string;
+	browserViewId: string;
 	autoSave;
 	
 	constructor(tabStore: Tabs, tabId: string, data: TabData = {}) {
 		this.tabStore = tabStore;
 		this.tabId = tabId;
 		
-		this.webview.src = 'about:blank';
-		this.webview.partition = this.partition;
+		// this.webview.src = 'about:blank';
+		// this.webview.partition = this.partition;
 		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
 		// BUG: Use events instead https://github.com/electron/electron/issues/26160
-		this.webview.preload = `file://${__dirname}/preload.js`;
+		// this.webview.preload = `file://${__dirname}/preload.js`;
 
+		/*
 		this.webview.addEventListener('did-finish-load', () => {
 			this.updateTitle();
 			this.faviconElement.removeAttribute('src');
@@ -49,8 +50,20 @@ export default class Tab {
 
 		this.webview.addEventListener('page-title-updated', () => this.updateTitle());
 		this.webview.addEventListener('page-favicon-updated', e => this.faviconElement.src = e.favicons[0]);
+		*/
 
-		tabStore.addWebview(this.webview);
+		this.browserViewId = ipcRenderer.sendSync('create-browserview');
+
+		setInterval(() => {
+			const rect = document.getElementById('webview-container').getBoundingClientRect();
+			
+			ipcRenderer.send('position-browserview', this.browserViewId, {
+				x: Math.round(rect.x),
+				y: Math.round(rect.y),
+				width: Math.round(rect.width),
+				height: Math.round(rect.height)
+			});
+		}, 1000);
 		
 		this.faviconElement.classList.add('tab-favicon');
 		
@@ -174,6 +187,7 @@ export default class Tab {
 	}
 	
 	updateTitle() {
+		/*
 		let title
 		
 		try {
@@ -191,9 +205,11 @@ export default class Tab {
 		
 		this.titleElement.innerText = `${title}`;
 		this.titleElement.title = `${title}${pathText}${unsavedText}`;
+		*/
 	}
 	
 	async preview(text?: string): Promise<void> {
+		/*
 		let value = text ?? this.editorSession.getValue();
 		
 		if (this.mode == 'markdown') {
@@ -210,6 +226,7 @@ export default class Tab {
 		} catch (e) {
 			// Pass
 		}
+		*/
 	}
 	
 	async save(askForPath = AskForPath.WhenNeeded): Promise<void> {
@@ -313,7 +330,7 @@ export default class Tab {
 	dispose(): void {
 		this.watchController?.abort();
 		this.tabElement.remove();
-		this.webview.remove();
+		// TODO: Browser View
 	}
 	
 	getTabData(): TabData {

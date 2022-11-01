@@ -1,10 +1,12 @@
-import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme, BrowserView, BrowserViewConstructorOptions } from 'electron';
 import { join } from 'path';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
 import * as npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
+import crypto from 'crypto';
+import BrowserViewStore from './BrowserViewStore';
 
 function createWindow(point?: Electron.Point) {
 	const options: Electron.BrowserWindowConstructorOptions = {
@@ -143,3 +145,21 @@ ipcMain.on('update-native-theme', (_, theme: 'system' | 'light' | 'dark') => {
 
 ipcMain.on('intercept-file', interceptFileProtocol);
 ipcMain.on('show-menu', showTopMenu);
+
+const browserViewStore = new BrowserViewStore();
+
+ipcMain.on('create-browserview', e => {
+	const { id, view: { webContents: contents } } = browserViewStore.create(BrowserWindow.fromWebContents(e.sender));
+	
+	contents.loadURL('http://web.simmons.edu/~gslislab/howto/create-pdfs.pdf');
+	contents.openDevTools({ mode: 'right' });
+
+	e.returnValue = id;
+});
+
+ipcMain.on('position-browserview', (_, id, rect: {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}) => browserViewStore.get(id).setBounds(rect));

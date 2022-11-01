@@ -11,37 +11,31 @@ import { AskForPath } from '../types';
 export default function menuActionFactory(
 	tabs: Tabs,
 	mainSplit: SplitElement,
-	viewerSplit: SplitElement,
 	settings: SettingStore
 ) {
 	return (e: Electron.IpcRendererEvent, action: string, arg?: string) => {
 		if (action === 'print') {
-			tabs.currentTab.webview.print();
+			// tabs.currentTab.webview.print();
 			return;
 		}
 		
 		if (action === 'find') {
-			showFindPopup(tabs.currentTab.webview);
+			// showFindPopup(tabs.currentTab.webview);
 			return;
 		}
 		
 		if (action === 'zoom') {
-			showZoomPopup(tabs.currentTab.webview);
+			// showZoomPopup(tabs.currentTab.webview);
 			return;
 		}
 		
 		if (action === 'terminate') {
-			ipcRenderer.send('crash-renderer', tabs.currentTab.webview.getWebContentsId());
+			// ipcRenderer.send('crash-renderer', tabs.currentTab.webview.getWebContentsId());
 			return;
 		}
 		
-		if (action === 'rotate-editor') {
+		if (action === 'rotate') {
 			settings.set('editorDirection', mainSplit.toggleDirection());
-			return;
-		}
-		
-		if (action === 'rotate-devtools') {
-			settings.set('devtoolsDirection', viewerSplit.toggleDirection());
 			return;
 		}
 		
@@ -71,7 +65,11 @@ export default function menuActionFactory(
 		}
 		
 		if (action === 'devtools') {
-			viewerSplit.toggleVisible(true);
+			/*
+			tabs.currentTab.openDevtools({
+				mode: 'left'
+			})
+			*/
 			return;
 		}
 		

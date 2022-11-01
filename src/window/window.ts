@@ -35,23 +35,13 @@ const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 		settings.get('autoEdit'),
 		settings.get('editorWidth'),
 		settings.get('editorHeight')
-	),
-	viewerSplit = new SplitElement(
-		'devtools',
-		document.getElementById('viewer-container'),
-		settings.get('devtoolsDirection'),
-		settings.get('autoDevtools'),
-		settings.get('viewerWidth'),
-		settings.get('viewerHeight')
 	);
 
 mainSplit.on('width', x => settings.set('editorWidth', x));
 mainSplit.on('height', x => settings.set('editorHeight', x));
-viewerSplit.on('width', x => settings.set('viewerWidth', x));
-viewerSplit.on('height', x => settings.set('viewerHeight', x));
 
 document.getElementById('edit').addEventListener('click', () => mainSplit.toggleVisible());
-document.getElementById('inspect').addEventListener('click', () => viewerSplit.toggleVisible());
+// document.getElementById('inspect').addEventListener('click', () => tabs.currentTab.webview.openDevtools());
 document.getElementById('run').addEventListener('click', () => tabs.currentTab.preview());
 document.getElementById('header').addEventListener('contextmenu', e => e.preventDefault());
 
@@ -88,4 +78,4 @@ ipcRenderer.on('show-tab', (_, tabData: TabData, index?: number) => tabs.createT
 ipcRenderer.on('maximize', () => document.body.classList.add('maximized'));
 ipcRenderer.on('unmaximize', () => document.body.classList.remove('maximized'));
 ipcRenderer.on('web-dialog-request', showWebDialog);
-ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, viewerSplit, settings))
+ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, settings))
