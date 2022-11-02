@@ -77,7 +77,7 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 			{
 				label: 'Copy',
 				enabled: hasSelection,
-				click: () => focused.cut()
+				click: () => focused.copy()
 			},
 			{
 				label: 'Paste',
@@ -86,7 +86,7 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 			},
 			{
 				label: 'Select All',
-				click: () => focused.paste()
+				click: () => focused.selectAll()
 			},
 			{
 				type: 'separator'
@@ -123,22 +123,18 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 			template.push(
 				{
 					label: `Save ${mediaType}`,
-					visible: Boolean(mediaType),
 					click: () => session.defaultSession.downloadURL(params.srcURL)
 				},
 				{
 					label: `Copy ${mediaType}`,
-					visible: Boolean(mediaType),
 					click: () => webview.copyImageAt(params.x, params.y)
 				},
 				{
 					label: `Copy ${mediaType} Address`,
-					visible: Boolean(mediaType),
 					click: () => clipboard.write({ text: params.srcURL })
 				},
 				{
-					type: 'separator',
-					visible: Boolean(mediaType),
+					type: 'separator'
 				}
 			);
 		}
