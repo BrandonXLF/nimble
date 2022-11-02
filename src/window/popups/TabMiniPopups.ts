@@ -63,7 +63,8 @@ export default class TabMiniPopups {
 					keepOpen: true
 				},
 				{
-					text: useSVG('x')
+					text: useSVG('x'),
+					click: () => this.currentPopup.dispose()
 				},
 			],
 			this.tab.popupArea,
