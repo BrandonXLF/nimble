@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron';
 import Tab from './Tab';
 import { TabData } from '../types';
-import { emittedOnce } from '../utils/emittedOnce';
 import SettingStore from './SettingStore';
 import ace from 'brace';
 
@@ -12,8 +11,6 @@ export default class Tabs {
 	devtoolContainer: HTMLElement;
 	editor: ace.Editor;
 	settings: SettingStore;
-	devtoolsReady: Promise<boolean>;
-	devtools: Electron.WebviewTag;
 	currentTab: Tab;
 
 	private tabIdCounter = 0;
@@ -96,32 +93,22 @@ export default class Tabs {
 		this.editor.setSession(tab.editorSession);
 		
 		document.querySelector('.tab.current')?.classList.remove('current');
-		[...this.webviewContainer.children].forEach((x: HTMLElement) => x.style.display = 'none');
-		this.devtools?.remove();
+		[...this.webviewContainer.children, ...this.devtoolContainer.children].forEach((x: HTMLElement) => x.style.display = 'none');
 		
 		this.currentTab = tab;
 		
 		tab.webview.style.display = '';
-		tab.popupArea.style.display = '';
+		tab.devtools.style.display = '';
+
 		tab.tabElement.classList.add('current');
-		
-		this.devtools = document.createElement('webview');
-		this.devtools.src = 'about:blank';
-		this.devtoolsReady = emittedOnce(this.devtools, 'dom-ready');
-		
-		this.devtoolContainer.append(this.devtools);
-		
-		Promise.all([tab.webviewReady, this.devtoolsReady]).then(() => {
-			ipcRenderer.send(
-				'set-devtool-webview',
-				tab.webview.getWebContentsId(),
-				this.devtools.getWebContentsId()
-			);
-		});
 	}
 	
 	addToMainArea(...elements: HTMLElement[]): void {
 		this.webviewContainer.append(...elements);
+	}
+	
+	addToDevtoolsArea(...elements: HTMLElement[]): void {
+		this.devtoolContainer.append(...elements);
 	}
 	
 	async getNewTabId(): Promise<string> {

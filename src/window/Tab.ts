@@ -15,10 +15,12 @@ import TabMiniPopups from './popups/TabMiniPopups';
 
 export default class Tab {
 	webview = document.createElement('webview');
+	devtools = document.createElement('webview');
 	popupArea = document.createElement('div');
 	partition = crypto.randomUUID();
 	faviconElement = document.createElement('img');
 	webviewReady = emittedOnce(this.webview, 'dom-ready');
+	devtoolsReady = emittedOnce(this.devtools, 'dom-ready');
 	tabElement = document.createElement('div');
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
@@ -56,6 +58,9 @@ export default class Tab {
 		this.popupArea.classList.add('webview-popup-area');
 
 		tabStore.addToMainArea(this.webview, this.popupArea);
+		
+		this.devtools.src = 'about:blank';
+		tabStore.addToDevtoolsArea(this.devtools);
 		
 		this.faviconElement.classList.add('tab-favicon');
 		
@@ -131,6 +136,7 @@ export default class Tab {
 		
 		this.setPath(data.path, true);
 		this.addDragAndDrop();
+		this.linkDevtools();
 		this.preview(data.text);
 	}
 		
@@ -216,6 +222,17 @@ export default class Tab {
 		} catch (e) {
 			// Pass
 		}
+	}
+	
+	async linkDevtools() {
+		await this.webviewReady;
+		await this.devtoolsReady;
+
+		ipcRenderer.send(
+			'set-devtool-webview',
+			this.webview.getWebContentsId(),
+			this.devtools.getWebContentsId()
+		);
 	}
 	
 	async save(askForPath = AskForPath.WhenNeeded): Promise<void> {
