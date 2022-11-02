@@ -5,6 +5,7 @@ import { showContextMenu } from './contextMenu';
 import * as npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
+import { randomUUID } from 'crypto';
 
 function createWindow(point?: Electron.Point) {
 	const options: Electron.BrowserWindowConstructorOptions = {
@@ -89,9 +90,16 @@ ipcMain.on('move-window-to-mouse', e => {
 });
 
 ipcMain.on('web-dialog', (e, type, message, initial) => {
-	BrowserWindow.getFocusedWindow().webContents.send('web-dialog-request', type, message, initial);
-
-	ipcMain.once('web-dialog-response', (_, res) => e.returnValue = res);
+	const uuid = randomUUID(),
+		onResponse = (_: Electron.IpcMainEvent, resUUID: string, res?: boolean | string) => {
+			if (resUUID !== uuid) return;
+			
+			ipcMain.off('web-dialog-response', onResponse);
+			e.returnValue = res;
+		};
+	
+	BrowserWindow.getFocusedWindow().webContents.send('web-dialog-request', uuid, type, message, initial);
+	ipcMain.on('web-dialog-response', onResponse);
 });
 
 ipcMain.on('set-devtool-webview', (_, targetContentsId: number, devtoolsContentsId: number) => {
