@@ -3,6 +3,9 @@ import Tab from './Tab';
 import { TabData } from '../types';
 import SettingStore from './SettingStore';
 import ace from 'brace';
+import { getFileType } from '../utils/fileTypes';
+import { popup } from './popups/popup';
+import { extname } from 'path';
 
 export default class Tabs {
 	tabs: Tab[] = [];
@@ -87,6 +90,15 @@ export default class Tabs {
 	
 	async createTab(data?: TabData, index?: number): Promise<void> {
 		this.addTab(new Tab(this, await this.getNewTabId(), data), index);
+	}
+	
+	createFromFile(path: string, index?: number) {
+		if (!getFileType(extname(path))) {
+			popup('Failed to open file', `Unsupported file type ${extname(path)}`);
+			return;
+		}
+
+		this.createTab({ path }, index);
 	}
 	
 	selectTab(tab: Tab): void {

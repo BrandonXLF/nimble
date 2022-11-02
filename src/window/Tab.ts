@@ -167,7 +167,7 @@ export default class Tab {
 			if (e.pageX - boundRect.left > boundRect.width / 2) targetIndex++;
 			
 			if (e.dataTransfer.files.length) {
-				[...e.dataTransfer.files].reverse().forEach(file => this.tabStore.createTab({path: file.path}, targetIndex));
+				[...e.dataTransfer.files].forEach(file => this.tabStore.createFromFile(file.path, targetIndex));
 				return;
 			}
 			
