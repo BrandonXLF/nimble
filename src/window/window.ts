@@ -12,7 +12,7 @@ import 'brace/mode/markdown';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 import SplitElement from './SplitElement';
-import showWebDialog from './popups/showWebDialog';
+import showWebDialogFactory from './popups/showWebDialogFactory';
 import promptUnsaved from './popups/promptUnsaved';
 import menuActionFactory from './menuActionFactory';
 import { initializeSettings } from './applySettings';
@@ -87,5 +87,5 @@ ipcRenderer.on('release-tab', (_, localTabId: string, targetWebContents: number,
 ipcRenderer.on('show-tab', (_, tabData: TabData, index?: number) => tabs.createTab(tabData, index));
 ipcRenderer.on('maximize', () => document.body.classList.add('maximized'));
 ipcRenderer.on('unmaximize', () => document.body.classList.remove('maximized'));
-ipcRenderer.on('web-dialog-request', showWebDialog);
+ipcRenderer.on('web-dialog-request', showWebDialogFactory(tabs));
 ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, viewerSplit, settings))

@@ -102,6 +102,7 @@ export default class Tabs {
 		this.currentTab = tab;
 		
 		tab.webview.style.display = '';
+		tab.popupArea.style.display = '';
 		tab.tabElement.classList.add('current');
 		
 		this.devtools = document.createElement('webview');
@@ -119,8 +120,8 @@ export default class Tabs {
 		});
 	}
 	
-	addWebview(webview: Electron.WebviewTag): void {
-		this.webviewContainer.append(webview);
+	addToMainArea(...elements: HTMLElement[]): void {
+		this.webviewContainer.append(...elements);
 	}
 	
 	async getNewTabId(): Promise<string> {

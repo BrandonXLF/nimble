@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
 import showAbout from './popups/showAbout';
-import { showFindPopup, showZoomPopup } from './popups/miniPopups';
 import openFile from './openFile';
 import UserSettingsPopup from './popups/UserSettingsPopup';
 import SettingStore from './SettingStore';
@@ -21,12 +20,12 @@ export default function menuActionFactory(
 		}
 		
 		if (action === 'find') {
-			showFindPopup(tabs.currentTab.webview);
+			tabs.currentTab.miniPopups.showFindPopup();
 			return;
 		}
 		
 		if (action === 'zoom') {
-			showZoomPopup(tabs.currentTab.webview);
+			tabs.currentTab.miniPopups.showZoomPopup();
 			return;
 		}
 		

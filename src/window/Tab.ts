@@ -11,9 +11,11 @@ import { pathToFileURL, fileURLToPath } from 'url';
 import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
+import TabMiniPopups from './popups/TabMiniPopups';
 
 export default class Tab {
 	webview = document.createElement('webview');
+	popupArea = document.createElement('div');
 	partition = crypto.randomUUID();
 	faviconElement = document.createElement('img');
 	webviewReady = emittedOnce(this.webview, 'dom-ready');
@@ -30,7 +32,8 @@ export default class Tab {
 	tabId: string;
 	unsaved: boolean;
 	savedText: string;
-	autoSave;
+	miniPopups: TabMiniPopups;
+	autoSave: () => void;
 	
 	constructor(tabStore: Tabs, tabId: string, data: TabData = {}) {
 		this.tabStore = tabStore;
@@ -49,13 +52,16 @@ export default class Tab {
 
 		this.webview.addEventListener('page-title-updated', () => this.updateTitle());
 		this.webview.addEventListener('page-favicon-updated', e => this.faviconElement.src = e.favicons[0]);
+		
+		this.popupArea.classList.add('webview-popup-area');
 
-		tabStore.addWebview(this.webview);
+		tabStore.addToMainArea(this.webview, this.popupArea);
 		
 		this.faviconElement.classList.add('tab-favicon');
 		
 		this.mode = data.mode || 'html';
 		this.savedText = data.savedText || '';
+		this.miniPopups = new TabMiniPopups(this);
 		
 		this.autoSave = throttle(async () => {
 			try {
