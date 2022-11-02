@@ -43,8 +43,7 @@ button:hover {
 	position: relative;
 }
 
-#main-container,
-.webview-popup-area {
+#main-container {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -56,6 +55,15 @@ button:hover {
 	display: flex;
 	flex-direction: column;
 	position: relative;
+}
+
+.webview-sub-container {
+	display: flex;
+	flex: 1;
+}
+
+.show-when-current:not(.current) {
+	display: none;
 }
 
 #devtool-container {

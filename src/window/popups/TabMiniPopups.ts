@@ -67,7 +67,7 @@ export default class TabMiniPopups {
 					click: () => this.currentPopup.dispose()
 				},
 			],
-			this.tab.popupArea,
+			this.tab.webviewSubContainer,
 			true
 		);
 		
@@ -136,7 +136,7 @@ export default class TabMiniPopups {
 					click: () => this.currentPopup.dispose()
 				},
 			],
-			this.tab.popupArea,
+			this.tab.webviewSubContainer,
 			true
 		);
 		

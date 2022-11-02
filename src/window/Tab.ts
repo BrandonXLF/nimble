@@ -16,7 +16,7 @@ import TabMiniPopups from './popups/TabMiniPopups';
 export default class Tab {
 	webview = document.createElement('webview');
 	devtools = document.createElement('webview');
-	popupArea = document.createElement('div');
+	webviewSubContainer = document.createElement('div');
 	partition = crypto.randomUUID();
 	faviconElement = document.createElement('img');
 	webviewReady = emittedOnce(this.webview, 'dom-ready');
@@ -54,12 +54,13 @@ export default class Tab {
 
 		this.webview.addEventListener('page-title-updated', () => this.updateTitle());
 		this.webview.addEventListener('page-favicon-updated', e => this.faviconElement.src = e.favicons[0]);
-		
-		this.popupArea.classList.add('webview-popup-area');
 
-		tabStore.addToMainArea(this.webview, this.popupArea);
+		this.webviewSubContainer.append(this.webview);
+		this.webviewSubContainer.classList.add('webview-sub-container', 'show-when-current');
+		tabStore.addToMainArea(this.webviewSubContainer);
 		
 		this.devtools.src = 'about:blank';
+		this.devtools.classList.add('show-when-current');
 		tabStore.addToDevtoolsArea(this.devtools);
 		
 		this.faviconElement.classList.add('tab-favicon');
@@ -336,7 +337,7 @@ export default class Tab {
 	dispose(): void {
 		this.watchController?.abort();
 		this.tabElement.remove();
-		this.webview.remove();
+		this.webviewSubContainer.remove();
 	}
 	
 	getTabData(): TabData {

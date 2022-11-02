@@ -91,16 +91,14 @@ export default class Tabs {
 	
 	selectTab(tab: Tab): void {
 		this.editor.setSession(tab.editorSession);
-		
-		document.querySelector('.tab.current')?.classList.remove('current');
-		[...this.webviewContainer.children, ...this.devtoolContainer.children].forEach((x: HTMLElement) => x.style.display = 'none');
+
+		document.querySelectorAll('.current').forEach(x => x.classList.remove('current'));
 		
 		this.currentTab = tab;
-		
-		tab.webview.style.display = '';
-		tab.devtools.style.display = '';
 
 		tab.tabElement.classList.add('current');
+		tab.webviewSubContainer.classList.add('current');
+		tab.devtools.classList.add('current');
 	}
 	
 	addToMainArea(...elements: HTMLElement[]): void {

@@ -14,7 +14,7 @@ export default function showWebDialogFactory(tabs: Tabs) {
 						click: () => ipcRenderer.send('web-dialog-response', uuid, undefined)
 					}
 				],
-				tabs.currentTab.popupArea
+				tabs.currentTab.webviewSubContainer
 			);
 
 			return;
@@ -34,7 +34,7 @@ export default function showWebDialogFactory(tabs: Tabs) {
 						click: () => ipcRenderer.send('web-dialog-response', uuid, false)
 					}
 				],
-				tabs.currentTab.popupArea
+				tabs.currentTab.webviewSubContainer
 			);
 			
 			return;
@@ -58,7 +58,7 @@ export default function showWebDialogFactory(tabs: Tabs) {
 						click: () => ipcRenderer.send('web-dialog-response', uuid, null)
 					}
 				],
-				tabs.currentTab.popupArea
+				tabs.currentTab.webviewSubContainer
 			);
 		}
 	};
