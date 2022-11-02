@@ -88,4 +88,6 @@ ipcRenderer.on('show-tab', (_, tabData: TabData, index?: number) => tabs.createT
 ipcRenderer.on('maximize', () => document.body.classList.add('maximized'));
 ipcRenderer.on('unmaximize', () => document.body.classList.remove('maximized'));
 ipcRenderer.on('web-dialog-request', showWebDialogFactory(tabs));
-ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, viewerSplit, settings))
+ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, viewerSplit, settings));
+
+ipcRenderer.send('ipc-message');

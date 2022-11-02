@@ -35,10 +35,7 @@ function createWindow(point?: Electron.Point) {
 	
 	win.on('maximize', () => win.webContents.send('maximize'));
 	win.on('unmaximize', () => win.webContents.send('unmaximize'));
-	
-	win.webContents.once('ipc-message', () => {
-		win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize')
-	});
+	win.webContents.once('ipc-message', () => win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize'));
 	
 	return win;
 }
