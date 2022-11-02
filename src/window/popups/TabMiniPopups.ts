@@ -88,12 +88,13 @@ export default class TabMiniPopups {
 		const input = document.createElement('input'),
 			current = new Text('0'),
 			sep = new Text('/'),
-			total = new Text('0');
+			total = new Text('0'),
+			onFoundInPage = (e: Electron.FoundInPageEvent) => {
+				current.data = e.result.activeMatchOrdinal.toString();
+				total.data = e.result.matches.toString();
+			};
 			
-			this.tab.webview.addEventListener('found-in-page', e => {
-			current.data = e.result.activeMatchOrdinal.toString();
-			total.data = e.result.matches.toString();
-		});
+		this.tab.webview.addEventListener('found-in-page', onFoundInPage);
 
 		input.style.marginRight = '4px';
 
@@ -131,9 +132,7 @@ export default class TabMiniPopups {
 				},
 				{
 					text: useSVG('x'),
-					click: () => {
-						this.tab.webview.stopFindInPage('clearSelection');
-					}
+					click: () => this.currentPopup.dispose()
 				},
 			],
 			this.tab.popupArea,
@@ -145,6 +144,7 @@ export default class TabMiniPopups {
 			dispose: () => {
 				popupElement.remove();
 				this.tab.webview.stopFindInPage('clearSelection');
+				this.tab.webview.removeEventListener('found-in-page', onFoundInPage);
 				this.currentPopup = undefined;
 			}
 		};

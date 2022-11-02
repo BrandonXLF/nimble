@@ -49,7 +49,7 @@ export function popup(
 		buttonElement.append(button.text);
 		buttonElement.addEventListener('click', () => {
 			if (!button.keepOpen) {
-				container ? container.remove() : popupElement.remove();
+				container ? container.remove() : popupElement?.remove();
 			}
 
 			button.click?.();
