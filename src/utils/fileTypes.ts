@@ -26,11 +26,19 @@ export function getFileType(extension: string): string|undefined {
 	return fileTypes.find(x => x.extensions.includes(extension))?.type;
 }
 
-export function getSaveFilters(): FileFilter[] {
-	return fileTypes.map(fileType => ({
+export function getSaveFilters(first?: string): FileFilter[] {
+	const saveFilters = fileTypes.map(fileType => ({
 		name: fileType.name,
 		extensions: fileType.extensions.map(x => x.slice(1))
 	}));
+	
+	if (first) {
+		const index = fileTypes.findIndex(x => x.type === first);
+		
+		saveFilters.unshift(saveFilters.splice(index, 1)[0]);
+	}
+	
+	return saveFilters;
 }
 
 export function getOpenFilters(): FileFilter[] {

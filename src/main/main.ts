@@ -132,11 +132,11 @@ ipcMain.on('perform-window-action', (e, action) => {
 	}
 });
 
-ipcMain.handle('get-path', async (e, defaultPath: string) => {
+ipcMain.handle('get-path', async (e, type: string, defaultPath: string) => {
 	const browserWindow = BrowserWindow.fromWebContents(e.sender),
 		pathInfo = await dialog.showSaveDialog(browserWindow, {
 			defaultPath,
-			filters: getSaveFilters()
+			filters: getSaveFilters(type)
 		});
 		
 	return pathInfo.filePath;

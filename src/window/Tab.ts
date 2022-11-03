@@ -277,7 +277,7 @@ export default class Tab {
 	}
 	
 	async getPath(): Promise<void> {
-		const newPath = await ipcRenderer.invoke('get-path', this.path || `unnamed${getDefaultExtension(this.mode) || ''}`);
+		const newPath = await ipcRenderer.invoke('get-path', this.mode, this.path || `unnamed${getDefaultExtension(this.mode) || ''}`);
 		
 		this.setPath(newPath);
 	}
