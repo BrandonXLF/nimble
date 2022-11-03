@@ -3,54 +3,48 @@ import { fileURLToPath } from 'url';
 import markdownToHTML from '../utils/mdConverter';
 import fs from 'fs/promises';
 
-export default function interceptFileProtocol(e: Electron.IpcMainEvent, partition: string, file: string, text: string) {
-	const partitionSession = session.fromPartition(partition),
-		stringIntercept = async (req: Electron.ProtocolRequest, callback: (response: string | Electron.ProtocolResponse) => void) => {
-			partitionSession.protocol.uninterceptProtocol('file');
-			
-			const requestFile = fileURLToPath(req.url);
-			
-			if (requestFile === file) {
-				callback(text);
+export default function interceptFileProtocol(_: Electron.IpcMainEvent, partition: string, file: string, text: string) {
+	const ses = session.fromPartition(partition);
 
-				return;
-			}
-			
-			if (requestFile.endsWith('.md') || requestFile.endsWith('.markdown')) {
-				const text = await fs.readFile(requestFile, 'utf8');
-				
-				callback(markdownToHTML(text));
-			}
-		};
+	// Second request could have been cancelled
+	ses.protocol.uninterceptProtocol('file');
 
-	partitionSession.protocol.uninterceptProtocol('file');
-
-	partitionSession.webRequest.onBeforeRequest((req, callback) => {
-		let requestFile;
+	ses.webRequest.onBeforeRequest((req, callback) => {
+		// Intercept already added
+		if (ses.protocol.isProtocolIntercepted('file')) return callback({});
+		
+		// Not a file: url
+		if (!req.url.startsWith('file:')) return callback({});
+		
+		let requestFile: string;
 		
 		try {
 			requestFile = fileURLToPath(req.url);
 		} catch (e) {
-			// Not a file
+			// Not a valid file
 		}
 		
-		if (!requestFile || partitionSession.protocol.isProtocolIntercepted('file')) {
-			callback({});
-			
-			return;
+		let intercept: () => string | Promise<string>;
+		
+		// Intercept for file being edited
+		if (req.url === `file://${partition}/` || (requestFile === file && requestFile !== undefined)) {
+			intercept = () => text;
 		}
 		
-		if (requestFile === file || requestFile.endsWith('.md') || requestFile.endsWith('.markdown')) {
-			partitionSession.protocol.interceptStringProtocol('file', stringIntercept);
-
-			callback({
-				redirectURL: req.url
-			});
-			
-			return;
+		// Intercept for markdown files
+		if (requestFile?.endsWith('.md') || requestFile?.endsWith('.markdown')) {
+			intercept = async () => markdownToHTML(await fs.readFile(requestFile, 'utf8'));
 		}
 		
 		// BUG: Files may have wrong background https://github.com/electron/electron/issues/36122
-		callback({});
+		if (!intercept) return callback({});
+		
+		ses.protocol.interceptStringProtocol('file', async (_, interceptCallback) => {
+			ses.protocol.uninterceptProtocol('file');
+			
+			interceptCallback(await intercept());
+		});
+		
+		return callback({ redirectURL: req.url });
 	});
 }

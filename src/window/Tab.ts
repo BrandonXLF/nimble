@@ -7,7 +7,7 @@ import markdownToHTML from '../utils/mdConverter';
 import { getDefaultExtension, getFileType } from '../utils/fileTypes';
 import ace from 'brace';
 import throttle from 'lodash.throttle';
-import { pathToFileURL, fileURLToPath } from 'url';
+import { pathToFileURL } from 'url';
 import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
@@ -215,10 +215,10 @@ export default class Tab {
 		
 		await this.webviewReady;
 		
-		ipcRenderer.send('intercept-file', this.partition, this.path || fileURLToPath(pathToFileURL(this.partition)), value);
+		ipcRenderer.send('intercept-file', this.partition, this.path, value);
 		
 		try {
-			await this.webview.loadURL(pathToFileURL(this.path || this.partition).href);
+			await this.webview.loadURL(this.path ? pathToFileURL(this.path).href : `file://${this.partition}/`);
 			this.webview.clearHistory();
 		} catch (e) {
 			// Pass
