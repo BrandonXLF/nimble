@@ -47,6 +47,8 @@ const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 
 mainSplit.on('width', x => settings.set('editorWidth', x));
 mainSplit.on('height', x => settings.set('editorHeight', x));
+mainSplit.on('visible', () => editor.resize());
+
 viewerSplit.on('width', x => settings.set('viewerWidth', x));
 viewerSplit.on('height', x => settings.set('viewerHeight', x));
 

@@ -1,4 +1,4 @@
-import * as EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import './split.less';
 
 export default class SplitElement extends EventEmitter {
@@ -78,6 +78,7 @@ export default class SplitElement extends EventEmitter {
 			: document.body.removeAttribute(`data-${this.identifier}`);
 			
 		this.positionResize();
+		this.emit('visible', visible);
 		
 		return visible;
 	}
