@@ -1,3 +1,5 @@
+declare module '*.png'
+
 declare enum AskForPath {
 	Always,
 	WhenNeeded,

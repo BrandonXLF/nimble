@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
-import * as npmPackage from '../../../package.json';
+import npmPackage from '../../../package.json';
 import { popup } from './popup';
+import Icon from '../../icon/icon.png';
 
 export default function showAbout() {
 	const nameDiv = document.createElement('div'),
@@ -9,7 +10,7 @@ export default function showAbout() {
 		showDevtools = document.createElement('a'),
 		icon = document.createElement('img');
 	
-	icon.src = 'icon.ico';
+	icon.src = Icon;
 	icon.style.height = '80px';
 	icon.classList.add('about-row');
 		

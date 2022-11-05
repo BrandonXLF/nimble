@@ -2,10 +2,18 @@ import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme }
 import { join } from 'path';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
-import * as npmPackage from '../../package.json';
+import npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
+import Icon from '../icon/icon.png';
+
+declare const WINDOW_WEBPACK_ENTRY: string;
+
+// Handle creating/removing shortcuts on Windows when installing/uninstalling
+if (require('electron-squirrel-startup')) {
+	app.quit();
+}
 
 function createWindow(point?: Electron.Point) {
 	const options: Electron.BrowserWindowConstructorOptions = {
@@ -14,7 +22,7 @@ function createWindow(point?: Electron.Point) {
 		resizable: true,
 		frame: false,
 		title: npmPackage.productName,
-		icon: join(__dirname, 'icon.ico'),
+		icon: join(__dirname, Icon),
 		webPreferences: {
 			webviewTag: true,
 			nodeIntegration: true,
@@ -29,7 +37,7 @@ function createWindow(point?: Electron.Point) {
 	
 	const win = new BrowserWindow(options);
 
-	win.loadFile(join(__dirname, 'window.html'));
+	win.loadURL(WINDOW_WEBPACK_ENTRY);
 
 	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
 	
