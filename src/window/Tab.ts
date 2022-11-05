@@ -2,7 +2,6 @@ import * as fs from 'fs/promises';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import { extname, basename } from 'path';
-import { AskForPath, TabData } from '../types';
 import markdownToHTML from '../utils/mdConverter';
 import { getDefaultExtension, getFileType } from '../utils/fileTypes';
 import ace from 'brace';

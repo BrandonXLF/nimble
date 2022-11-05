@@ -1,7 +1,6 @@
 import './css/window.less';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
-import { TabData } from '../types';
 import SettingStore from './SettingStore';
 import ace from 'brace';
 import 'brace/theme/clouds';

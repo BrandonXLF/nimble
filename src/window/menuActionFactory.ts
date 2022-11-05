@@ -5,7 +5,6 @@ import UserSettingsPopup from './popups/UserSettingsPopup';
 import SettingStore from './SettingStore';
 import SplitElement from './SplitElement';
 import Tabs from './Tabs';
-import { AskForPath } from '../types';
 
 export default function menuActionFactory(
 	tabs: Tabs,

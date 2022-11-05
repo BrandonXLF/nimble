@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
 import Tab from './Tab';
-import { TabData } from '../types';
 import SettingStore from './SettingStore';
 import ace from 'brace';
 import { getFileType } from '../utils/fileTypes';

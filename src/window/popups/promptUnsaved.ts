@@ -2,7 +2,6 @@ import { ipcRenderer } from 'electron';
 import { popup } from './popup';
 import SettingStore from '../SettingStore';
 import Tabs from '../Tabs';
-import { AskForPath } from '../../types';
 
 export default async function promptUnsaved(tabs: Tabs, settings: SettingStore) {
 	let unsaved = tabs.tabs.filter(tab => tab.unsaved);
