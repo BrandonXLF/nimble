@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
+		"module": "CommonJS",
 		"moduleResolution": "node",
 		"noImplicitAny": true,
 		"sourceMap": false,
+		"esModuleInterop": true,
 		"outDir": "dist",
 		"baseUrl": ".",
 		"allowSyntheticDefaultImports": true,

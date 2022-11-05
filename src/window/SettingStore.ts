@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import * as EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 export default class SettingStore extends EventEmitter {
 	readonly defaults: Record<string, any> = {
