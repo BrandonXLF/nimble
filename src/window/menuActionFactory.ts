@@ -12,7 +12,7 @@ export default function menuActionFactory(
 	viewerSplit: SplitElement,
 	settings: SettingStore
 ) {
-	return (e: Electron.IpcRendererEvent, action: string, arg?: string) => {
+	return (e: Electron.IpcRendererEvent, action: string, mode?: string) => {
 		if (action === 'print') {
 			tabs.currentTab.webview.print();
 			return;
@@ -78,8 +78,47 @@ export default function menuActionFactory(
 			return;
 		}
 		
+		if (action === 'devtools') {
+			viewerSplit.toggleVisible(true);
+			return;
+		}
+		
+		if (action === 'toggle-devtools') {
+			viewerSplit.toggleVisible();
+			return;
+		}
+		
+		if (action === 'toggle-editor') {
+			mainSplit.toggleVisible();
+			return;
+		}
+		
+		if (action === 'close') {
+			tabs.currentTab.close();
+			return;
+		}
+
 		if (action === 'new') {
-			tabs.createTab({ mode: arg });
+			tabs.createTab({ mode: mode || tabs.currentTab.mode });
+		}
+		
+		if (action === 'prev-tab') {
+			tabs.selectPrev();
+			return;
+		}
+		
+		if (action === 'next-tab') {
+			tabs.selectNext();
+			return;
+		}
+
+		if (action === 'back') {
+			tabs.currentTab.webview.goBack();
+			return;
+		}
+		
+		if (action === 'forward') {
+			tabs.currentTab.webview.goForward();
 		}
 	};
 }

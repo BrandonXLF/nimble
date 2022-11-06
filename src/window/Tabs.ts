@@ -112,6 +112,18 @@ export default class Tabs {
 		tab.devtools.classList.add('current');
 	}
 	
+	selectPrev(): void {
+		const index = this.getTabIndex(this.currentTab);
+
+		this.selectTab(this.tabs[index - 1] || this.tabs[this.tabs.length - 1]);
+	}
+	
+	selectNext(): void {
+		const index = this.getTabIndex(this.currentTab);
+
+		this.selectTab(this.tabs[index + 1] || this.tabs[0]);
+	}
+	
 	addToMainArea(...elements: HTMLElement[]): void {
 		this.webviewContainer.append(...elements);
 	}

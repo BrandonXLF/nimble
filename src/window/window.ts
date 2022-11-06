@@ -59,7 +59,7 @@ document.getElementById('header').addEventListener('contextmenu', e => e.prevent
 ['options', 'new'].forEach(id => document.getElementById(id).addEventListener('click', () => {
 	const rect = document.getElementById(id).getBoundingClientRect();
 
-	ipcRenderer.send('show-menu', id, Math.round(rect.x), Math.round(rect.y + rect.height));
+	ipcRenderer.send('show-menu', id, Math.round(rect.x), Math.round(rect.y + rect.height), tabs.currentTab.mode);
 }));
 
 ['minimize', 'maximize', 'unmaximize', 'close'].forEach(windowAction => {
@@ -76,6 +76,15 @@ window.addEventListener('beforeunload', e => {
 
 	promptUnsaved(tabs, settings);
 });
+
+document.body.addEventListener('keyup', e => ipcRenderer.send(
+	'keyboard-input',
+	true,
+	e.key,
+	process.platform === 'darwin' ? e.metaKey : e.ctrlKey,
+	e.altKey,
+	e.shiftKey
+));
 
 ipcRenderer.on('release-tab', (_, localTabId: string, targetWebContents: number, targetIndex?: number) => {
 	const tab = tabs.getTabById(localTabId);

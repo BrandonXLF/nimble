@@ -2,19 +2,22 @@ import { Menu } from 'electron';
 
 const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 	id?: string;
-	arg?: string;
+	mode?: string;
 })[]> = {
 	options: [
 		{
 			label: 'Print',
+			accelerator: 'CmdOrCtrl+P',
 			id: 'print'
 		},
 		{
 			label: 'Find',
+			accelerator: 'CmdOrCtrl+F',
 			id: 'find'
 		},
 		{
 			label: 'Zoom',
+			accelerator: 'CmdOrCtrl+=',
 			id: 'zoom'
 		},
 		{
@@ -26,10 +29,12 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		},
 		{
 			label: 'Rotate Editor',
+			accelerator: 'CmdOrCtrl+Shift+E',
 			id: 'rotate-editor'
 		},
 		{
 			label: 'Rotate Devtools',
+			accelerator: 'CmdOrCtrl+Shift+D',
 			id: 'rotate-devtools'
 		},
 		{
@@ -37,10 +42,12 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		},
 		{
 			label: 'Save',
+			accelerator: 'CmdOrCtrl+S',
 			id: 'save'
 		},
 		{
 			label: 'Save As',
+			accelerator: 'CmdOrCtrl+Shift+S',
 			id: 'save-as'
 		},
 		{
@@ -58,6 +65,7 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 	new: [
 		{
 			label: 'Open File',
+			accelerator: 'CmdOrCtrl+O',
 			id: 'open'
 		},
 		{
@@ -65,32 +73,41 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		},
 		{
 			label: 'New HTML',
+			accelerator: 'CmdOrCtrl+N',
 			id: 'new',
-			arg: 'html'
+			mode: 'html'
 		},
 		{
 			label: 'New SVG',
+			accelerator: 'CmdOrCtrl+N',
 			id: 'new',
-			arg: 'svg'
+			mode: 'svg'
 		},
 		{
 			label: 'New MD',
+			accelerator: 'CmdOrCtrl+N',
 			id: 'new',
-			arg: 'markdown'
+			mode: 'markdown'
 		}
 	]
 };
 
-export default function showTopMenu(e: Electron.IpcMainEvent, type: 'options' | 'new', x: number, y: number) {
+export default function showTopMenu(e: Electron.IpcMainEvent, type: 'options' | 'new', x: number, y: number, mode: string) {
 	const template = menus[type].map(item => {
-		if (item.id) {
-			item.click = () => {
-				e.sender.send('menu-action', item.id, item.arg);
+		const newItem = {...item};
+		
+		if (newItem.id) {
+			newItem.click = () => {
+				e.sender.send('menu-action', newItem.id, newItem.mode);
 			};
 		}
 		
-		return item;
-	})
+		if (newItem.mode && newItem.mode !== mode) {
+			delete newItem.accelerator;
+		}
+		
+		return newItem;
+	});
 	
 	Menu.buildFromTemplate(template).popup({ x, y });
 }

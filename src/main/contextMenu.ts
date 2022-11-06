@@ -9,11 +9,13 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 			{
 				label: 'Back',
 				enabled: webview.canGoBack(),
+				accelerator: 'Alt+Left',
 				click: () => webview.goBack()
 			},
 			{
 				label: 'Forward',
 				enabled: webview.canGoForward(),
+				accelerator: 'Alt+Right',
 				click: () => webview.goForward()
 			},
 			{
@@ -24,22 +26,26 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	
 	template.push({
 		label: 'Run',
+		accelerator: 'CmdOrCtrl+R',
 		click: () => main.send('menu-action', 'run')
 	})
 	
 	if (webview) {
 		template.push({
 			label: 'Find...',
+			accelerator: 'CmdOrCtrl+F',
 			click: () => main.send('menu-action', 'find')
 		})
 		
 		template.push({
 			label: 'Zoom...',
+			accelerator: 'CmdOrCtrl+=',
 			click: () => main.send('menu-action', 'zoom')
 		})
 		
 		template.push({
 			label: 'Print...',
+			accelerator: 'CmdOrCtrl+P',
 			click: () => webview.print()
 		})
 	}
@@ -54,10 +60,12 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		template.push(
 			{
 				label: 'Undo',
+				accelerator: 'CmdOrCtrl+Z',
 				click: () => focused.undo()
 			},
 			{
 				label: 'Redo',
+				accelerator: 'CmdOrCtrl+Shift+Z ',
 				click: () => focused.redo()
 			},
 			{
@@ -70,22 +78,26 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		template.push(
 			{
 				label: 'Cut',
+				accelerator: 'CmdOrCtrl+Z',
 				visible: params.isEditable,
 				enabled: hasSelection,
 				click: () => focused.cut()
 			},
 			{
 				label: 'Copy',
+				accelerator: 'CmdOrCtrl+C',
 				enabled: hasSelection,
 				click: () => focused.copy()
 			},
 			{
 				label: 'Paste',
+				accelerator: 'CmdOrCtrl+V',
 				visible: params.isEditable,
 				click: () => focused.paste()
 			},
 			{
 				label: 'Select All',
+				accelerator: 'CmdOrCtrl+A',
 				click: () => focused.selectAll()
 			},
 			{

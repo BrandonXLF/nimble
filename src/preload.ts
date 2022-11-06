@@ -16,5 +16,18 @@ contextBridge.exposeInMainWorld('MVE_prompt', (message: unknown, initial: unknow
 	return ipcRenderer.sendSync('web-dialog', 'prompt', message, initial);
 });
 
+window.addEventListener('keyup', e => {
+	if (e.defaultPrevented) return;
+	
+	ipcRenderer.send(
+		'keyboard-input',
+		false,
+		e.key,
+		process.platform === 'darwin' ? e.metaKey : e.ctrlKey,
+		e.altKey,
+		e.shiftKey
+	);
+});
+
 // TODO: Directly override https://github.com/electron/electron/issues/33460
 webFrame.executeJavaScript(genFuncOverrides('alert', 'confirm', 'prompt'));

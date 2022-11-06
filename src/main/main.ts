@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme, Menu } from 'electron';
 import { join } from 'path';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
@@ -7,6 +7,7 @@ import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
 import Icon from '../icon/icon.png';
+import handleKeyboardShortcut from './handleKeyboardShortcut';
 
 declare const WINDOW_WEBPACK_ENTRY: string;
 
@@ -14,6 +15,8 @@ declare const WINDOW_WEBPACK_ENTRY: string;
 if (require('electron-squirrel-startup')) {
 	app.quit();
 }
+
+Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
 function createWindow(point?: Electron.Point) {
 	const options: Electron.BrowserWindowConstructorOptions = {
@@ -156,3 +159,4 @@ ipcMain.on('update-native-theme', (_, theme: 'system' | 'light' | 'dark') => {
 
 ipcMain.on('intercept-file', interceptFileProtocol);
 ipcMain.on('show-menu', showTopMenu);
+ipcMain.on('keyboard-input', handleKeyboardShortcut);

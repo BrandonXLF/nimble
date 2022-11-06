@@ -93,42 +93,11 @@ export default class Tab {
 		
 		this.closeButton.append(useSVG('x'));
 		this.closeButton.classList.add('tab-close');
-		this.closeButton.addEventListener('click', async e => {
+		this.closeButton.title = 'Close tab (Ctrl+W)'
+		this.closeButton.addEventListener('click', e => {
 			e.stopPropagation();
 
-			if (this.unsaved && this.tabStore.settings.get('autoSave')) {
-				try {
-					await this.save(AskForPath.Never);
-				} catch {
-					// Pass
-				}
-			}
-
-			if (!this.unsaved) {
-				this.tabStore.removeTab(this);
-				return;
-			}
-			
-			popup(
-				'Unsaved changes!',
-				'Tab has unsaved changes, would you like to save them now?',
-				[
-					{
-						text: 'Save',
-						click: async () => {
-							await this.save();
-							this.tabStore.removeTab(this);
-						}
-					},
-					{
-						text: 'Don\'t Save',
-						click: () => this.tabStore.removeTab(this)
-					},
-					{
-						text: 'Cancel'
-					}
-				]
-			);
+			this.close();
 		});
 		
 		this.tabElement.draggable = true;
@@ -333,6 +302,42 @@ export default class Tab {
 		} catch (err) {
 			if (err.name !== 'AbortError') throw err;
 		}
+	}
+	
+	async close(): Promise<void> {
+		if (this.unsaved && this.tabStore.settings.get('autoSave')) {
+			try {
+				await this.save(AskForPath.Never);
+			} catch {
+				// Pass
+			}
+		}
+
+		if (!this.unsaved) {
+			this.tabStore.removeTab(this);
+			return;
+		}
+		
+		popup(
+			'Unsaved changes!',
+			'Tab has unsaved changes, would you like to save them now?',
+			[
+				{
+					text: 'Save',
+					click: async () => {
+						await this.save();
+						this.tabStore.removeTab(this);
+					}
+				},
+				{
+					text: 'Don\'t Save',
+					click: () => this.tabStore.removeTab(this)
+				},
+				{
+					text: 'Cancel'
+				}
+			]
+		);
 	}
 	
 	dispose(): void {
