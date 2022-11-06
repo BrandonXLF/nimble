@@ -1,6 +1,6 @@
 declare module '*.png'
 
-declare enum AskForPath {
+declare const enum AskForPath {
 	Always,
 	WhenNeeded,
 	Never
