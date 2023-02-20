@@ -12,8 +12,6 @@ import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
 import TabMiniPopups from './popups/TabMiniPopups';
 
-declare const WEBVIEW_PRELOAD_WEBPACK_ENTRY: string;
-
 export default class Tab {
 	webview = document.createElement('webview');
 	devtools = document.createElement('webview');
@@ -44,9 +42,6 @@ export default class Tab {
 		
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
-		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
-		// BUG: Use events instead https://github.com/electron/electron/issues/26160
-		this.webview.preload = WEBVIEW_PRELOAD_WEBPACK_ENTRY;
 
 		this.webview.addEventListener('did-finish-load', () => {
 			this.updateTitle();

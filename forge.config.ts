@@ -33,7 +33,7 @@ const config: ForgeConfig = {
 					},
 					{
 						preload: {
-							js: './src/preload.ts'
+							js: './src/preload/preload.ts'
 						},
 						name: 'webview'
 					}
