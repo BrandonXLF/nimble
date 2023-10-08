@@ -7,11 +7,12 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 	const ses = session.fromPartition(partition);
 
 	// Second request could have been cancelled
-	ses.protocol.uninterceptProtocol('file');
+	if (ses.protocol.isProtocolHandled('file')) 
+		ses.protocol.unhandle('file');
 
 	ses.webRequest.onBeforeRequest((req, callback) => {
 		// Intercept already added
-		if (ses.protocol.isProtocolIntercepted('file')) return callback({});
+		if (ses.protocol.isProtocolHandled('file')) return callback({});
 		
 		// Not a file: url
 		if (!req.url.startsWith('file:')) return callback({});
@@ -39,10 +40,12 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		// BUG: Files may have wrong background https://github.com/electron/electron/issues/36122
 		if (!intercept) return callback({});
 		
-		ses.protocol.interceptStringProtocol('file', async (_, interceptCallback) => {
-			ses.protocol.uninterceptProtocol('file');
+		ses.protocol.handle('file', async () => {
+			ses.protocol.unhandle('file');
 			
-			interceptCallback(await intercept());
+			return new Response(await intercept(), {
+				headers: { 'content-type': 'text/html' }
+			});
 		});
 		
 		return callback({ redirectURL: req.url });
