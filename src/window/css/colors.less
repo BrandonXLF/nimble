@@ -1,6 +1,11 @@
+:root {
+	--light-bg-color: #fff;
+	--dark-bg-color: #222;
+}
+
 @media (prefers-color-scheme: light) {
 	:root {
-		--bg-color: #fff;
+		--bg-color: var(--light-bg-color);
 		--top-color: #ddd;
 		--border-color: #d0d0d0;
 		--txt-color: #444;
@@ -14,7 +19,7 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--bg-color: #222;
+		--bg-color: var(--dark-bg-color);
 		--top-color: #444;
 		--border-color: #525252;
 		--txt-color: #ccc;

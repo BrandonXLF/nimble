@@ -7,6 +7,7 @@ export default class SettingStore extends EventEmitter {
 		autoRun: true,
 		autoSave: true,
 		theme: 'system',
+		viewerTheme: 'inherit',
 		autoEdit: false,
 		autoDevtools: false,
 		softTabs: false,
@@ -30,8 +31,6 @@ export default class SettingStore extends EventEmitter {
 		super();
 		
 		this.settings = JSON.parse(localStorage.getItem('settings') || '{}');
-		
-		this.addListener('change', this.onChange.bind(this));
 	}
 	
 	get<T>(name: string): T {
@@ -53,9 +52,5 @@ export default class SettingStore extends EventEmitter {
 	
 	save(): void {
 		localStorage.setItem('settings', JSON.stringify(this.settings));
-	}
-	
-	onChange() {
-		ipcRenderer.send('update-native-theme', this.get('theme'));
 	}
 }

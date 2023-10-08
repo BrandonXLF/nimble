@@ -12,7 +12,7 @@
 	{
 		"type": "select",
 		"name": "theme",
-		"label": "Theme (color scheme)",
+		"label": "Theme",
 		"values": [
 			{
 				"value": "dark",
@@ -25,6 +25,25 @@
 			{
 				"value": "system",
 				"label": "System"
+			}
+		]
+	},
+	{
+		"type": "select",
+		"name": "viewerTheme",
+		"label": "Viewer theme",
+		"values": [
+			{
+				"value": "dark",
+				"label": "Dark"
+			},
+			{
+				"value": "light",
+				"label": "Light"
+			},
+			{
+				"value": "inherit",
+				"label": "Inherit"
 			}
 		]
 	},

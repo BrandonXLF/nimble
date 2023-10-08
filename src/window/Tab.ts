@@ -11,6 +11,7 @@ import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
 import TabMiniPopups from './popups/TabMiniPopups';
+import { resolveDarkModes } from './applySettings';
 
 export default class Tab {
 	webview = document.createElement('webview');
@@ -34,6 +35,7 @@ export default class Tab {
 	unsaved: boolean;
 	savedText: string;
 	miniPopups: TabMiniPopups;
+	webviewCssId: string;
 	autoSave: () => void;
 	
 	constructor(tabStore: Tabs, tabId: string, data: TabData = {}) {
@@ -42,6 +44,11 @@ export default class Tab {
 		
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
+		
+		// TODO: Use earlier event
+		// BUG: https://github.com/electron/electron/issues/36122
+		this.webview.addEventListener('dom-ready', () => this.updateWebviewCSS());
+		this.tabStore.settings.on('change', () => this.updateWebviewCSS());
 
 		this.webview.addEventListener('did-finish-load', () => {
 			this.updateTitle();
@@ -104,6 +111,18 @@ export default class Tab {
 		this.addDragAndDrop();
 		this.linkDevtools();
 		this.preview(data.text);
+	}
+
+	async updateWebviewCSS() {
+		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings);
+
+		if (this.webviewCssId) {
+			this.webview.removeInsertedCSS(this.webviewCssId);
+		}
+
+		if (darkViewer) {
+			this.webviewCssId = await this.webview.insertCSS(':root{color-scheme:dark;}');
+		}
 	}
 		
 	addDragAndDrop(): void {

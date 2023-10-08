@@ -72,7 +72,14 @@ button:hover {
 
 webview {
 	flex: 1;
-	background: white;
+
+	[viewer-theme="dark"] & {
+		background: var(--dark-bg-color);
+	}
+
+	[viewer-theme="light"] & {
+		background: var(--light-bg-color);
+	}
 }
 
 .about-row {

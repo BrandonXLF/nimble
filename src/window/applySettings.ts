@@ -5,9 +5,7 @@ import SettingStore from './SettingStore';
 const darkMatch = matchMedia('(prefers-color-scheme: dark)');
 
 export default function applySettings(settings: SettingStore, editor: AceAjax.Editor) {
-	const theme = settings.get('theme'),
-		darkTheme = theme === 'Light' ? false : theme === 'Dark' ? true : darkMatch.matches,
-		aceTheme = darkTheme ? 'clouds_midnight' : 'clouds';
+	const { general: darkTheme, viewer: darkViewer } = resolveDarkModes(settings);
 
 	editor.setOptions({
 		enableLiveAutocompletion: true,
@@ -18,13 +16,28 @@ export default function applySettings(settings: SettingStore, editor: AceAjax.Ed
 		showGutter: settings.get('gutter'),
 		showPrintMargin: false,
 		showInvisibles: settings.get('showInvisible'),
-		theme: 'ace/theme/' + aceTheme,
+		theme: 'ace/theme/' + (darkTheme ? 'clouds_midnight' : 'clouds'),
 	});
+
+	ipcRenderer.send('update-native-theme', settings.get('theme'));
+
+	document.querySelector('#webview-container')
+		?.setAttribute('viewer-theme', darkViewer ? 'dark' : 'light');
+}
+
+export function resolveDarkModes(settings: SettingStore) {
+	const theme = settings.get('theme'),
+	darkTheme = theme === 'light' ? false : theme === 'dark' ? true : darkMatch.matches,
+	viewerTheme = settings.get('viewerTheme'),
+	darkViewer = viewerTheme === 'light' ? false : viewerTheme === 'dark' ? true : darkTheme;
+
+	return {
+		general: darkTheme,
+		viewer: darkViewer
+	};
 }
 
 export function initializeSettings(settings: SettingStore, editor: AceAjax.Editor) {
-	ipcRenderer.send('update-native-theme', settings.get('theme'));
-
 	settings.on('change', () => applySettings(settings, editor));
 	darkMatch.addEventListener('change', () => applySettings(settings, editor));
 
