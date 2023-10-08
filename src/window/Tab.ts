@@ -193,7 +193,7 @@ export default class Tab {
 	async preview(text?: string): Promise<void> {
 		let value = text ?? this.editorSession.getValue();
 		
-		if (this.mode == 'markdown') {
+		if (this.mode === 'markdown') {
 			value = markdownToHTML(value);
 		}
 		
