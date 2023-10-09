@@ -4,7 +4,7 @@ export function popup(
 	title: string,
 	msg: string|Node|(string|Node)[],
 	buttons: {text: string|Node, click?: () => any, keepOpen?: boolean}[] = [{text: 'OK'}],
-	parent = document.getElementById('main'),
+	parent = document.body,
 	small = false
 ) {
 	const popupElement = document.createElement('div'),
