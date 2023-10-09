@@ -132,7 +132,7 @@ export default class Tab {
 		this.tabElement.addEventListener('dragover', e => e.preventDefault());
 	
 		this.tabElement.addEventListener('dragstart', e => {
-			e.dataTransfer.setData('markup-viewer-editor/tab-id', this.tabId);
+			e.dataTransfer.setData('nimble-html-markdown/tab-id', this.tabId);
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
@@ -158,7 +158,7 @@ export default class Tab {
 				return;
 			}
 			
-			const tabId = e.dataTransfer.getData('markup-viewer-editor/tab-id');
+			const tabId = e.dataTransfer.getData('nimble-html-markdown/tab-id');
 			
 			if (tabId === this.tabId) return;
 			
