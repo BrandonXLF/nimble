@@ -15,7 +15,7 @@ export default function promptUnsaved(tabs: Tabs, settings: SettingStore) {
 		if (!unsaved.length) return;
 
 		popup(
-			'Unsaved Changes!',
+			'Unsaved changes!',
 			'You have unsaved tabs, would you like to save them now?',
 			[
 				{
