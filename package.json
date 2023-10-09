@@ -1,11 +1,10 @@
 {
-	"name": "nimble-html-markdown",
-	"productName": "Nimble HTML & Markdown",
-	"description": "HTML, markdown, and SVG viewer and code editor",
+	"name": "nimble",
+	"productName": "Nimble HTML and Markdown",
+	"description": "HTML, markdown, and SVG viewer and code editor.",
 	"version": "1.0.0",
 	"author": "Brandon Fowler",
 	"license": "GPLv3",
-	"private": true,
 	"main": ".webpack/main",
 	"scripts": {
 		"start": "electron-forge start",
