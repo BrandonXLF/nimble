@@ -10,7 +10,6 @@ export const rendererConfig: Configuration = {
 	],
 	module: {
 		rules: [
-			...(mainConfig.module?.rules || []),
 			{
 				test: /\.css$/,
 				use: [MiniCssExtractPlugin.loader, 'css-loader']
@@ -18,6 +17,15 @@ export const rendererConfig: Configuration = {
 			{
 				test: /\.less$/i,
 				use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
+			},
+			{
+				test: /\.ts$/,
+				exclude: /(node_modules|\.webpack)/,
+				use: 'ts-loader'
+			},
+			{
+				test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+				type: 'asset/resource',
 			}
 		]
 	},
