@@ -4,36 +4,34 @@ import { popup } from './popup';
 import Icon from '../../icon/icon.png';
 
 export default function showAbout() {
-	const nameDiv = document.createElement('div'),
-		versionDiv = document.createElement('div'),
-		chromeVerDiv = document.createElement('div'),
-		showDevtools = document.createElement('a'),
-		icon = document.createElement('img');
+	const rows: HTMLDivElement[] = [];
+
+	const addRow = (...items: (string | Node)[]) => {
+		const row = document.createElement('div');
+		row.className = 'about-row';
+		row.append(...items);
+		rows.push(row);
+	};
 	
+	const icon = document.createElement('img');
 	icon.src = Icon;
 	icon.style.height = '80px';
-	icon.classList.add('about-row');
+	addRow(icon);
 		
-	nameDiv.append(icon, npmPackage.productName);
-	nameDiv.classList.add('about-row');
-
-	versionDiv.innerText = `Version ${npmPackage.version}`;
-	versionDiv.classList.add('about-row');
+	addRow(npmPackage.productName);
+	addRow(`By ${npmPackage.author}`);
+	addRow(`Version ${npmPackage.version}`);
+	addRow(`Chrome ${process.versions.chrome}`);
 	
-	chromeVerDiv.innerText = `Chrome ${process.versions.chrome}`;
-	chromeVerDiv.classList.add('about-row');
-	
+	const showDevtools = document.createElement('a');
 	showDevtools.innerText = 'Show App Devtools'
 	showDevtools.href = '#';
-	showDevtools.classList.add('about-row');
+	addRow(showDevtools);
 	
 	showDevtools.addEventListener('click', e => {
 		e.preventDefault();
 		ipcRenderer.send('show-window-devtools');
 	});
 	
-	popup(
-		'About',
-		[icon, nameDiv, versionDiv, chromeVerDiv, showDevtools]
-	);
+	popup('About', rows);
 }
