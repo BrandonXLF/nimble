@@ -110,6 +110,7 @@ export default class Tab {
 		this.addDragAndDrop();
 		this.linkDevtools();
 		this.preview(data.text);
+		this.updateUnsaved();
 	}
 
 	get unsaved() {
