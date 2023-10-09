@@ -32,7 +32,6 @@ export default class Tab {
 	path: string;
 	watchController: AbortController;
 	tabId: string;
-	unsaved: boolean;
 	savedText: string;
 	miniPopups: TabMiniPopups;
 	webviewCssId: string;
@@ -113,6 +112,10 @@ export default class Tab {
 		this.preview(data.text);
 	}
 
+	get unsaved() {
+		return this.editorSession.getValue() !== this.savedText;
+	}
+
 	async updateWebviewCSS() {
 		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings);
 
@@ -183,7 +186,7 @@ export default class Tab {
 			title = this.path ? basename(this.path) : `unnamed${getDefaultExtension(this.mode) || ''}`;
 		}
 		
-		const unsavedText = this.isUnsaved() ? ' - Unsaved' : '',
+		const unsavedText = this.unsaved ? ' - Unsaved' : '',
 			pathText = this.path ? ` - ${this.path}` : '';
 		
 		this.titleElement.innerText = `${title}`;
@@ -369,12 +372,8 @@ export default class Tab {
 		};
 	}
 	
-	isUnsaved(): boolean {
-		return this.editorSession.getValue() !== this.savedText;
-	}
-	
 	updateUnsaved(): void {
-		if (this.isUnsaved()) {
+		if (this.unsaved) {
 			if (!this.tabStore.settings.get('autoSave') || !this.path) this.tabElement.classList.add('unsaved');
 		} else {
 			this.tabElement.classList.remove('unsaved');
