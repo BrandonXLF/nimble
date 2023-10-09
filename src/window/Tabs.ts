@@ -65,7 +65,10 @@ export default class Tabs {
 		
 		const newTab = this.tabs[index] || this.tabs[index - 1] || this.tabs[0];
 		
-		if (!newTab) ipcRenderer.send('perform-window-action', 'close');
+		if (!newTab) {
+			ipcRenderer.send('perform-window-action', 'close');
+			return;
+		}
 		
 		this.selectTab(newTab);
 	}
