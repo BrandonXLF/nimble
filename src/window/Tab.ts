@@ -71,13 +71,7 @@ export default class Tab {
 		this.savedText = data.savedText || '';
 		this.miniPopups = new TabMiniPopups(this);
 		
-		this.autoSave = throttle(async () => {
-			try {
-				await this.save(AskForPath.Never);
-			} catch (e) {
-				// Pass
-			}
-		}, 500);
+		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
 
 		this.editorSession = ace.createEditSession(data.text || '', `ace/mode/${this.mode}` as any);
 		this.editorSession.on('change', () => {
@@ -224,44 +218,47 @@ export default class Tab {
 		);
 	}
 	
-	async save(askForPath = AskForPath.WhenNeeded): Promise<void> {
+	async save(askForPath = AskForPath.WhenNeeded): Promise<boolean> {
 		const value = this.editorSession.getValue();
 		
-		if (askForPath === AskForPath.Always || (askForPath === AskForPath.WhenNeeded && !this.path)) await this.getPath();
+		if (
+			askForPath === AskForPath.Always ||
+			(askForPath === AskForPath.WhenNeeded && !this.path)
+		) await this.getPath();
 		
-		if (!this.path) throw new Error('No path given when saving tab');
+		if (!this.path) return false;
 		
 		try {
 			await fs.writeFile(this.path, value);
-			
-			this.savedText = value;
-			this.updateUnsaved();
 		} catch (e) {
-			if (askForPath === AskForPath.Never) {
-				throw new Error('Failed to write to file');
-			}
+			if (askForPath === AskForPath.Never) return false;
 		
-			popup(
-				'Failed To Save',
-				'Failed to save tab to ' + this.path,
-				[
-					{
-						text: 'Retry',
-						click: () => this.save(AskForPath.WhenNeeded)
-					},
-					{
-						text: 'Save As',
-						click: () => this.save(AskForPath.Always)
-					},
-					{
-						text: 'Cancel',
-						click: () => {
-							throw new Error('Failed to write to file');
+			return new Promise(resolve => {
+				popup(
+					'Failed To Save',
+					'Failed to save tab to ' + this.path,
+					[
+						{
+							text: 'Retry',
+							click: () => resolve(this.save(AskForPath.WhenNeeded))
+						},
+						{
+							text: 'Save As',
+							click: () => resolve(this.save(AskForPath.Always))
+						},
+						{
+							text: 'Cancel',
+							click: () => resolve(false)
 						}
-					}
-				]
-			);
+					]
+				)
+			});
 		}
+
+		this.savedText = value;
+		this.updateUnsaved();
+
+		return true;
 	}
 	
 	async getPath(): Promise<void> {
@@ -322,40 +319,37 @@ export default class Tab {
 		}
 	}
 	
-	async close(): Promise<void> {
-		if (this.unsaved && this.tabStore.settings.get('autoSave')) {
-			try {
+	close() {
+		(async () => {
+			if (this.unsaved && this.tabStore.settings.get('autoSave')) {
 				await this.save(AskForPath.Never);
-			} catch {
-				// Pass
 			}
-		}
 
-		if (!this.unsaved) {
-			this.tabStore.removeTab(this);
-			return;
-		}
-		
-		popup(
-			'Unsaved changes!',
-			'Tab has unsaved changes, would you like to save them now?',
-			[
-				{
-					text: 'Save',
-					click: async () => {
-						await this.save();
-						this.tabStore.removeTab(this);
+			if (!this.unsaved) {
+				this.tabStore.removeTab(this);
+				return;
+			}
+			
+			popup(
+				'Unsaved changes!',
+				'Tab has unsaved changes, would you like to save them now?',
+				[
+					{
+						text: 'Save',
+						click: async () => {
+							if (await this.save()) this.tabStore.removeTab(this)
+						}
+					},
+					{
+						text: 'Don\'t Save',
+						click: () => this.tabStore.removeTab(this)
+					},
+					{
+						text: 'Cancel'
 					}
-				},
-				{
-					text: 'Don\'t Save',
-					click: () => this.tabStore.removeTab(this)
-				},
-				{
-					text: 'Cancel'
-				}
-			]
-		);
+				]
+			);
+		})();
 	}
 	
 	dispose(): void {
