@@ -1,18 +1,18 @@
 import { ipcRenderer, contextBridge, webFrame } from 'electron';
 
 function genFuncOverrides(...funcs: string[]) {
-	return funcs.map(func => `window.${func}=window.MVE_${func};`).join('');
+	return funcs.map(func => `window.${func}=window.NIMBLE_${func};`).join('');
 }
 
-contextBridge.exposeInMainWorld('MVE_alert', (message: unknown) => {
+contextBridge.exposeInMainWorld('NIMBLE_alert', (message: unknown) => {
 	ipcRenderer.sendSync('web-dialog', 'alert', message);
 });
 
-contextBridge.exposeInMainWorld('MVE_confirm', (message: unknown) => {
+contextBridge.exposeInMainWorld('NIMBLE_confirm', (message: unknown) => {
 	return ipcRenderer.sendSync('web-dialog', 'confirm', message);
 });
 
-contextBridge.exposeInMainWorld('MVE_prompt', (message: unknown, initial: unknown) => {
+contextBridge.exposeInMainWorld('NIMBLE_prompt', (message: unknown, initial: unknown) => {
 	return ipcRenderer.sendSync('web-dialog', 'prompt', message, initial);
 });
 
