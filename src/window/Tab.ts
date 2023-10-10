@@ -136,11 +136,11 @@ export default class Tab {
 		this.tabElement.addEventListener('dragover', e => e.preventDefault());
 	
 		this.tabElement.addEventListener('dragstart', e => {
-			e.dataTransfer.setData('nimble-html-markdown/tab-id', this.tabId);
+			e.dataTransfer!.setData('nimble-html-markdown/tab-id', this.tabId);
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
-			if (e.dataTransfer.dropEffect === 'none') {
+			if (e.dataTransfer!.dropEffect === 'none') {
 				if (this.tabStore.tabs.length > 1) {
 					ipcRenderer.send('new-window-with-tab', this.tabId);
 				} else {
@@ -157,14 +157,14 @@ export default class Tab {
 			
 			if (e.pageX - boundRect.left > boundRect.width / 2) targetIndex++;
 			
-			if (e.dataTransfer.files.length) {
+			if (e.dataTransfer?.files.length) {
 				[...e.dataTransfer.files].forEach(file => this.tabStore.createFromFile(file.path, targetIndex));
 				return;
 			}
 			
-			const tabId = e.dataTransfer.getData('nimble-html-markdown/tab-id');
+			const tabId = e.dataTransfer?.getData('nimble-html-markdown/tab-id');
 			
-			if (tabId === this.tabId) return;
+			if (!tabId || tabId === this.tabId) return;
 			
 			const localTab = this.tabStore.getTabById(tabId);
 			
@@ -272,7 +272,7 @@ export default class Tab {
 		this.setPath(newPath);
 	}
 	
-	async setPath(path: string, loadFile = false): Promise<void> {
+	async setPath(path?: string, loadFile = false): Promise<void> {
 		if (!path || path === this.path) return;
 		
 		if (!getFileType(path)) {
@@ -284,7 +284,7 @@ export default class Tab {
 		}
 		
 		this.path = path;
-		this.mode = getFileType(this.path);
+		this.mode = getFileType(this.path)!;
 		
 		this.updateTitle();
 

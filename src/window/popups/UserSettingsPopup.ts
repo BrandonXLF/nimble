@@ -46,7 +46,7 @@ export default class UserSettingsPopup {
 		const select = document.createElement('select');
 
 		select.addEventListener('change', () => this.settings.set(setting.name, select.value));
-		setting.values.forEach(({label, value}) => {
+		setting.values?.forEach(({label, value}) => {
 			const option = document.createElement('option');
 
 			option.append(label);

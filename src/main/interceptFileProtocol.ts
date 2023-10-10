@@ -17,7 +17,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 			!req.url.startsWith('file:') // Not a file: url
 		) return callback({});
 		
-		let requestFile: string;
+		let requestFile: string | undefined;
 		
 		try {
 			requestFile = fileURLToPath(req.url);
@@ -25,14 +25,14 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 			// Not a valid file
 		}
 		
-		let intercept: () => string | Promise<string>;
+		let intercept: (() => string | Promise<string>) | undefined;
 		
 		// Intercept the file being edited
 		if (req.url === `file://${partition}/` || (requestFile !== undefined && requestFile === file)) {
 			intercept = () => convertText(mode, text);
 		// Convert supported file types
-		} else if (getFileType(requestFile)) {
-			intercept = async () => convertText(mode, await fs.readFile(requestFile, 'utf8'));
+		} else if (requestFile !== undefined && getFileType(requestFile)) {
+			intercept = async () => convertText(mode, await fs.readFile(requestFile!, 'utf8'));
 		}
 		
 		// BUG: Files may have wrong background https://github.com/electron/electron/issues/36122
@@ -41,7 +41,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		ses.protocol.handle('file', async () => {
 			ses.protocol.unhandle('file');
 			
-			return new Response(await intercept(), {
+			return new Response(await intercept!(), {
 				headers: { 'content-type': 'text/html' }
 			});
 		});

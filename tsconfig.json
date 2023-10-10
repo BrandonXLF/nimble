@@ -3,6 +3,7 @@
 		"module": "CommonJS",
 		"moduleResolution": "node",
 		"noImplicitAny": true,
+		"strictNullChecks": true,
 		"sourceMap": false,
 		"esModuleInterop": true,
 		"outDir": "dist",

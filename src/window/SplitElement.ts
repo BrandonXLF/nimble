@@ -20,7 +20,7 @@ export default class SplitElement extends EventEmitter {
 		
 		this.identifier = identifier;
 		this.element = element;
-		this.resizeElement = element.querySelector<HTMLElement>(':scope > .resize');
+		this.resizeElement = element.querySelector<HTMLElement>(':scope > .resize')!;
 		this.firstChild = element.firstElementChild as HTMLElement;
 		this.mouseMoveBound = this.mouseMove.bind(this);
 		

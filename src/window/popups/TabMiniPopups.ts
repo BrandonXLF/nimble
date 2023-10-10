@@ -8,7 +8,7 @@ export default class TabMiniPopups {
 	currentPopup: {
 		type: string;
 		dispose: () => unknown;
-	};
+	} | undefined;
 
 	tab: Tab;
 	
@@ -64,7 +64,7 @@ export default class TabMiniPopups {
 				},
 				{
 					text: useSVG('x'),
-					click: () => this.currentPopup.dispose()
+					click: () => this.currentPopup!.dispose()
 				},
 			],
 			this.tab.webviewSubContainer,
@@ -133,7 +133,7 @@ export default class TabMiniPopups {
 				},
 				{
 					text: useSVG('x'),
-					click: () => this.currentPopup.dispose()
+					click: () => this.currentPopup!.dispose()
 				},
 			],
 			this.tab.webviewSubContainer,

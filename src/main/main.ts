@@ -47,7 +47,7 @@ function createWindow(point?: Electron.Point) {
 
 app.whenReady().then(() => createWindow());
 
-ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id).openDevTools({
+ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
 	mode: 'undocked'
 }));
 
@@ -58,7 +58,7 @@ app.on('web-contents-created', (_, contents) => {
 });
 
 ipcMain.handle('open-file', async (e) => {
-	const browserWindow = BrowserWindow.fromWebContents(e.sender),
+	const browserWindow = BrowserWindow.fromWebContents(e.sender)!,
 		openDialog = await dialog.showOpenDialog(browserWindow, {
 			filters: getOpenFilters()
 		});
@@ -68,12 +68,12 @@ ipcMain.handle('open-file', async (e) => {
 
 ipcMain.handle('get-webcontents-id', e => e.sender.id);
 
-ipcMain.on('crash-renderer', (_, webContentsId: number) => webContents.fromId(webContentsId).forcefullyCrashRenderer());
+ipcMain.on('crash-renderer', (_, webContentsId: number) => webContents.fromId(webContentsId)?.forcefullyCrashRenderer());
 
 ipcMain.on('release-tab', (e, tabId: string, targetIndex?: number) => {
 	const sourceContentsId = parseInt(tabId.split('-')[0]);
 
-	webContents.fromId(sourceContentsId).send('release-tab', tabId, e.sender.id, targetIndex);
+	webContents.fromId(sourceContentsId)?.send('release-tab', tabId, e.sender.id, targetIndex);
 });
 
 ipcMain.on('new-window-with-tab', (_, tabId: string) => {
@@ -81,14 +81,14 @@ ipcMain.on('new-window-with-tab', (_, tabId: string) => {
 		target = createWindow(screen.getCursorScreenPoint()).webContents;
 		
 	target.once('ipc-message', () => {
-		webContents.fromId(sourceContentsId).send('release-tab', tabId, target.id);
+		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id);
 	});
 });
 
 ipcMain.on('move-window-to-mouse', e => {
 	const point = screen.getCursorScreenPoint();
 	
-	BrowserWindow.fromWebContents(e.sender).setPosition(point.x - 40, point.y - 10);
+	BrowserWindow.fromWebContents(e.sender)!.setPosition(point.x - 40, point.y - 10);
 });
 
 ipcMain.on('web-dialog', (e, type, message, initial) => {
@@ -100,13 +100,13 @@ ipcMain.on('web-dialog', (e, type, message, initial) => {
 			e.returnValue = res;
 		};
 	
-	BrowserWindow.getFocusedWindow().webContents.send('web-dialog-request', uuid, type, message, initial);
+	BrowserWindow.getFocusedWindow()?.webContents.send('web-dialog-request', uuid, type, message, initial);
 	ipcMain.on('web-dialog-response', onResponse);
 });
 
 ipcMain.on('set-devtool-webview', (_, targetContentsId: number, devtoolsContentsId: number) => {
-	const target = webContents.fromId(targetContentsId),
-		devtools = webContents.fromId(devtoolsContentsId);
+	const target = webContents.fromId(targetContentsId)!,
+		devtools = webContents.fromId(devtoolsContentsId)!;
 
 	target.setDevToolsWebContents(devtools);
 	target.openDevTools();
@@ -115,7 +115,7 @@ ipcMain.on('set-devtool-webview', (_, targetContentsId: number, devtoolsContents
 });
 
 ipcMain.on('perform-window-action', (e, action) => {
-	const browserWindow = BrowserWindow.fromWebContents(e.sender);
+	const browserWindow = BrowserWindow.fromWebContents(e.sender)!;
 	
 	switch (action) {
 		case 'minimize':
@@ -138,7 +138,7 @@ ipcMain.on('perform-window-action', (e, action) => {
 });
 
 ipcMain.handle('get-path', async (e, type: string, defaultPath: string) => {
-	const browserWindow = BrowserWindow.fromWebContents(e.sender),
+	const browserWindow = BrowserWindow.fromWebContents(e.sender)!,
 		pathInfo = await dialog.showSaveDialog(browserWindow, {
 			defaultPath,
 			filters: getSaveFilters(type)

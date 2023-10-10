@@ -39,7 +39,7 @@ export default function handleKeyboardShortcut(
 	shortcuts.some(([shortcutKey, shortcutFlag, action, editorAction]) => {
 		if (shortcutKey.toUpperCase() !== key.toUpperCase() || shortcutFlag !== flag) return;
 
-		BrowserWindow.getFocusedWindow().webContents.send('menu-action', editor && editorAction ? editorAction : action);
+		BrowserWindow.getFocusedWindow()?.webContents.send('menu-action', editor && editorAction ? editorAction : action);
 		
 		return true;
 	});
