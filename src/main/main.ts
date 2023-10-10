@@ -6,7 +6,7 @@ import npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
-import Icon from '../icon/icon.png';
+import Icon from '../icon/icon.ico';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
 
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));

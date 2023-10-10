@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import npmPackage from '../../../package.json';
 import { popup } from './popup';
-import Icon from '../../icon/icon.png';
+import Icon from '../../icon/icon.ico';
 
 export default function showAbout() {
 	const rows: HTMLDivElement[] = [];

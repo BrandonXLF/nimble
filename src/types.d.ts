@@ -1,4 +1,4 @@
-declare module '*.png'
+declare module '*.ico'
 
 declare const enum AskForPath {
 	Always,
