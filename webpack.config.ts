@@ -1,6 +1,6 @@
 import type { Configuration } from 'webpack';
 import path from 'path';
-import CopyPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const commonConfig = {
@@ -48,13 +48,9 @@ const rendererConfig: Configuration = {
 		window: './src/window/window.ts'
 	},
 	plugins: [
-		new CopyPlugin({
-			patterns: [
-				{
-					from: './src/window/window.html',
-					to: './window.html'
-				}
-			]
+		new HtmlWebpackPlugin({
+			filename: 'window.html',
+			template: './src/window/window.html'
 		}),
 		new MiniCssExtractPlugin({
 			filename: 'window.css'
@@ -63,6 +59,10 @@ const rendererConfig: Configuration = {
 	module: {
 		rules: [
 			...commonConfig.module.rules,
+			{
+				test: /\.html$/,
+				use: 'html-loader'
+			},
 			{
 				test: /\.css$/,
 				use: [MiniCssExtractPlugin.loader, 'css-loader'],
