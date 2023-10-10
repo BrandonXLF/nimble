@@ -15,6 +15,7 @@ import showWebDialogFactory from './popups/showWebDialogFactory';
 import promptUnsaved from './popups/promptUnsaved';
 import menuActionFactory from './menuActionFactory';
 import { initializeSettings } from './applySettings';
+import Icon from '../icon/icon.ico';
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 	editor = ace.edit(document.querySelector<HTMLElement>('#editor-container')),
@@ -55,6 +56,8 @@ document.getElementById('edit').addEventListener('click', () => mainSplit.toggle
 document.getElementById('inspect').addEventListener('click', () => viewerSplit.toggleVisible());
 document.getElementById('run').addEventListener('click', () => tabs.currentTab.preview());
 document.getElementById('header').addEventListener('contextmenu', e => e.preventDefault());
+
+(document.getElementById('top-icon') as HTMLImageElement).src = Icon;
 
 ['options', 'new'].forEach(id => document.getElementById(id).addEventListener('click', () => {
 	const rect = document.getElementById(id).getBoundingClientRect();
