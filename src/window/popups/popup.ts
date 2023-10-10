@@ -3,7 +3,7 @@ import './popup.less';
 export function popup(
 	title: string,
 	msg: string|Node|(string|Node)[],
-	buttons: {text: string|Node, click?: () => any, keepOpen?: boolean}[] = [{text: 'OK'}],
+	buttons: {text: string|Node, click?: () => unknown, keepOpen?: boolean}[] = [{text: 'OK'}],
 	parent = document.body,
 	small = false
 ) {

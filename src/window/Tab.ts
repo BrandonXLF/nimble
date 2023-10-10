@@ -73,7 +73,7 @@ export default class Tab {
 		
 		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
 
-		this.editorSession = ace.createEditSession(data.text || '', `ace/mode/${this.mode}` as any);
+		this.editorSession = ace.createEditSession(data.text || '', `ace/mode/${this.mode}` as unknown as ace.TextMode);
 		this.editorSession.on('change', () => {
 			this.updateUnsaved();
 			this.tabStore.settings.get('autoRun') && this.preview();
@@ -173,7 +173,7 @@ export default class Tab {
 		
 		try {
 			title = this.webview.getTitle();
-		} catch (e) {
+		} catch (_) {
 			// Pass
 		}
 		
@@ -202,7 +202,7 @@ export default class Tab {
 		try {
 			await this.webview.loadURL(this.path ? pathToFileURL(this.path).href : `file://${this.partition}/`);
 			this.webview.clearHistory();
-		} catch (e) {
+		} catch (_) {
 			// Pass
 		}
 	}
@@ -230,7 +230,7 @@ export default class Tab {
 		
 		try {
 			await fs.writeFile(this.path, value);
-		} catch (e) {
+		} catch (_) {
 			if (askForPath === AskForPath.Never) return false;
 		
 			return new Promise(resolve => {
@@ -301,7 +301,7 @@ export default class Tab {
 
 		const watcher = fs.watch(this.path, {
 			signal: this.watchController.signal
-		});
+		}); 
 		
 		try {
 			for await (const _ of watcher) {

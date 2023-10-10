@@ -1,6 +1,5 @@
 import type { Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { mainConfig } from './webpack.main.config';
 
 export const rendererConfig: Configuration = {
 	plugins: [

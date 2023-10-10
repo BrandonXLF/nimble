@@ -1,8 +1,7 @@
-import { ipcRenderer } from 'electron';
 import { EventEmitter } from 'events';
 
 export default class SettingStore extends EventEmitter {
-	readonly defaults: Record<string, any> = {
+	readonly defaults: Record<string, unknown> = {
 		// User settings
 		autoRun: true,
 		autoSave: true,
@@ -23,9 +22,9 @@ export default class SettingStore extends EventEmitter {
 		editorHeight: '50%',
 		viewerWidth: '50%',
 		viewerHeight: '50%'
-	}
+	};
 	
-	settings: Record<string, any>;
+	settings: Record<string, unknown>;
 	
 	constructor() {
 		super();
@@ -33,8 +32,8 @@ export default class SettingStore extends EventEmitter {
 		this.settings = JSON.parse(localStorage.getItem('settings') || '{}');
 	}
 	
-	get<T>(name: string): T {
-		return this.settings[name] ?? this.defaults[name];
+	get<T>(name: string) {
+		return (this.settings[name] ?? this.defaults[name]) as T;
 	}
 	
 	set<T>(name: string, value: T): void {
@@ -45,9 +44,9 @@ export default class SettingStore extends EventEmitter {
 	}
 	
 	toggle(name: string, force?: boolean): boolean {
-		this.set(name, force !== undefined ? force : !this.get(name));
+		this.set<boolean>(name, force ?? !this.get<boolean>(name));
 		
-		return this.get(name);
+		return this.get<boolean>(name);
 	}
 	
 	save(): void {

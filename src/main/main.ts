@@ -49,7 +49,7 @@ function createWindow(point?: Electron.Point) {
 	win.on('unmaximize', () => win.webContents.send('unmaximize'));
 	win.webContents.once('ipc-message', () => win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize'));
 	
-	win.webContents.on('will-attach-webview', (e, opts) => {
+	win.webContents.on('will-attach-webview', (_, opts) => {
 		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
 		// BUG: Use events instead https://github.com/electron/electron/issues/26160
 		opts.preload = WEBVIEW_PRELOAD_WEBPACK_ENTRY;
@@ -64,7 +64,7 @@ ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id).openDevT
 	mode: 'undocked'
 }));
 
-app.on('web-contents-created', (e, contents) => {
+app.on('web-contents-created', (_, contents) => {
 	if (contents.getType() !== 'webview') return;
 	
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));

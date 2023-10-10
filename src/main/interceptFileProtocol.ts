@@ -21,7 +21,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		
 		try {
 			requestFile = fileURLToPath(req.url);
-		} catch (e) {
+		} catch (_) {
 			// Not a valid file
 		}
 		

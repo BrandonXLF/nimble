@@ -12,7 +12,7 @@ export default function menuActionFactory(
 	viewerSplit: SplitElement,
 	settings: SettingStore
 ) {
-	return (e: Electron.IpcRendererEvent, action: string, mode?: string) => {
+	return (_: Electron.IpcRendererEvent, action: string, mode?: string) => {
 		if (action === 'print') {
 			tabs.currentTab.webview.print();
 			return;

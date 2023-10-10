@@ -25,7 +25,7 @@ const shortcuts: [string, number, string, string?][] = [
 ];
 
 export default function handleKeyboardShortcut(
-	e: Electron.IpcMainEvent,
+	_: Electron.IpcMainEvent,
 	editor: boolean,
 	key: string,
 	ctrlOrCmd: boolean,
