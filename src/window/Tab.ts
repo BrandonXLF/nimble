@@ -1,4 +1,5 @@
 import * as fs from 'fs/promises';
+import { join } from 'path';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import { extname, basename } from 'path';
@@ -43,6 +44,9 @@ export default class Tab {
 		
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
+		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
+		// BUG: Use events instead https://github.com/electron/electron/issues/26160
+		this.webview.preload = join(__dirname, 'preload.js');
 		
 		// TODO: Use earlier event
 		// BUG: https://github.com/electron/electron/issues/36122

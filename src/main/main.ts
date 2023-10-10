@@ -9,14 +9,6 @@ import { randomUUID } from 'crypto';
 import Icon from '../icon/icon.png';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
 
-declare const WINDOW_WEBPACK_ENTRY: string;
-declare const WEBVIEW_PRELOAD_WEBPACK_ENTRY: string;
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling
-if (require('electron-squirrel-startup')) {
-	app.quit();
-}
-
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
 function createWindow(point?: Electron.Point) {
@@ -41,19 +33,13 @@ function createWindow(point?: Electron.Point) {
 	
 	const win = new BrowserWindow(options);
 
-	win.loadURL(WINDOW_WEBPACK_ENTRY);
+	win.loadFile(join(__dirname, 'window.html'));
 
 	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
 	
 	win.on('maximize', () => win.webContents.send('maximize'));
 	win.on('unmaximize', () => win.webContents.send('unmaximize'));
 	win.webContents.once('ipc-message', () => win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize'));
-	
-	win.webContents.on('will-attach-webview', (_, opts) => {
-		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
-		// BUG: Use events instead https://github.com/electron/electron/issues/26160
-		opts.preload = WEBVIEW_PRELOAD_WEBPACK_ENTRY;
-	});
 	
 	return win;
 }
