@@ -112,6 +112,14 @@ export default class Tab {
 		return this.editorSession.getValue() !== this.savedText;
 	}
 
+	get defaultName() {
+		let suffix = getDefaultExtension(this.mode) ?? '';
+
+		if (suffix) suffix = '.' + suffix;
+
+		return `unnamed${suffix}`;
+	}
+
 	async updateWebviewCSS() {
 		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings);
 
@@ -179,7 +187,7 @@ export default class Tab {
 		}
 		
 		if (!title || title === this.partition || title === 'about:blank') {
-			title = this.path ? basename(this.path) : `unnamed${getDefaultExtension(this.mode) || ''}`;
+			title = this.path ? basename(this.path) : this.defaultName;
 		}
 		
 		const unsavedText = this.unsaved ? ' - Unsaved' : '',
@@ -259,7 +267,7 @@ export default class Tab {
 	}
 	
 	async getPath(): Promise<void> {
-		const newPath = await ipcRenderer.invoke('get-path', this.mode, this.path || `unnamed${getDefaultExtension(this.mode) || ''}`);
+		const newPath = await ipcRenderer.invoke('get-path', this.mode, this.path || this.defaultName);
 		
 		this.setPath(newPath);
 	}
@@ -267,7 +275,7 @@ export default class Tab {
 	async setPath(path: string, loadFile = false): Promise<void> {
 		if (!path || path === this.path) return;
 		
-		if (!getFileType(extname(path))) {
+		if (!getFileType(path)) {
 			popup('Failed to set path', `Unsupported file type ${extname(path)}`);
 			
 			if (loadFile) this.tabStore.removeTab(this);
@@ -276,7 +284,7 @@ export default class Tab {
 		}
 		
 		this.path = path;
-		this.mode = getFileType(extname(this.path));
+		this.mode = getFileType(this.path);
 		
 		this.updateTitle();
 

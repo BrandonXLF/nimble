@@ -1,7 +1,8 @@
 import { session } from 'electron';
 import { fileURLToPath } from 'url';
-import markdownToHTML from './mdConverter';
 import fs from 'fs/promises';
+import convertText from './convertText';
+import { getFileType } from '../utils/fileTypes';
 
 export default function interceptFileProtocol(_: Electron.IpcMainEvent, partition: string, file: string, mode: string, text: string) {
 	const ses = session.fromPartition(partition);
@@ -27,14 +28,12 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		
 		let intercept: () => string | Promise<string>;
 		
-		// Intercept for file being edited
+		// Intercept the file being edited
 		if (req.url === `file://${partition}/` || (requestFile === file && requestFile !== undefined)) {
-			intercept = () => mode === 'markdown' ? markdownToHTML(text) : text;
-		}
-		
-		// Intercept for markdown files
-		if (requestFile?.endsWith('.md') || requestFile?.endsWith('.markdown')) {
-			intercept = async () => markdownToHTML(await fs.readFile(requestFile, 'utf8'));
+			intercept = () => convertText(mode, text);
+		// Convert supported file types
+		} else if (getFileType(requestFile)) {
+			intercept = async () => convertText(mode, await fs.readFile(requestFile, 'utf8'));
 		}
 		
 		// BUG: Files may have wrong background https://github.com/electron/electron/issues/36122

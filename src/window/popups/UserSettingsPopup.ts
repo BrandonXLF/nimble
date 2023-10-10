@@ -1,7 +1,7 @@
 import SettingStore from '../SettingStore';
-import userSettings from './userSettings.json';
 import { popup } from './popup';
 import './userSettings.less';
+import { userSettingsData } from './userSettingsData';
 
 export default class UserSettingsPopup {
 	settings: SettingStore;
@@ -11,10 +11,10 @@ export default class UserSettingsPopup {
 	}
 	
 	show() {
-		popup('Settings', userSettings.map(setting => this.createSetting(setting)));
+		popup('Settings', userSettingsData.map(setting => this.createSetting(setting)));
 	}
 	
-	createSetting(setting: typeof userSettings[0]) {
+	createSetting(setting: typeof userSettingsData[0]) {
 		const el = document.createElement('label');
 		el.className = 'setting-row';
 
@@ -33,7 +33,7 @@ export default class UserSettingsPopup {
 		return el;
 	}
 	
-	createCheckbox(parent: HTMLElement, setting: typeof userSettings[0]) {
+	createCheckbox(parent: HTMLElement, setting: typeof userSettingsData[0]) {
 		const checkbox = document.createElement('input');
 
 		checkbox.type = 'checkbox';
@@ -42,7 +42,7 @@ export default class UserSettingsPopup {
 		parent.append(setting.label, checkbox);
 	}
 	
-	createSelect(parent: HTMLElement, setting: typeof userSettings[0]) {
+	createSelect(parent: HTMLElement, setting: typeof userSettingsData[0]) {
 		const select = document.createElement('select');
 
 		select.addEventListener('change', () => this.settings.set(setting.name, select.value));
@@ -58,7 +58,7 @@ export default class UserSettingsPopup {
 		parent.append(setting.label, select);
 	}
 	
-	createInput(parent: HTMLElement, setting: typeof userSettings[0]) {
+	createInput(parent: HTMLElement, setting: typeof userSettingsData[0]) {
 		const input = document.createElement('input');
 
 		input.type = setting.type;

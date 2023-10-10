@@ -95,7 +95,7 @@ export default class Tabs {
 	}
 	
 	createFromFile(path: string, index?: number) {
-		if (!getFileType(extname(path))) {
+		if (!getFileType(path)) {
 			popup('Failed to open file', `Unsupported file type ${extname(path)}`);
 			return;
 		}

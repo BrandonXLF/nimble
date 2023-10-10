@@ -1,4 +1,5 @@
 import { Menu } from 'electron';
+import { fileTypes } from '../utils/fileTypes';
 
 const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 	id?: string;
@@ -71,24 +72,12 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		{
 			type: 'separator'
 		},
-		{
-			label: 'New HTML',
+		...fileTypes.map(typeInfo => ({
+			label: `New ${typeInfo.shortName ?? typeInfo.name}`,
 			accelerator: 'CmdOrCtrl+N',
 			id: 'new',
-			mode: 'html'
-		},
-		{
-			label: 'New SVG',
-			accelerator: 'CmdOrCtrl+N',
-			id: 'new',
-			mode: 'svg'
-		},
-		{
-			label: 'New MD',
-			accelerator: 'CmdOrCtrl+N',
-			id: 'new',
-			mode: 'markdown'
-		}
+			mode: typeInfo.type
+		}))
 	]
 };
 
