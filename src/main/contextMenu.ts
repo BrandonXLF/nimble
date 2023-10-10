@@ -46,7 +46,7 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		template.push({
 			label: 'Print...',
 			accelerator: 'CmdOrCtrl+P',
-			click: () => webview.print()
+			click: () => webview.print({ silent: false })
 		})
 	}
 	

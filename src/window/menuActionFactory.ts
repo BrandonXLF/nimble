@@ -14,7 +14,7 @@ export default function menuActionFactory(
 ) {
 	return (_: Electron.IpcRendererEvent, action: string, mode?: string) => {
 		if (action === 'print') {
-			tabs.currentTab.webview.print();
+			tabs.currentTab.webview.print({ silent: false });
 			return;
 		}
 		
