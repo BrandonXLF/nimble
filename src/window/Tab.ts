@@ -1,9 +1,7 @@
 import * as fs from 'fs/promises';
-import { join } from 'path';
+import { join, extname, basename } from 'path';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
-import { extname, basename } from 'path';
-import markdownToHTML from '../utils/mdConverter';
 import { getDefaultExtension, getFileType } from '../utils/fileTypes';
 import ace from 'brace';
 import throttle from 'lodash.throttle';
@@ -192,15 +190,11 @@ export default class Tab {
 	}
 	
 	async preview(text?: string): Promise<void> {
-		let value = text ?? this.editorSession.getValue();
-		
-		if (this.mode === 'markdown') {
-			value = markdownToHTML(value);
-		}
+		const value = text ?? this.editorSession.getValue();
 		
 		await this.webviewReady;
 		
-		ipcRenderer.send('intercept-file', this.partition, this.path, value);
+		ipcRenderer.send('intercept-file', this.partition, this.path, this.mode, value);
 		
 		try {
 			await this.webview.loadURL(this.path ? pathToFileURL(this.path).href : `file://${this.partition}/`);

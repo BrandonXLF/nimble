@@ -1,9 +1,9 @@
 import { session } from 'electron';
 import { fileURLToPath } from 'url';
-import markdownToHTML from '../utils/mdConverter';
+import markdownToHTML from './mdConverter';
 import fs from 'fs/promises';
 
-export default function interceptFileProtocol(_: Electron.IpcMainEvent, partition: string, file: string, text: string) {
+export default function interceptFileProtocol(_: Electron.IpcMainEvent, partition: string, file: string, mode: string, text: string) {
 	const ses = session.fromPartition(partition);
 
 	// Second request could have been cancelled
@@ -29,7 +29,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		
 		// Intercept for file being edited
 		if (req.url === `file://${partition}/` || (requestFile === file && requestFile !== undefined)) {
-			intercept = () => text;
+			intercept = () => mode === 'markdown' ? markdownToHTML(text) : text;
 		}
 		
 		// Intercept for markdown files
