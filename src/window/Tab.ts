@@ -121,15 +121,14 @@ export default class Tab {
 	}
 
 	async updateWebviewCSS() {
-		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings);
-
-		if (this.webviewCssId) {
-			this.webview.removeInsertedCSS(this.webviewCssId);
-		}
+		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings),
+			oldCssId = this.webviewCssId;
 
 		if (darkViewer) {
 			this.webviewCssId = await this.webview.insertCSS(':root{color-scheme:dark;}');
 		}
+
+		this.webview.removeInsertedCSS(oldCssId);
 	}
 		
 	addDragAndDrop(): void {
