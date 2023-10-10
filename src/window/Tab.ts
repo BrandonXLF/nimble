@@ -68,13 +68,13 @@ export default class Tab {
 		
 		this.faviconElement.classList.add('tab-favicon');
 		
-		this.mode = data.mode || this.tabStore.settings.get('defaultType');
-		this.savedText = data.savedText || '';
+		this.mode = data.mode ?? this.tabStore.settings.get('defaultType');
+		this.savedText = data.savedText ?? '';
 		this.miniPopups = new TabMiniPopups(this);
 		
 		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
 
-		this.editorSession = ace.createEditSession(data.text || '', `ace/mode/${this.mode}` as unknown as ace.TextMode);
+		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as ace.TextMode);
 		this.editorSession.on('change', () => {
 			this.updateUnsaved();
 			this.tabStore.settings.get('autoRun') && this.preview();

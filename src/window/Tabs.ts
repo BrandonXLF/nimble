@@ -63,7 +63,7 @@ export default class Tabs {
 		this.tabs.splice(index, 1);
 		tab.dispose();
 		
-		const newTab = this.tabs[index] || this.tabs[index - 1] || this.tabs[0];
+		const newTab = this.tabs[index] ?? this.tabs[index - 1] ?? this.tabs[0];
 		
 		if (!newTab) {
 			ipcRenderer.send('perform-window-action', 'close');
@@ -118,13 +118,13 @@ export default class Tabs {
 	selectPrev(): void {
 		const index = this.getTabIndex(this.currentTab);
 
-		this.selectTab(this.tabs[index - 1] || this.tabs[this.tabs.length - 1]);
+		this.selectTab(this.tabs[index - 1] ?? this.tabs[this.tabs.length - 1]);
 	}
 	
 	selectNext(): void {
 		const index = this.getTabIndex(this.currentTab);
 
-		this.selectTab(this.tabs[index + 1] || this.tabs[0]);
+		this.selectTab(this.tabs[index + 1] ?? this.tabs[0]);
 	}
 	
 	addToMainArea(...elements: HTMLElement[]): void {

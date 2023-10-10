@@ -42,7 +42,7 @@ export default function showWebDialogFactory(tabs: Tabs) {
 		
 		if (type === 'prompt') {
 			const input = document.createElement('input');
-			input.value = initial || '';
+			input.value = initial ?? '';
 			input.style.cssText = 'display: block; margin-top: 1em';
 
 			popup(

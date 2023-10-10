@@ -30,7 +30,7 @@ export default class SettingStore extends EventEmitter {
 	constructor() {
 		super();
 		
-		this.settings = JSON.parse(localStorage.getItem('settings') || '{}');
+		this.settings = JSON.parse(localStorage.getItem('settings') ?? '{}');
 	}
 	
 	get<T>(name: string) {

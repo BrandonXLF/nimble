@@ -99,7 +99,7 @@ export default function menuActionFactory(
 		}
 
 		if (action === 'new') {
-			tabs.createTab({ mode: mode || tabs.currentTab.mode });
+			tabs.createTab({ mode: mode ?? tabs.currentTab.mode });
 		}
 		
 		if (action === 'prev-tab') {
