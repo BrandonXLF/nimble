@@ -44,13 +44,12 @@ export default class Tab {
 		
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
-		// BUG: Preload in iframes https://github.com/electron/electron/issues/22582
+		// BUG: No preload in iframes https://github.com/electron/electron/issues/22582
 		// BUG: Use events instead https://github.com/electron/electron/issues/26160
 		this.webview.preload = join(__dirname, 'preload.js');
 		
-		// TODO: Use earlier event
-		// BUG: https://github.com/electron/electron/issues/36122
-		this.webview.addEventListener('dom-ready', () => this.updateWebviewCSS());
+		// Can be placed in preload if this breaks
+		this.webview.addEventListener('did-navigate', () => this.updateWebviewCSS());
 		this.tabStore.settings.on('change', () => this.updateWebviewCSS());
 
 		this.webview.addEventListener('did-finish-load', () => {
