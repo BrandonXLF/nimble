@@ -71,7 +71,7 @@ export default class Tab {
 		
 		this.faviconElement.classList.add('tab-favicon');
 		
-		this.mode = data.mode || 'html';
+		this.mode = data.mode || this.tabStore.settings.get('defaultType');
 		this.savedText = data.savedText || '';
 		this.miniPopups = new TabMiniPopups(this);
 		

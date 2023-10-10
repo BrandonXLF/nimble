@@ -14,6 +14,7 @@ export default class SettingStore extends EventEmitter {
 		showInvisible: false,
 		gutter: true,
 		wordWrap: true,
+		defaultType: 'html',
 		
 		// Layout settings
 		editorDirection: 'horizontal',

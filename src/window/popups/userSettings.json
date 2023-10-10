@@ -9,6 +9,16 @@
 		"name": "autoSave",
 		"label": "Save changes automatically"
 	},
+		{
+		"type": "checkbox",
+		"name": "autoEdit",
+		"label": "Show the editor by default"
+	},
+	{
+		"type": "checkbox",
+		"name": "autoDevtools",
+		"label": "Show devtools by default"
+	},
 	{
 		"type": "select",
 		"name": "theme",
@@ -48,14 +58,23 @@
 		]
 	},
 	{
-		"type": "checkbox",
-		"name": "autoEdit",
-		"label": "Show the editor by default"
-	},
-	{
-		"type": "checkbox",
-		"name": "autoDevtools",
-		"label": "Show devtools by default"
+		"type": "select",
+		"name": "defaultType",
+		"label": "Default Type",
+		"values": [
+			{
+				"value": "html",
+				"label": "HTML"
+			},
+			{
+				"value": "svg",
+				"label": "SVG"
+			},
+			{
+				"value": "markdown",
+				"label": "Markdown"
+			}
+		]
 	},
 	{
 		"type": "checkbox",
