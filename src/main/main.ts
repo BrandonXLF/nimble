@@ -22,7 +22,8 @@ function createWindow(point?: Electron.Point) {
 		webPreferences: {
 			webviewTag: true,
 			nodeIntegration: true,
-			contextIsolation: false
+			contextIsolation: false,
+			additionalArguments: process.argv.slice(app.isPackaged ? 1 : 2).map(file => '--open-file=' + file)
 		}
 	};
 	

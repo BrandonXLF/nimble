@@ -67,7 +67,20 @@ document.getElementById('header').addEventListener('contextmenu', e => e.prevent
 });
 
 initializeSettings(settings, editor);
-tabs.createTab();
+
+const openFilePrefix = '--open-file=';
+
+const openFiles = process.argv
+	.filter(arg => arg.startsWith(openFilePrefix))
+	.map(arg => arg.substring(openFilePrefix.length));
+
+if (openFiles.length) {
+	for (const file of openFiles) {
+		tabs.createFromFile(file);
+	}
+} else {
+	tabs.createTab();
+}
 
 window.addEventListener('beforeunload', e => {
 	if (!tabs.tabs.some(tab => tab.unsaved)) return;
