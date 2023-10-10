@@ -4,7 +4,8 @@ export function useSVG(id: string, className?: string) {
 
 	svg.setAttributeNS(null, 'viewBox', '0 0 100 100');
 	svg.classList.add('icon');
-	className && svg.classList.add(className);
+	if (className) svg.classList.add(className);
+
 	use.setAttributeNS(null, 'href', '#' + id);
 	svg.append(use);
 

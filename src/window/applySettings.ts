@@ -10,7 +10,7 @@ export default function applySettings(settings: SettingStore, editor: AceAjax.Ed
 	editor.setOptions({
 		enableLiveAutocompletion: true,
 		useSoftTabs: settings.get('softTabs'),
-		wrap: settings.get('wordWrap') ? 'free' : 'off',
+		wrap: settings.get('wordWrap'),
 		tabSize: settings.get('tabSize'),
 		useWorker: false,
 		showGutter: settings.get('gutter'),

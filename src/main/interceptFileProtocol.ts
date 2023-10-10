@@ -12,11 +12,10 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		ses.protocol.unhandle('file');
 
 	ses.webRequest.onBeforeRequest((req, callback) => {
-		// Intercept already added
-		if (ses.protocol.isProtocolHandled('file')) return callback({});
-		
-		// Not a file: url
-		if (!req.url.startsWith('file:')) return callback({});
+		if (
+			ses.protocol.isProtocolHandled('file') || // Intercept already added
+			!req.url.startsWith('file:') // Not a file: url
+		) return callback({});
 		
 		let requestFile: string;
 		
@@ -29,7 +28,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 		let intercept: () => string | Promise<string>;
 		
 		// Intercept the file being edited
-		if (req.url === `file://${partition}/` || (requestFile === file && requestFile !== undefined)) {
+		if (req.url === `file://${partition}/` || (requestFile !== undefined && requestFile === file)) {
 			intercept = () => convertText(mode, text);
 		// Convert supported file types
 		} else if (getFileType(requestFile)) {
