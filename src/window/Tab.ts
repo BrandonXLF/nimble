@@ -24,6 +24,7 @@ export default class Tab {
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
 	unsavedIndicator = document.createElement('div');
+	boundUpdateCSS = this.updateWebviewCSS.bind(this);
 
 	editorSession: ace.IEditSession;
 	tabStore: Tabs;
@@ -47,8 +48,7 @@ export default class Tab {
 		this.webview.preload = join(__dirname, 'preload.js');
 		
 		// Can be placed in preload if this breaks
-		this.webview.addEventListener('did-navigate', () => this.updateWebviewCSS());
-		this.tabStore.settings.on('change', () => this.updateWebviewCSS());
+		this.tabStore.settings.on('change', this.boundUpdateCSS);
 
 		this.webview.addEventListener('did-finish-load', () => {
 			this.updateTitle();
@@ -360,6 +360,7 @@ export default class Tab {
 		this.watchController?.abort();
 		this.tabElement.remove();
 		this.webviewSubContainer.remove();
+		this.tabStore.settings.off('change', this.boundUpdateCSS);
 	}
 	
 	getTabData(): TabData {
