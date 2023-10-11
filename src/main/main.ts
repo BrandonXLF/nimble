@@ -8,7 +8,9 @@ import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
 import Icon from '../icon/icon.ico';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
+import Store from 'electron-store';
 
+Store.initRenderer();
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
 function createWindow(point?: Electron.Point) {
