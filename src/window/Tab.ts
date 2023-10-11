@@ -34,7 +34,7 @@ export default class Tab {
 	tabId: string;
 	savedText: string;
 	miniPopups: TabMiniPopups;
-	webviewCssId: string;
+	webviewCssId: string | undefined;
 	autoSave: () => void;
 	
 	constructor(tabStore: Tabs, tabId: string, data: TabData = {}) {
@@ -48,6 +48,10 @@ export default class Tab {
 		this.webview.preload = join(__dirname, 'preload.js');
 		
 		// Can be placed in preload if this breaks
+		this.webview.addEventListener('did-navigate', () => {
+			delete this.webviewCssId;
+			this.updateWebviewCSS();
+		});
 		this.tabStore.settings.on('change', this.boundUpdateCSS);
 
 		this.webview.addEventListener('did-finish-load', () => {
@@ -124,11 +128,8 @@ export default class Tab {
 		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings),
 			oldCssId = this.webviewCssId;
 
-		if (darkViewer) {
-			this.webviewCssId = await this.webview.insertCSS(':root{color-scheme:dark;}');
-		}
-
-		this.webview.removeInsertedCSS(oldCssId);
+		this.webviewCssId = await this.webview.insertCSS(`:root{color-scheme:${darkViewer ? 'dark' : 'light'}}`);
+		if (oldCssId) this.webview.removeInsertedCSS(oldCssId);
 	}
 		
 	addDragAndDrop(): void {
