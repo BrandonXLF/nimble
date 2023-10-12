@@ -112,6 +112,7 @@ ipcRenderer.on('release-tab', (_, localTabId: string, targetWebContents: number,
 	tabs.removeTab(tab);
 });
 
+ipcRenderer.on('open-files', (_, files: string[]) => files.forEach(file => tabs.createFromFile(file)));
 ipcRenderer.on('show-tab', (_, tabData: TabData, index?: number) => tabs.createTab(tabData, index));
 ipcRenderer.on('maximize', () => document.body.classList.add('maximized'));
 ipcRenderer.on('unmaximize', () => document.body.classList.remove('maximized'));

@@ -13,7 +13,25 @@ import Store from 'electron-store';
 Store.initRenderer();
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
-function createWindow(point?: Electron.Point) {
+let currentWindow: BrowserWindow | undefined;
+let fileQueue: string[] | undefined = [];
+
+function openFiles(...files: string[]) {
+	if (!currentWindow) {
+		fileQueue!.push(...files);
+		return;
+	}
+
+	currentWindow.show();
+	currentWindow.webContents.send('open-files', files);
+}
+
+function createWindow(files: string[] = [], point?: Electron.Point) {
+	if (fileQueue?.length) {
+		files.push(...fileQueue!);
+		fileQueue = [];
+	}
+
 	const options: Electron.BrowserWindowConstructorOptions = {
 		width: 800,
 		height: 600,
@@ -25,7 +43,7 @@ function createWindow(point?: Electron.Point) {
 			webviewTag: true,
 			nodeIntegration: true,
 			contextIsolation: false,
-			additionalArguments: process.argv.slice(app.isPackaged ? 1 : 2).map(file => '--open-file=' + file)
+			additionalArguments: files.map(file => '--open-file=' + file)
 		}
 	};
 	
@@ -35,19 +53,36 @@ function createWindow(point?: Electron.Point) {
 	}
 	
 	const win = new BrowserWindow(options);
-
 	win.loadFile(join(__dirname, 'window.html'));
 
 	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
-	
-	win.on('maximize', () => win.webContents.send('maximize'));
-	win.on('unmaximize', () => win.webContents.send('unmaximize'));
-	win.webContents.once('ipc-message', () => win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize'));
-	
+
+	win.webContents.once('ipc-message', () => {
+		win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize');
+		win.on('maximize', () => win.webContents.send('maximize'));
+		win.on('unmaximize', () => win.webContents.send('unmaximize'));
+
+		currentWindow = win;
+		win.on('focus', () => currentWindow = win);
+
+		if (fileQueue?.length) {
+			win.webContents.send('open-files', fileQueue);
+			fileQueue = undefined;
+		}
+	});
+
 	return win;
 }
 
-app.whenReady().then(() => createWindow());
+const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
+	gotLock = app.requestSingleInstanceLock(initialFiles);
+
+if (!gotLock) app.quit();
+
+app.whenReady().then(() => createWindow(initialFiles));
+
+app.on('second-instance', (_, _args, _cwd, files: string[]) => openFiles(...files));
+app.on('open-file', (_, path) => openFiles(path));
 
 ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
 	mode: 'undocked'
@@ -59,7 +94,7 @@ app.on('web-contents-created', (_, contents) => {
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));
 });
 
-ipcMain.handle('open-file', async (e) => {
+ipcMain.handle('show-open-dialog', async (e) => {
 	const browserWindow = BrowserWindow.fromWebContents(e.sender)!,
 		openDialog = await dialog.showOpenDialog(browserWindow, {
 			filters: getOpenFilters()
@@ -80,7 +115,7 @@ ipcMain.on('release-tab', (e, tabId: string, targetIndex?: number) => {
 
 ipcMain.on('new-window-with-tab', (_, tabId: string) => {
 	const sourceContentsId = parseInt(tabId.split('-')[0]),
-		target = createWindow(screen.getCursorScreenPoint()).webContents;
+		target = createWindow(undefined, screen.getCursorScreenPoint()).webContents;
 		
 	target.once('ipc-message', () => {
 		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id);
