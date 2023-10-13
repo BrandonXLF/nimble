@@ -364,6 +364,7 @@ export default class Tab {
 		this.watchController?.abort();
 		this.tabElement.remove();
 		this.webviewSubContainer.remove();
+		this.devtools.remove();
 		this.tabStore.settings.off('change', this.boundUpdateCSS);
 	}
 	
