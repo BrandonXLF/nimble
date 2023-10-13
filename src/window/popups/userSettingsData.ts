@@ -4,17 +4,17 @@ export const userSettingsData = [
 	{
 		type: 'checkbox',
 		name: 'autoRun',
-		label: 'Preview changes automatically'
+		label: 'Automatic preview'
 	},
 	{
 		type: 'checkbox',
 		name: 'autoSave',
-		label: 'Save changes automatically'
+		label: 'Autosave'
 	},
 		{
 		type: 'checkbox',
 		name: 'autoEdit',
-		label: 'Show the editor by default'
+		label: 'Show editor by default'
 	},
 	{
 		type: 'checkbox',
@@ -57,12 +57,12 @@ export const userSettingsData = [
 	{
 		type: 'checkbox',
 		name: 'softTabs',
-		label: 'Use spaces instead of tabs'
+		label: 'Use spaces as tabs'
 	},
 	{
 		type: 'number',
 		name: 'tabSize',
-		label: 'Length of tabs'
+		label: 'Tab length'
 	},
 	{
 		type: 'checkbox',
@@ -72,11 +72,11 @@ export const userSettingsData = [
 	{
 		type: 'checkbox',
 		name: 'gutter',
-		label: 'Show line numbers while editing'
+		label: 'Show line numbers'
 	},
 	{
 		type: 'checkbox',
 		name: 'wordWrap',
-		label: 'Wrap long lines in the editor'
+		label: 'Wrap long lines'
 	}
 ];
