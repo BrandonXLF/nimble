@@ -9,12 +9,15 @@ import { randomUUID } from 'crypto';
 import Icon from '../icon/icon.ico';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
 import Store from 'electron-store';
+import WindowStateManager from './WindowStateManager';
 
-Store.initRenderer();
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
-let currentWindow: BrowserWindow | undefined;
-let fileQueue: string[] | undefined = [];
+const store = new Store(),
+	windowStateManager = new WindowStateManager(store);
+
+let currentWindow: BrowserWindow | undefined,
+	fileQueue: string[] | undefined = [];
 
 function openFiles(...files: string[]) {
 	if (!currentWindow) {
@@ -26,15 +29,13 @@ function openFiles(...files: string[]) {
 	currentWindow.webContents.send('open-files', files);
 }
 
-function createWindow(files: string[] = [], point?: Electron.Point) {
+function createWindow(files: string[] = [], position?: Electron.Point) {
 	if (fileQueue?.length) {
-		files.push(...fileQueue!);
+		files.push(...fileQueue);
 		fileQueue = [];
 	}
 
 	const options: Electron.BrowserWindowConstructorOptions = {
-		width: 800,
-		height: 600,
 		resizable: true,
 		frame: false,
 		title: npmPackage.productName,
@@ -47,12 +48,7 @@ function createWindow(files: string[] = [], point?: Electron.Point) {
 		}
 	};
 	
-	if (point) {
-		options.x = point.x - 40;
-		options.y = point.y - 10;
-	}
-	
-	const win = new BrowserWindow(options);
+	const win = windowStateManager.createWindow(options, position);
 	win.loadFile(join(__dirname, 'window.html'));
 
 	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
