@@ -11,11 +11,11 @@ import 'brace/mode/markdown';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 import SplitElement from './SplitElement';
-import showWebDialogFactory from './popups/showWebDialogFactory';
 import promptUnsaved from './popups/promptUnsaved';
-import menuActionFactory from './menuActionFactory';
 import { initializeSettings } from './applySettings';
 import Icon from '../icon/icon.ico';
+import WebDialogFactory from './popups/WebDialogFactory';
+import MenuActionProcessor from './MenuActionProcessor';
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 	editor = ace.edit(document.querySelector<HTMLElement>('#editor-container')!),
@@ -71,11 +71,10 @@ document.getElementById('header')!.addEventListener('contextmenu', e => e.preven
 
 initializeSettings(settings, editor);
 
-const openFilePrefix = '--open-file=';
-
-const openFiles = process.argv
-	.filter(arg => arg.startsWith(openFilePrefix))
-	.map(arg => arg.substring(openFilePrefix.length));
+const openFilePrefix = '--open-file=',
+	openFiles = process.argv
+		.filter(arg => arg.startsWith(openFilePrefix))
+		.map(arg => arg.substring(openFilePrefix.length));
 
 if (openFiles.length) {
 	for (const file of openFiles) {
@@ -114,9 +113,14 @@ ipcRenderer.on('release-tab', (_, localTabId: string, targetWebContents: number,
 
 ipcRenderer.on('open-files', (_, files: string[]) => files.forEach(file => tabs.createFromFile(file)));
 ipcRenderer.on('show-tab', (_, tabData: TabData, index?: number) => tabs.createTab(tabData, index));
+
 ipcRenderer.on('maximize', () => document.body.classList.add('maximized'));
 ipcRenderer.on('unmaximize', () => document.body.classList.remove('maximized'));
-ipcRenderer.on('web-dialog-request', showWebDialogFactory(tabs));
-ipcRenderer.on('menu-action', menuActionFactory(tabs, mainSplit, viewerSplit, settings));
+
+const webDialogFactory = new WebDialogFactory(tabs),
+	menuActionProcessor = new MenuActionProcessor(tabs, mainSplit, viewerSplit, settings);
+
+ipcRenderer.on('web-dialog-request', webDialogFactory.processRequest.bind(webDialogFactory));
+ipcRenderer.on('menu-action', menuActionProcessor.processRequest.bind(menuActionProcessor));
 
 ipcRenderer.send('ipc-message');

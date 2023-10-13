@@ -2,19 +2,15 @@ import Tab from '../Tab';
 import { useSVG } from '../useSVG';
 import { popup } from './popup';
 
-export default class TabMiniPopups {
-	zoomLevels = [0.25, 1/3, 0.5, 2/3, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5];
+export default class MiniPopupFactory {
+	static ZOOM_LEVELS = [0.25, 1/3, 0.5, 2/3, 0.75, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5];
 
 	currentPopup: {
 		type: string;
 		dispose: () => unknown;
 	} | undefined;
-
-	tab: Tab;
 	
-	constructor(tab: Tab) {
-		this.tab = tab;
-	}
+	constructor(private tab: Tab) { }
 
 	showZoomPopup() {
 		if (this.currentPopup) {
@@ -29,7 +25,7 @@ export default class TabMiniPopups {
 		
 		let zoomIndex = 0;
 		
-		while (this.zoomLevels[zoomIndex] < initialZoom) zoomIndex++;
+		while (MiniPopupFactory.ZOOM_LEVELS[zoomIndex] < initialZoom) zoomIndex++;
 		
 		showZoom(initialZoom);
 
@@ -41,24 +37,24 @@ export default class TabMiniPopups {
 					text: useSVG('minus'),
 					click: () => {
 						zoomIndex = Math.max(zoomIndex - 1, 0);
-						this.tab.webview.setZoomFactor(this.zoomLevels[zoomIndex]);
-						showZoom(this.zoomLevels[zoomIndex]);
+						this.tab.webview.setZoomFactor(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
+						showZoom(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
 					},
 					keepOpen: true
 				},
 				{
 					text: useSVG('plus'), click: () => {
-						zoomIndex = Math.min(zoomIndex + 1, this.zoomLevels.length - 1);
-						this.tab.webview.setZoomFactor(this.zoomLevels[zoomIndex]);
-						showZoom(this.zoomLevels[zoomIndex]);
+						zoomIndex = Math.min(zoomIndex + 1, MiniPopupFactory.ZOOM_LEVELS.length - 1);
+						this.tab.webview.setZoomFactor(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
+						showZoom(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
 					},
 					keepOpen: true
 				},
 				{
 					text: 'Reset', click: () => {
-						zoomIndex = this.zoomLevels.indexOf(1);
-						this.tab.webview.setZoomFactor(this.zoomLevels[zoomIndex]);
-						showZoom(this.zoomLevels[zoomIndex]);
+						zoomIndex = MiniPopupFactory.ZOOM_LEVELS.indexOf(1);
+						this.tab.webview.setZoomFactor(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
+						showZoom(MiniPopupFactory.ZOOM_LEVELS[zoomIndex]);
 					},
 					keepOpen: true
 				},

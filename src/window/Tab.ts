@@ -9,7 +9,7 @@ import { pathToFileURL } from 'url';
 import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
-import TabMiniPopups from './popups/TabMiniPopups';
+import MiniPopupFactory from './popups/MiniPopupFactory';
 import { resolveDarkMode } from './applySettings';
 
 export default class Tab {
@@ -33,7 +33,7 @@ export default class Tab {
 	watchController: AbortController;
 	tabId: string;
 	savedText: string;
-	miniPopups: TabMiniPopups;
+	miniPopupFactory: MiniPopupFactory;
 	webviewCssId: string | undefined;
 	autoSave: () => void;
 	
@@ -74,7 +74,7 @@ export default class Tab {
 		
 		this.mode = data.mode ?? this.tabStore.settings.get('defaultType');
 		this.savedText = data.savedText ?? '';
-		this.miniPopups = new TabMiniPopups(this);
+		this.miniPopupFactory = new MiniPopupFactory(this);
 		
 		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
 
