@@ -3,7 +3,7 @@ import Tabs from '../Tabs';
 import { popup } from './popup';
 
 export default function showWebDialogFactory(tabs: Tabs) {
-	return async (_: Electron.IpcRendererEvent, uuid: string, type: string, message: string, initial: string) => {
+	return async (_: Electron.IpcRendererEvent, uuid: string, type: string, message = '', initial = '') => {
 		if (type === 'alert') {
 			popup(
 				'Alert',
@@ -42,7 +42,7 @@ export default function showWebDialogFactory(tabs: Tabs) {
 		
 		if (type === 'prompt') {
 			const input = document.createElement('input');
-			input.value = initial ?? '';
+			input.value = initial;
 			input.style.cssText = 'display: block; margin-top: 1em';
 
 			popup(
