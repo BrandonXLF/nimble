@@ -7,7 +7,7 @@ export default class SettingStore extends EventEmitter {
 		autoRun: true,
 		autoSave: true,
 		theme: 'system',
-		viewerTheme: 'inherit',
+		viewerUseTheme: true,
 		autoEdit: false,
 		autoDevtools: false,
 		softTabs: false,

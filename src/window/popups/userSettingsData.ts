@@ -41,28 +41,14 @@ export const userSettingsData = [
 		]
 	},
 	{
-		type: 'select',
-		name: 'viewerTheme',
-		label: 'Viewer theme',
-		values: [
-			{
-				value: 'dark',
-				label: 'Dark'
-			},
-			{
-				value: 'light',
-				label: 'Light'
-			},
-			{
-				value: 'inherit',
-				label: 'Inherit'
-			}
-		]
+		type: 'checkbox',
+		name: 'viewerUseTheme',
+		label: 'Apply theme to viewer'
 	},
 	{
 		type: 'select',
 		name: 'defaultType',
-		label: 'Default Type',
+		label: 'Default file type',
 		values: fileTypes.map(typeInfo => ({
             value: typeInfo.type,
             label: typeInfo.name

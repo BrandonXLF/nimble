@@ -5,7 +5,7 @@ import SettingStore from './SettingStore';
 const darkMatch = matchMedia('(prefers-color-scheme: dark)');
 
 export default function applySettings(settings: SettingStore, editor: AceAjax.Editor) {
-	const { general: darkTheme, viewer: darkViewer } = resolveDarkModes(settings);
+	const darkTheme = resolveDarkMode(settings);
 
 	editor.setOptions({
 		enableLiveAutocompletion: true,
@@ -22,20 +22,13 @@ export default function applySettings(settings: SettingStore, editor: AceAjax.Ed
 	ipcRenderer.send('update-native-theme', settings.get('theme'));
 
 	// BUG: Background colour must be set https://github.com/electron/electron/issues/36122
-	document.querySelector('#webview-container')
-		?.setAttribute('viewer-theme', darkViewer ? 'dark' : 'light');
+	document.querySelector('#webview-container')?.classList.toggle('use-theme', settings.get('viewerUseTheme'));
 }
 
-export function resolveDarkModes(settings: SettingStore) {
-	const theme = settings.get('theme'),
-	darkTheme = theme === 'light' ? false : theme === 'dark' ? true : darkMatch.matches,
-	viewerTheme = settings.get('viewerTheme'),
-	darkViewer = viewerTheme === 'light' ? false : viewerTheme === 'dark' ? true : darkTheme;
+export function resolveDarkMode(settings: SettingStore) {
+	const theme = settings.get('theme');
 
-	return {
-		general: darkTheme,
-		viewer: darkViewer
-	};
+	return theme === 'dark' || (theme === 'system' && darkMatch.matches);
 }
 
 export function initializeSettings(settings: SettingStore, editor: AceAjax.Editor) {

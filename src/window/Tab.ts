@@ -10,7 +10,7 @@ import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
 import TabMiniPopups from './popups/TabMiniPopups';
-import { resolveDarkModes } from './applySettings';
+import { resolveDarkMode } from './applySettings';
 
 export default class Tab {
 	webview = document.createElement('webview');
@@ -125,10 +125,13 @@ export default class Tab {
 	}
 
 	async updateWebviewCSS() {
-		const { viewer: darkViewer } = resolveDarkModes(this.tabStore.settings),
+		const darkViewer = resolveDarkMode(this.tabStore.settings),
 			oldCssId = this.webviewCssId;
 
-		this.webviewCssId = await this.webview.insertCSS(`:root{color-scheme:${darkViewer ? 'dark' : 'light'}}`);
+		if (this.tabStore.settings.get('viewerUseTheme')) {
+			this.webviewCssId = await this.webview.insertCSS(`:root{color-scheme:${darkViewer ? 'dark' : 'light'}}`);
+		}
+
 		if (oldCssId) this.webview.removeInsertedCSS(oldCssId);
 	}
 		

@@ -55,6 +55,22 @@ button:hover {
 	display: flex;
 	flex-direction: column;
 	position: relative;
+
+	webview {
+		flex: 1;
+	}
+
+	.use-theme {
+		webiview {
+			background: --bg-color;
+		}
+	}
+
+	&:not(.use-theme) {
+		webview {
+			background: #fff;
+		}
+	}
 }
 
 .webview-sub-container {
@@ -68,17 +84,9 @@ button:hover {
 
 #devtool-container {
 	display: flex;
-}
 
-webview {
-	flex: 1;
-
-	[viewer-theme="dark"] & {
-		background: var(--dark-bg-color);
-	}
-
-	[viewer-theme="light"] & {
-		background: var(--light-bg-color);
+	webview {
+		flex: 1;
 	}
 }
 
