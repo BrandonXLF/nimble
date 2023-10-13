@@ -19,7 +19,7 @@ export default class UserSettingsPopup {
 
 	createSection(section: Section) {
 		const heading = document.createElement('h4');
-		heading.className = 'setting-section-heading';
+		heading.className = 'row setting-section-heading';
 		heading.textContent = section.name;
 
 		return [heading, ...section.settings.map(setting => this.createSetting(setting))]
@@ -27,7 +27,7 @@ export default class UserSettingsPopup {
 	
 	createSetting(setting: Setting) {
 		const el = document.createElement('label');
-		el.className = 'setting-row';
+		el.className = 'row setting-row';
 
 		switch (setting.type) {
 			case 'checkbox':

@@ -8,7 +8,7 @@ export default function showAbout() {
 
 	const addRow = (...items: (string | Node)[]) => {
 		const row = document.createElement('div');
-		row.className = 'about-row';
+		row.className = 'row';
 		row.append(...items);
 		rows.push(row);
 	};
