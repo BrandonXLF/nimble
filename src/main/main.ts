@@ -153,20 +153,15 @@ ipcMain.on('perform-window-action', (e, action) => {
 	switch (action) {
 		case 'minimize':
 			browserWindow.minimize();
-			
 			break;
 		case 'maximize':
 			browserWindow.maximize();
-			
 			break;
 		case 'unmaximize':
 			browserWindow.unmaximize();
-			
 			break;
 		case 'close':
 			browserWindow.close();
-			
-			break;
 	}
 });
 
