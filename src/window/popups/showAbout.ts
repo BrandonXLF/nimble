@@ -24,7 +24,7 @@ export default function showAbout() {
 	addRow(`Chrome ${process.versions.chrome}`);
 	
 	const showDevtools = document.createElement('a');
-	showDevtools.innerText = 'Show App Devtools'
+	showDevtools.innerText = 'Show app devtools'
 	showDevtools.href = '#';
 	addRow(showDevtools);
 	
