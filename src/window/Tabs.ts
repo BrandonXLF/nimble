@@ -8,31 +8,21 @@ import { extname } from 'path';
 
 export default class Tabs {
 	tabs: Tab[] = [];
-	tabRow: HTMLElement;
-	webviewContainer: HTMLElement;
-	devtoolContainer: HTMLElement;
-	editor: ace.Editor;
-	settings: SettingStore;
 	currentTab: Tab;
+	baseRowX: number;
 
 	private tabIdCounter = 0;
 	private tabMap: Record<string, WeakRef<Tab>> = {};
-	private webContentsIdPromise: Promise<number>;
 	
 	constructor(
-		tabRow: HTMLElement,
-		webviewContainer: HTMLElement,
-		devtoolContainer: HTMLElement,
-		editor: ace.Editor,
-		webContentsIdPromise: Promise<number>,
-		settings: SettingStore
+		public tabRow: HTMLElement,
+		public webviewContainer: HTMLElement,
+		public devtoolContainer: HTMLElement,
+		public editor: ace.Editor,
+		public webContentsIdPromise: Promise<number>,
+		public settings: SettingStore
 	) {
-		this.tabRow = tabRow;
-		this.webviewContainer = webviewContainer;
-		this.devtoolContainer = devtoolContainer;
-		this.editor = editor;
-		this.webContentsIdPromise = webContentsIdPromise;
-		this.settings = settings;
+		this.baseRowX = tabRow.getBoundingClientRect().x;
 	}
 
 	addTab(tab: Tab, index?: number): void {

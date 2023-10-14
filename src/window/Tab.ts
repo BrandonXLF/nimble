@@ -32,6 +32,7 @@ export default class Tab {
 	path: string;
 	watchController: AbortController;
 	tabId: string;
+	dragStart?: [number, number];
 	savedText: string;
 	miniPopupFactory: MiniPopupFactory;
 	webviewCssId: string | undefined;
@@ -139,17 +140,24 @@ export default class Tab {
 		this.tabElement.addEventListener('dragover', e => e.preventDefault());
 	
 		this.tabElement.addEventListener('dragstart', e => {
+			this.dragStart = [e.offsetX, e.offsetY];
 			e.dataTransfer!.setData('nimble-html-markdown/tab-id', this.tabId);
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
-			if (e.dataTransfer!.dropEffect === 'none') {
-				if (this.tabStore.tabs.length > 1) {
-					ipcRenderer.send('new-window-with-tab', this.tabId);
-				} else {
-					ipcRenderer.send('move-window-to-mouse');
-				}
+			const x = screenX + e.x - this.tabStore.baseRowX - this.dragStart![0],
+				y = screenY + e.y - this.dragStart![1];
+
+			delete this.dragStart;
+
+			if (e.dataTransfer!.dropEffect !== 'none') return;
+
+			if (this.tabStore.tabs.length > 1) {
+				ipcRenderer.send('new-window-with-tab', this.tabId, x, y);
+				return;
 			}
+
+			ipcRenderer.send('move-window', x, y);
 		})
 		
 		this.tabElement.addEventListener('drop', e => {

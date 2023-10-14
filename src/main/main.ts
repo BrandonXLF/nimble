@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, webContents, dialog, screen, nativeTheme, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, webContents, dialog, nativeTheme, Menu } from 'electron';
 import { join } from 'path';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
@@ -109,20 +109,18 @@ ipcMain.on('release-tab', (e, tabId: string, targetIndex?: number) => {
 	webContents.fromId(sourceContentsId)?.send('release-tab', tabId, e.sender.id, targetIndex);
 });
 
-ipcMain.on('new-window-with-tab', (_, tabId: string) => {
+ipcMain.on('new-window-with-tab', (_, tabId: string, x: number, y: number) => {
 	const sourceContentsId = parseInt(tabId.split('-')[0]),
-		target = createWindow(undefined, screen.getCursorScreenPoint()).webContents;
+		target = createWindow(undefined, { x, y }).webContents;
 		
-	target.once('ipc-message', () => {
-		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id);
-	});
+	target.once('ipc-message', () =>
+		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id)
+	);
 });
 
-ipcMain.on('move-window-to-mouse', e => {
-	const point = screen.getCursorScreenPoint();
-	
-	BrowserWindow.fromWebContents(e.sender)!.setPosition(point.x - 40, point.y - 10);
-});
+ipcMain.on('move-window', (e, x: number, y: number) =>
+	BrowserWindow.fromWebContents(e.sender)!.setPosition(x, y)
+);
 
 ipcMain.on('web-dialog', (e, type, message, initial) => {
 	const uuid = randomUUID(),
