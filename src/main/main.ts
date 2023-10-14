@@ -38,7 +38,7 @@ function createWindow(files: string[] = [], position?: Electron.Point) {
 	const options: Electron.BrowserWindowConstructorOptions = {
 		resizable: true,
 		frame: false,
-		title: npmPackage.productName,
+		title: npmPackage.build.productName,
 		icon: join(__dirname, Icon),
 		webPreferences: {
 			webviewTag: true,

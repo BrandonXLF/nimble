@@ -1,6 +1,5 @@
 {
 	"name": "nimble",
-	"productName": "Nimble HTML and Markdown",
 	"description": "HTML, markdown, and SVG viewer and code editor.",
 	"version": "1.0.0",
 	"author": "Brandon Fowler",
@@ -43,12 +42,23 @@
 		"lodash.throttle": "^4.1.1",
 		"showdown": "^2.1.0"
 	},
+	"//": "BUG: https://github.com/electron-userland/electron-builder/issues/7826",
 	"build": {
 		"appId": "me.brandonfowler.nimble",
+		"productName": "Nimble HTML and Markdown",
 		"files": [
 			"build/*",
 			"package.json"
 		],
+		"win": {
+			"executableName": "nimble"
+		},
+		"linux": {
+			"executableName": "nimble"
+		},
+		"mac": {
+			"executableName": "nimble"
+		},
 		"fileAssociations": [
 			{
 				"ext": "html",

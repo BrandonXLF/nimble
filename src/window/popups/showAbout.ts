@@ -18,7 +18,7 @@ export default function showAbout() {
 	icon.style.height = '80px';
 	addRow(icon);
 		
-	addRow(npmPackage.productName);
+	addRow(npmPackage.build.productName);
 	addRow(`By ${npmPackage.author}`);
 	addRow(`Version ${npmPackage.version}`);
 	addRow(`Chrome ${process.versions.chrome}`);
