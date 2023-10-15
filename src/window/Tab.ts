@@ -185,7 +185,7 @@ export default class Tab {
 				return;
 			}
 			
-			ipcRenderer.send('release-tab', tabId, targetIndex);
+			ipcRenderer.send('request-tab', tabId, targetIndex);
 		});
 	}
 	

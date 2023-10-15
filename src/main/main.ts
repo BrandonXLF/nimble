@@ -8,6 +8,7 @@ import handleKeyboardShortcut from './handleKeyboardShortcut';
 import Store from 'electron-store';
 import FileHandler from './FileHandler';
 import WindowFactory from './WindowFactory';
+import setUpTabTransferring from './setUpTabTransferring';
 
 const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
 	gotLock = app.requestSingleInstanceLock(initialFiles);
@@ -45,21 +46,6 @@ ipcMain.handle('show-open-dialog', async (e) => {
 ipcMain.handle('get-webcontents-id', e => e.sender.id);
 
 ipcMain.on('crash-renderer', (_, webContentsId: number) => webContents.fromId(webContentsId)?.forcefullyCrashRenderer());
-
-ipcMain.on('release-tab', (e, tabId: string, targetIndex?: number) => {
-	const sourceContentsId = parseInt(tabId.split('-')[0]);
-
-	webContents.fromId(sourceContentsId)?.send('release-tab', tabId, e.sender.id, targetIndex);
-});
-
-ipcMain.on('new-window-with-tab', (_, tabId: string, x: number, y: number) => {
-	const sourceContentsId = parseInt(tabId.split('-')[0]),
-		target = windowFactory.create(undefined, { x, y }).webContents;
-		
-	target.once('ipc-message', () =>
-		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id)
-	);
-});
 
 ipcMain.on('move-window', (e, x: number, y: number) =>
 	BrowserWindow.fromWebContents(e.sender)!.setPosition(x, y)
@@ -123,3 +109,5 @@ ipcMain.on('update-native-theme', (_, theme: 'system' | 'light' | 'dark') => {
 ipcMain.on('intercept-file', interceptFileProtocol);
 ipcMain.on('show-menu', showTopMenu);
 ipcMain.on('keyboard-input', handleKeyboardShortcut);
+
+setUpTabTransferring(windowFactory);

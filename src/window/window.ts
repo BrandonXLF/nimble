@@ -101,13 +101,12 @@ document.body.addEventListener('keyup', e => ipcRenderer.send(
 	e.shiftKey
 ));
 
-ipcRenderer.on('release-tab', (_, localTabId: string, targetWebContents: number, targetIndex?: number) => {
+ipcRenderer.on('release-tab-to', (_, localTabId: string, targetId: number, targetIndex?: number) => {
 	const tab = tabs.getTabById(localTabId);
 
 	if (!tab) return;
 
-	ipcRenderer.sendTo(targetWebContents, 'show-tab', tab.getTabData(), targetIndex);
-
+	ipcRenderer.send('send-tab-to', targetId, tab.getTabData(), targetIndex);
 	tabs.removeTab(tab);
 });
 
