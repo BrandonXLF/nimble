@@ -29,7 +29,7 @@ export default class MiniPopupFactory {
 		
 		showZoom(initialZoom);
 
-		const popupElement = popup(
+		const closePopup = popup(
 			'',
 			zoomText,
 			[
@@ -70,7 +70,7 @@ export default class MiniPopupFactory {
 		this.currentPopup = {
 			type: 'zoom',
 			dispose: () => {
-				popupElement.remove();
+				closePopup();
 				this.currentPopup = undefined;
 			}
 		};
@@ -103,7 +103,7 @@ export default class MiniPopupFactory {
 			});
 		});
 
-		const popupElement = popup(
+		const closePopup = popup(
 			'',
 			[input, current, sep, total],
 			[
@@ -139,7 +139,7 @@ export default class MiniPopupFactory {
 		this.currentPopup = {
 			type: 'find',
 			dispose: () => {
-				popupElement.remove();
+				closePopup();
 				this.tab.webview.stopFindInPage('clearSelection');
 				this.tab.webview.removeEventListener('found-in-page', onFoundInPage);
 				this.currentPopup = undefined;

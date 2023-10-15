@@ -43,19 +43,19 @@ export function popup(
 	buttonCnt.style.textAlign = 'right';
 	popupElement.append(buttonCnt);
 
+	const closePopup = () => container ? container.remove() : popupElement?.remove();
+
 	buttons.forEach(button => {
 		const buttonElement = document.createElement('button');
 
 		buttonElement.append(button.text);
 		buttonElement.addEventListener('click', () => {
-			if (!button.keepOpen) {
-				container ? container.remove() : popupElement?.remove();
-			}
+			if (!button.keepOpen) closePopup();
 
 			button.click?.();
 		});
 		buttonCnt.append(buttonElement);
 	});
 
-	return popupElement;
+	return closePopup;
 }
