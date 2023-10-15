@@ -51,6 +51,9 @@
 			"build/*",
 			"package.json"
 		],
+		"extraFiles": [
+			"LICENSE.md"
+		],
 		"win": {
 			"executableName": "nimble"
 		},

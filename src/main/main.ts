@@ -9,6 +9,7 @@ import Store from 'electron-store';
 import FileHandler from './FileHandler';
 import WindowFactory from './WindowFactory';
 import setUpTabTransferring from './setUpTabTransferring';
+import License from '../../LICENSE.md';
 
 const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
 	gotLock = app.requestSingleInstanceLock(initialFiles);
@@ -29,6 +30,8 @@ app.on('web-contents-created', (_, contents) => {
 	
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));
 });
+
+ipcMain.on('show-license', () => fileHandler.openFiles(License));
 
 ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
 	mode: 'undocked'
