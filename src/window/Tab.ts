@@ -161,6 +161,7 @@ export default class Tab {
 		})
 		
 		this.tabElement.addEventListener('drop', e => {
+			e.preventDefault();
 			e.stopPropagation();
 			
 			const boundRect = this.tabElement.getBoundingClientRect();
