@@ -35,7 +35,7 @@ export default function interceptFileProtocol(_: Electron.IpcMainEvent, partitio
 			intercept = async () => convertText(mode, await fs.readFile(requestFile!, 'utf8'));
 		}
 		
-		// BUG: Files may have wrong background https://github.com/electron/electron/issues/36122
+		// BUG: Files may have wrong background https://github.com/electron/electron/issues/40207
 		if (!intercept) return callback({});
 		
 		ses.protocol.handle('file', async () => {

@@ -21,7 +21,7 @@ export default function applySettings(settings: SettingStore, editor: AceAjax.Ed
 
 	ipcRenderer.send('update-native-theme', settings.get('theme'));
 
-	// BUG: Background colour must be set https://github.com/electron/electron/issues/36122
+	// BUG: Background colour must be set https://github.com/electron/electron/issues/40207
 	document.querySelector('#webview-container')?.classList.toggle('use-theme', settings.get('viewerUseTheme'));
 }
 
