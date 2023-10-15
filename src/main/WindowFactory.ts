@@ -1,5 +1,10 @@
+import { BrowserWindow, Point, screen } from 'electron';
+import { join } from 'path';
+import { showContextMenu } from './contextMenu';
+import npmPackage from '../../package.json';
+import Icon from '../icon/icon.ico';
 import Store from 'electron-store';
-import { BrowserWindow, screen } from 'electron';
+import FileHandler from './FileHandler';
 
 type FullWindowState = {
     x: number,
@@ -17,12 +22,15 @@ type WindowState = FullWindowState | {
     maximized?: boolean
 };
 
-export default class WindowStateManager {
+export default class WindowFactory {
     static DEFAULT_WIDTH = 800;
     static DEFAULT_HEIGHT = 600;
     static STATE_EVENTS =  ['focus', 'moved', 'resize', 'maximize', 'unmaximize'] as const;
 
-    constructor(private store: Store) { }
+    constructor(
+        private store: Store,
+        private fileHandler: FileHandler
+    ) { }
 
     stateWithinBounds(state: FullWindowState, bounds: Electron.Rectangle) {
         return state.x >= bounds.x &&
@@ -48,8 +56,8 @@ export default class WindowStateManager {
         const state = {
             x: position?.x ?? storedState.x,
             y: position?.y ?? storedState.y,
-            width: storedState.width ?? WindowStateManager.DEFAULT_WIDTH,
-            height: storedState.height ?? WindowStateManager.DEFAULT_HEIGHT,
+            width: storedState.width ?? WindowFactory.DEFAULT_WIDTH,
+            height: storedState.height ?? WindowFactory.DEFAULT_HEIGHT,
             maximized: storedState.maximized ?? false
         } as WindowState;
 
@@ -63,8 +71,8 @@ export default class WindowStateManager {
         }
 
         if (!this.stateWithinDisplay(state)) {
-            state.width = WindowStateManager.DEFAULT_WIDTH;
-            state.height = WindowStateManager.DEFAULT_HEIGHT;
+            state.width = WindowFactory.DEFAULT_WIDTH;
+            state.height = WindowFactory.DEFAULT_HEIGHT;
         }
 
         return state;
@@ -80,15 +88,46 @@ export default class WindowStateManager {
         this.store.set('window-state', state);
     }
 
-    createWindow(options: Electron.BrowserWindowConstructorOptions, position?: Electron.Point) {
+    create(files: string[] = [], position?: Point) {
+        const earlyFileQueue = this.fileHandler.consumeQueue();
+
+        if (earlyFileQueue?.length) {
+            files.push(...earlyFileQueue);
+        }
+    
         const state = this.getWindowState(position),
-            win = new BrowserWindow({ ...options, ...state });
+            options: Electron.BrowserWindowConstructorOptions = {
+                ...state,
+                resizable: true,
+                frame: false,
+                title: npmPackage.build.productName,
+                icon: join(__dirname, Icon),
+                webPreferences: {
+                    webviewTag: true,
+                    nodeIntegration: true,
+                    contextIsolation: false,
+                    additionalArguments: files.map(file => '--open-file=' + file)
+                }
+            },
+            win = new BrowserWindow(options);
+        
+        win.loadFile(join(__dirname, 'window.html'));
 
         if (state.maximized) win.maximize();
 
         const listener = () => this.saveState(win);
-        WindowStateManager.STATE_EVENTS.forEach(event => win.on(event as 'focus', listener));
+        WindowFactory.STATE_EVENTS.forEach(event => win.on(event as 'focus', listener));
+    
+        win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
+    
+        win.webContents.once('ipc-message', () => {
+            win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize');
+            win.on('maximize', () => win.webContents.send('maximize'));
+            win.on('unmaximize', () => win.webContents.send('unmaximize'));
 
+            this.fileHandler.setCurrentWindow(win);
+        });
+    
         return win;
     }
 }

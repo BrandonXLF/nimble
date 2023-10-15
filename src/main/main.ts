@@ -1,94 +1,37 @@
 import { app, BrowserWindow, ipcMain, webContents, dialog, nativeTheme, Menu } from 'electron';
-import { join } from 'path';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
-import npmPackage from '../../package.json';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
-import Icon from '../icon/icon.ico';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
 import Store from 'electron-store';
-import WindowStateManager from './WindowStateManager';
-
-Menu.setApplicationMenu(Menu.buildFromTemplate([]));
-
-const store = new Store(),
-	windowStateManager = new WindowStateManager(store);
-
-let currentWindow: BrowserWindow | undefined,
-	fileQueue: string[] | undefined = [];
-
-function openFiles(...files: string[]) {
-	if (!currentWindow) {
-		fileQueue!.push(...files);
-		return;
-	}
-
-	currentWindow.show();
-	currentWindow.webContents.send('open-files', files);
-}
-
-function createWindow(files: string[] = [], position?: Electron.Point) {
-	if (fileQueue?.length) {
-		files.push(...fileQueue);
-		fileQueue = [];
-	}
-
-	const options: Electron.BrowserWindowConstructorOptions = {
-		resizable: true,
-		frame: false,
-		title: npmPackage.build.productName,
-		icon: join(__dirname, Icon),
-		webPreferences: {
-			webviewTag: true,
-			nodeIntegration: true,
-			contextIsolation: false,
-			additionalArguments: files.map(file => '--open-file=' + file)
-		}
-	};
-	
-	const win = windowStateManager.createWindow(options, position);
-	win.loadFile(join(__dirname, 'window.html'));
-
-	win.webContents.on('context-menu', (_, params) => showContextMenu(params, win.webContents));
-
-	win.webContents.once('ipc-message', () => {
-		win.webContents.send(win.isMaximized() ? 'maximize' : 'unmaximize');
-		win.on('maximize', () => win.webContents.send('maximize'));
-		win.on('unmaximize', () => win.webContents.send('unmaximize'));
-
-		currentWindow = win;
-		win.on('focus', () => currentWindow = win);
-
-		if (fileQueue?.length) {
-			win.webContents.send('open-files', fileQueue);
-			fileQueue = undefined;
-		}
-	});
-
-	return win;
-}
+import FileHandler from './FileHandler';
+import WindowFactory from './WindowFactory';
 
 const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
 	gotLock = app.requestSingleInstanceLock(initialFiles);
 
 if (!gotLock) app.quit();
 
-app.whenReady().then(() => createWindow(initialFiles));
+const store = new Store(),
+	fileHandler = new FileHandler(),
+	windowFactory = new WindowFactory(store, fileHandler);
 
-app.on('second-instance', (_, _args, _cwd, files: string[]) => openFiles(...files));
-app.on('open-file', (_, path) => openFiles(path));
+Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+fileHandler.registerEvents(app);
 
-ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
-	mode: 'undocked'
-}));
+app.whenReady().then(() => windowFactory.create(initialFiles));
 
 app.on('web-contents-created', (_, contents) => {
 	if (contents.getType() !== 'webview') return;
 	
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));
 });
+
+ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
+	mode: 'undocked'
+}));
 
 ipcMain.handle('show-open-dialog', async (e) => {
 	const browserWindow = BrowserWindow.fromWebContents(e.sender)!,
@@ -111,7 +54,7 @@ ipcMain.on('release-tab', (e, tabId: string, targetIndex?: number) => {
 
 ipcMain.on('new-window-with-tab', (_, tabId: string, x: number, y: number) => {
 	const sourceContentsId = parseInt(tabId.split('-')[0]),
-		target = createWindow(undefined, { x, y }).webContents;
+		target = windowFactory.create(undefined, { x, y }).webContents;
 		
 	target.once('ipc-message', () =>
 		webContents.fromId(sourceContentsId)?.send('release-tab', tabId, target.id)
