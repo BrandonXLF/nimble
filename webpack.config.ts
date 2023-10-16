@@ -16,7 +16,7 @@ const commonConfig = {
 				exclude: /node_modules/,
 			},
 			{
-				test: /\.(ico|md)$/,
+				test: /\.(ico|md|png)$/,
 				use: [
 					{
 						loader: 'file-loader',

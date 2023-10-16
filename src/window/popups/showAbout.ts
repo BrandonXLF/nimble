@@ -1,7 +1,7 @@
 import { ipcRenderer, shell } from 'electron';
 import npmPackage from '../../../package.json';
 import { popup } from './popup';
-import Icon from '../../icon/icon.ico';
+import Icon from '../../icon/icon.png';
 
 export default function showAbout() {
 	// eslint-disable-next-line prefer-const

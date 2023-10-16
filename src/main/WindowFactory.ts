@@ -1,8 +1,10 @@
 import { BrowserWindow, Point, screen } from 'electron';
 import { join } from 'path';
+import { platform } from 'os';
 import { showContextMenu } from './contextMenu';
 import npmPackage from '../../package.json';
-import Icon from '../icon/icon.ico';
+import Icon from '../icon/icon.png';
+import IconIco from '../icon/icon.ico';
 import Store from 'electron-store';
 import FileHandler from './FileHandler';
 
@@ -101,7 +103,7 @@ export default class WindowFactory {
                 resizable: true,
                 frame: false,
                 title: npmPackage.build.productName,
-                icon: join(__dirname, Icon),
+                icon: join(__dirname, platform() === 'win32' ? IconIco : Icon),
                 webPreferences: {
                     webviewTag: true,
                     nodeIntegration: true,
