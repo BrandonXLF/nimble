@@ -1,9 +1,9 @@
 import './popup.less';
 
 export function popup(
-	title: string,
-	msg: string|Node|(string|Node)[],
-	buttons: {text: string|Node, click?: () => unknown, keepOpen?: boolean}[] = [{text: 'OK'}],
+	title: string | Node,
+	msg: string | Node|(string | Node)[],
+	buttons: {text: string | Node, click?: () => unknown, keepOpen?: boolean}[] = [{text: 'OK'}],
 	parent = document.body,
 	small = false
 ) {
@@ -33,7 +33,7 @@ export function popup(
 		const titleElement = document.createElement('h3');
 
 		titleElement.style.cssText = 'margin: 0;';
-		titleElement.innerText = title;
+		titleElement.append(title);
 		popupElement.append(titleElement);
 	}
 

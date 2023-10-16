@@ -6,38 +6,47 @@ export default class Updater {
     status?: UpdateStatus;
 
     constructor() {
-        autoUpdater.forceDevUpdateConfig = true;
+        autoUpdater.on('checking-for-update', () => this.updateStatus({
+            state: 'checking',
+            title: 'Checking for updates...',
+            details: 'Checking for updates from the release server.'
+        }));
 
-        autoUpdater.on('update-available', info => {
-            this.updateStatus({
-                state: 'available',
-                title: 'Update available!',
-                details: `Update to v${info.version} is available.`
-            });
-        });
+        autoUpdater.on('update-not-available', () => this.updateStatus({
+            state: 'unavailable',
+            title: 'No update available.',
+            details: 'Already up to date!'
+        }));
 
-        autoUpdater.on('download-progress', info => {
-            this.updateStatus({
-                state: 'downloading',
-                title: 'Update downloading...',
-                details: `Update is ${info.percent}% downloaded.`
-            });
-        });
+        autoUpdater.on('update-available', info => this.updateStatus({
+            state: 'available',
+            title: 'Update available!',
+            details: `Update to v${info.version} is available.`
+        }));
 
-        autoUpdater.on('update-downloaded', () => {
-            this.updateStatus({
-                state: 'downloaded',
-                title: 'Update downloaded!',
-                details: `Restart to use the new version of ${npmPackage.build.productName}!`
-            });
-        });
+        autoUpdater.on('download-progress', info => this.updateStatus({
+            state: 'downloading',
+            title: 'Update downloading...',
+            details: `Update is ${info.percent}% downloaded.`
+        }));
 
-        autoUpdater.on('error', () => this.updateStatus());
+        autoUpdater.on('update-downloaded', () => this.updateStatus({
+            state: 'downloaded',
+            title: 'Update downloaded!',
+            details: `Restart to use the new version of ${npmPackage.build.productName}!`
+        }));
+
+        autoUpdater.on('error', info => this.updateStatus({
+            state: 'error',
+            title: 'Error while updating.',
+            details: info.message
+        }));
         
         ipcMain.handle('get-update-status', () => this.status);
+        ipcMain.on('check-for-updates', () => autoUpdater.checkForUpdates());
     }
 
-    updateStatus(newStatus?: UpdateStatus) {
+    updateStatus(newStatus: UpdateStatus) {
         this.status = newStatus;
 
         BrowserWindow.getAllWindows().forEach(

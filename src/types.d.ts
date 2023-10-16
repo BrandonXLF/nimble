@@ -16,7 +16,7 @@ declare interface TabData {
 }
 
 declare interface UpdateStatus {
-    state: 'available' | 'downloading' | 'downloaded';
+    state: 'checking' | 'unavailable' | 'available' | 'downloading' | 'downloaded' | 'error';
     title: string;
-    details?: string;
-};
+    details: string;
+}
