@@ -5,13 +5,20 @@ on:
     branches:
       - main
 
+  release:
+    types:
+      - published
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
     
     steps:
       - name: Checkout repository
