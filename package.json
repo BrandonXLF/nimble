@@ -8,7 +8,7 @@
 	"scripts": {
 		"start": "webpack --mode=development && electron .",
 		"build": "webpack --mode=production && electron-builder --publish never",
-		"deploy": "webpack --mode=production && electron-builder --publish always",
+		"release": "webpack --mode=production && electron-builder",
 		"lint": "eslint --ext .ts ."
 	},
 	"repository": {
