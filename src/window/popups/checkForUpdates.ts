@@ -5,7 +5,7 @@ export default async function checkForUpdates() {
     ipcRenderer.send('check-for-updates');
 
     const title = new Text('Initializing...'),
-        details = new Text('Update initializing...');
+        details = new Text('Updater initializing...');
 
     const updateStateListener = (_: IpcRendererEvent, status: UpdateStatus) => {
         title.textContent = status.title;

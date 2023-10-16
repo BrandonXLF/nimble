@@ -14,7 +14,7 @@ export default class Updater {
 
         autoUpdater.on('update-not-available', () => this.updateStatus({
             state: 'unavailable',
-            title: 'No update available.',
+            title: 'No updates available.',
             details: 'Already up to date!'
         }));
 
@@ -27,7 +27,7 @@ export default class Updater {
         autoUpdater.on('download-progress', info => this.updateStatus({
             state: 'downloading',
             title: 'Update downloading...',
-            details: `Update is ${info.percent}% downloaded.`
+            details: `Update is ${Math.round(info.percent)}% downloaded.`
         }));
 
         autoUpdater.on('update-downloaded', () => this.updateStatus({
