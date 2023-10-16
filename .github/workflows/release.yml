@@ -22,6 +22,12 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v2
+        if: startsWith(matrix.os, 'ubuntu')
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+
       - name: Install dependencies
         run: npm install
 
