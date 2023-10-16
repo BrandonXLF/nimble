@@ -14,3 +14,9 @@ declare interface TabData {
 	text?: string;
 	savedText?: string;
 }
+
+declare interface UpdateStatus {
+    state: 'available' | 'downloading' | 'downloaded';
+    title: string;
+    details?: string;
+};

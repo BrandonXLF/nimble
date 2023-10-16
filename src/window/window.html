@@ -33,6 +33,10 @@
 			<g id="circle">
 				<circle cx="50" cy="50" r="50" fill="currentColor" />
 			</g>
+			<g id="update-svg" stroke="currentColor" fill="none" stroke-width="5" stroke-linecap="round">
+				<path d="M5 10l7-6 8 6"></path>
+				<path d="M12 4l0 16"></path>
+			</g>
 		</svg>
 		<header id="header">
 			<div id="chrome">
@@ -80,6 +84,11 @@
 				</button>
 			</div>
 			<div id="os-drag"></div>
+			<button id="update" class="window-button" style="display: none;">
+				<svg viewBox="0 0 24 24" style="width: 10px;">
+					<use href="#update-svg" />
+				</svg>
+			</button>
 			<button id="minimize" class="window-button">
 				<svg viewBox="0 0 100 100" style="width: 10px;">
 					<use href="#minus" />

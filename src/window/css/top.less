@@ -115,17 +115,25 @@ header {
 	-webkit-app-region: no-drag;
 	transition: color 0.25s, background 0.25s;
 	
-	&:not(#exit):hover {
-		background-color: var(--button-color);
+	&:not(#exit) {
+		&:hover {
+			background-color: var(--button-color);
+		}
 	}
 
 	&#close {
 		margin-right: 5px;
-	}
 	
-	&#close:hover {
-		background-color: var(--close-color);
-		color: #fff;
+		&:hover {
+			background-color: var(--close-color);
+			color: #fff;
+		}
+	}
+
+	&#update {
+		&[data-update-state="downloaded"] {
+			background-color: var(--update-color);
+		}
 	}
 }
 

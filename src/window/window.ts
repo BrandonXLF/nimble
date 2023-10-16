@@ -16,6 +16,7 @@ import { initializeSettings } from './applySettings';
 import Icon from '../icon/icon.ico';
 import WebDialogFactory from './popups/WebDialogFactory';
 import MenuActionProcessor from './MenuActionProcessor';
+import UpdateUI from './UpdateUI';
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 	editor = ace.edit(document.querySelector<HTMLElement>('#editor-container')!),
@@ -43,7 +44,8 @@ const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 		settings.get('autoDevtools'),
 		settings.get('viewerWidth'),
 		settings.get('viewerHeight')
-	);
+	),
+	updateUI = new UpdateUI();
 
 mainSplit.on('width', x => settings.set('editorWidth', x));
 mainSplit.on('height', x => settings.set('editorHeight', x));
@@ -121,5 +123,7 @@ const webDialogFactory = new WebDialogFactory(tabs),
 
 ipcRenderer.on('web-dialog-request', webDialogFactory.processRequest.bind(webDialogFactory));
 ipcRenderer.on('menu-action', menuActionProcessor.processRequest.bind(menuActionProcessor));
+
+updateUI.init();
 
 ipcRenderer.send('ipc-message');
