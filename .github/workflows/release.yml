@@ -25,8 +25,6 @@ jobs:
       - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v2
         if: startsWith(matrix.os, 'ubuntu')
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
 
       - name: Install dependencies
         run: npm install
@@ -34,4 +32,5 @@ jobs:
       - name: Deploy app
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
         run: npm run deploy
