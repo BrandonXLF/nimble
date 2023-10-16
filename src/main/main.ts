@@ -10,6 +10,7 @@ import FileHandler from './FileHandler';
 import WindowFactory from './WindowFactory';
 import setUpTabTransferring from './setUpTabTransferring';
 import License from '../../LICENSE.md';
+import { autoUpdater } from 'electron-updater';
 
 const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
 	gotLock = app.requestSingleInstanceLock(initialFiles);
@@ -23,7 +24,10 @@ const store = new Store(),
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 fileHandler.registerEvents(app);
 
-app.whenReady().then(() => windowFactory.create(initialFiles));
+app.whenReady().then(() => {
+	windowFactory.create(initialFiles);
+	autoUpdater.checkForUpdatesAndNotify();
+});
 
 app.on('web-contents-created', (_, contents) => {
 	if (contents.getType() !== 'webview') return;
