@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, webContents, dialog, nativeTheme, Menu } from 'electron';
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
+import { join } from 'path';
 import interceptFileProtocol from './interceptFileProtocol';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
@@ -35,7 +36,7 @@ app.on('web-contents-created', (_, contents) => {
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));
 });
 
-ipcMain.on('show-license', () => fileHandler.openFiles(License));
+ipcMain.on('show-license', () => fileHandler.openFiles(join(__dirname, License)));
 
 ipcMain.on('show-window-devtools', e => webContents.fromId(e.sender.id)!.openDevTools({
 	mode: 'undocked'
