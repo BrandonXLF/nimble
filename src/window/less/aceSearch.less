@@ -1,0 +1,35 @@
+#editor-container {
+    .ace_search {
+        color: var(--txt-color);
+        background: var(--top-color);
+        border-color: var(--border-color);
+        border-radius: 0;
+    }
+
+    .ace_button {
+        color: var(--txt-color);
+        border-color: var(--border-color);
+
+        &:active,
+        &:hover {
+            background-color: var(--button-hover-color);
+        }
+    }
+
+    .ace_search_field,
+    .ace_searchbtn {
+        color: var(--txt-color);
+        background-color: var(--button-color);
+        border-color: var(--border-color);
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    #editor-container {
+        .ace_searchbtn_close {
+            filter: brightness(1.5);
+            background-color: var(--button-color);
+        }
+    }
+}
