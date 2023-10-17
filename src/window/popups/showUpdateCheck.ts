@@ -1,7 +1,7 @@
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { popup } from './popup';
 
-export default async function checkForUpdates() {
+export default async function showUpdateCheck() {
     ipcRenderer.send('check-for-updates');
 
     const title = new Text('Initializing...'),

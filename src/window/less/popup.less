@@ -26,10 +26,6 @@
 		cursor: pointer;
 	}
 
-	> :not(:first-child) {
-		padding-top: 1em;
-	}
-
 	.row {
 		padding-bottom: 0.25em;
 
@@ -40,6 +36,10 @@
 
 	&:not(.mini-popup) {
 		min-width: min(250px, 33%, 100% - 4em);
+
+		> :not(:first-child) {
+			padding-top: 1em;
+		}
 	}
 
 	&.mini-popup {
@@ -53,7 +53,6 @@
 
 		> * {
 			display: inline-block;
-			padding-top: 0 !important;
 		}
 
 		button {

@@ -1,4 +1,4 @@
-import './css/window.less';
+import './less/window.less';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import SettingStore from './SettingStore';

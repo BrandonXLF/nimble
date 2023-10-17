@@ -2,7 +2,7 @@ import { ipcRenderer, shell } from 'electron';
 import npmPackage from '../../../package.json';
 import { popup } from './popup';
 import Icon from '../../icon/icon.png';
-import checkForUpdates from './checkForUpdates';
+import showUpdateCheck from './showUpdateCheck';
 
 export default function showAbout() {
 	// eslint-disable-next-line prefer-const
@@ -46,7 +46,7 @@ export default function showAbout() {
 
 	addRow('');
 	
-	addActionLink('Check for updates', () => checkForUpdates());
+	addActionLink('Check for updates', () => showUpdateCheck());
 	addActionLink(
 		'Open code repository',
 		() => shell.openExternal('https://github.com/BrandonXLF/nimble')

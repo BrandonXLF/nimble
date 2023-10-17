@@ -1,4 +1,4 @@
-import './popup.less';
+import '../less/popup.less';
 
 export function popup(
 	title: string | Node,

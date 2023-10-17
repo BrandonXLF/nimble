@@ -1,6 +1,6 @@
 import SettingStore from '../SettingStore';
 import { popup } from './popup';
-import './userSettings.less';
+import '../less/userSettings.less';
 import { userSettingsData } from './userSettingsData';
 
 type Section = typeof userSettingsData[0];
