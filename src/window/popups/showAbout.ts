@@ -44,7 +44,7 @@ export default function showAbout() {
 	addRow(`Version ${npmPackage.version}`);
 	addRow(`Chrome ${process.versions.chrome}`);
 
-	addRow(``);
+	addRow('');
 	
 	addActionLink('Check for updates', () => checkForUpdates());
 	addActionLink(
