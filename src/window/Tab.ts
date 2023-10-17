@@ -3,7 +3,7 @@ import { join, extname, basename } from 'path';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import { getDefaultExtension, getFileType } from '../utils/fileTypes';
-import ace from 'brace';
+import ace, { Ace } from 'ace-builds';
 import throttle from 'lodash.throttle';
 import { pathToFileURL } from 'url';
 import { popup } from './popups/popup';
@@ -26,7 +26,7 @@ export default class Tab {
 	unsavedIndicator = document.createElement('div');
 	boundUpdateCSS = this.updateWebviewCSS.bind(this);
 
-	editorSession: ace.IEditSession;
+	editorSession: Ace.EditSession;
 	tabStore: Tabs;
 	mode: string;
 	path: string;
@@ -79,7 +79,7 @@ export default class Tab {
 		
 		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
 
-		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as ace.TextMode);
+		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
 		this.editorSession.on('change', () => {
 			this.updateUnsaved();
 			this.tabStore.settings.get('autoRun') && this.preview();

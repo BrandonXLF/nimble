@@ -91,6 +91,16 @@ export const userSettingsData = [
 				type: 'checkbox',
 				name: 'wordWrap',
 				label: 'Wrap long lines'
+			},
+			{
+				type: 'checkbox',
+				name: 'autocomplete',
+				label: 'Autocompletion'
+			},
+			{
+				type: 'checkbox',
+				name: 'enableSnippets',
+				label: 'Enable code snippets'
 			}
 		]
 	}

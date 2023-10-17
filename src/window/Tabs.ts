@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import Tab from './Tab';
 import SettingStore from './SettingStore';
-import ace from 'brace';
+import { Ace } from 'ace-builds';
 import { getFileType } from '../utils/fileTypes';
 import { popup } from './popups/popup';
 import { extname } from 'path';
@@ -18,7 +18,7 @@ export default class Tabs {
 		public tabRow: HTMLElement,
 		public webviewContainer: HTMLElement,
 		public devtoolContainer: HTMLElement,
-		public editor: ace.Editor,
+		public editor: Ace.Editor,
 		public webContentsIdPromise: Promise<number>,
 		public settings: SettingStore
 	) {

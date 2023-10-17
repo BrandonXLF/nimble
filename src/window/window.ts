@@ -2,25 +2,29 @@ import './less/window.less';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import SettingStore from './SettingStore';
-import ace from 'brace';
-import 'brace/theme/clouds';
-import 'brace/theme/clouds_midnight';
-import 'brace/mode/html';
-import 'brace/mode/svg';
-import 'brace/mode/markdown';
-import 'brace/ext/language_tools';
-import 'brace/ext/searchbox';
+import ace from 'ace-builds';
+import 'ace-builds/src-noconflict/theme-clouds';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-svg';
+import 'ace-builds/src-noconflict/mode-markdown';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/ext-searchbox';
+import 'ace-builds/src-noconflict/snippets/html';
 import SplitElement from './SplitElement';
 import promptUnsaved from './popups/promptUnsaved';
-import { initializeSettings } from './applySettings';
+import { getEditorOptions, initializeSettings } from './applySettings';
 import Icon from '../icon/icon.ico';
 import WebDialogFactory from './popups/WebDialogFactory';
 import MenuActionProcessor from './MenuActionProcessor';
 import UpdateUI from './UpdateUI';
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
-	editor = ace.edit(document.querySelector<HTMLElement>('#editor-container')!),
 	settings = new SettingStore(),
+	editor = ace.edit(
+		document.querySelector<HTMLElement>('#editor-container')!,
+		getEditorOptions(settings)
+	),
 	tabs = new Tabs(
 		document.getElementById('tabs')!,
 		document.getElementById('webview-container')!,
