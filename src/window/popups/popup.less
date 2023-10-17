@@ -19,7 +19,6 @@
 	max-width: calc(100% - 4em);
 	overflow: auto;
 	border: 1px solid var(--border-color);
-	min-width: min(250px, 33%, 100% - 4em);
 
 	button {
 		padding: 0.5em 1em;
@@ -38,30 +37,34 @@
 			padding-top: 0.25em;
 		}
 	}
-}
 
-.mini-popup {
-	position: absolute;
-	top: 0;
-	right: 0;
-	border-width: 0 0 1px 1px;
-	padding: 4px;
-	margin: 0;
-	max-width: calc(100% - 16px);
-
-	> * {
-		display: inline-block;
-		padding-top: 0 !important;
+	&:not(.mini-popup) {
+		min-width: min(250px, 33%, 100% - 4em);
 	}
 
-	button {
-		border: 0;
-		background: none;
-		margin-left: 4px;
+	&.mini-popup {
+		position: absolute;
+		top: 0;
+		right: 0;
+		border-width: 0 0 1px 1px;
 		padding: 4px;
-	}
+		margin: 0;
+		max-width: calc(100% - 16px);
 
-	button:hover {
-		background: var(--button-hover-color);
+		> * {
+			display: inline-block;
+			padding-top: 0 !important;
+		}
+
+		button {
+			border: 0;
+			background: none;
+			margin-left: 4px;
+			padding: 4px;
+
+			&:hover {
+				background: var(--button-hover-color);
+			}
+		}
 	}
 }
