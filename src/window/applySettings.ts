@@ -24,9 +24,9 @@ export function resolveDarkMode(settings: SettingStore) {
 
 export function initializeSettings(settings: SettingStore, editor: Ace.Editor) {
 	settings.on('change', () => applySettings(settings, editor));
-	darkMatch.addEventListener('change', () => applySettings(settings, editor));
 
-	applySettings(settings, editor);
+	darkMatch.addEventListener('change', () => settings.emit('change'));
+	settings.emit('change');
 }
 
 export function getEditorOptions(
