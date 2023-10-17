@@ -33,7 +33,7 @@ export default class Updater {
         autoUpdater.on('update-downloaded', () => this.updateStatus({
             state: 'downloaded',
             title: 'Update downloaded!',
-            details: `Restart to use the new version of ${npmPackage.build.productName}!`
+            details: `Relaunch to use the new version of ${npmPackage.build.productName}!`
         }));
 
         autoUpdater.on('error', info => this.updateStatus({
