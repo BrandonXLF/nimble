@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { popup } from "./popups/popup";
+import updateStatusPopup from './popups/updateStatusPopup';
 
 export default class UpdateUI {
     static IGNORE_STATES: UpdateStatus['state'][] = ['checking', 'unavailable', 'error'];
@@ -14,7 +14,7 @@ export default class UpdateUI {
         this.updateEl.addEventListener('click', () => {
             if (!this.status) return;
 
-            popup(this.status.title, this.status.details);
+            updateStatusPopup(false, this.status);
         });
     }
 
