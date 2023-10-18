@@ -1,8 +1,12 @@
 # Nimble HTML and Markdown
 
-<img src="/src/icon/icon.png" style="width: 100px;">
+<img src="/src/icon/icon.png" width="100">
 
 Nimble is an HTML, markdown, and SVG viewer and code editor built on Electron. It aims to provide a quick way to switch between viewing, editing, and debugging files.
+
+## Screenshot
+
+<img src="/images/screenshot.png" width="500">
 
 ## Developing
 
