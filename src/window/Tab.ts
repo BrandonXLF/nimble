@@ -10,7 +10,6 @@ import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
 import MiniPopupFactory from './popups/MiniPopupFactory';
-import { resolveDarkMode } from './applySettings';
 
 export default class Tab {
 	webview = document.createElement('webview');
@@ -24,7 +23,7 @@ export default class Tab {
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
 	unsavedIndicator = document.createElement('div');
-	boundUpdateCSS = this.updateWebviewCSS.bind(this);
+	removeCSSUpdateListener?: () => void;
 
 	editorSession: Ace.EditSession;
 	tabStore: Tabs;
@@ -52,7 +51,11 @@ export default class Tab {
 			delete this.webviewCssId;
 			this.updateWebviewCSS();
 		});
-		this.tabStore.settings.on('change', this.boundUpdateCSS);
+
+		this.removeCSSUpdateListener = this.tabStore.settings.listen(
+			'viewerUseTheme',
+			() => void this.updateWebviewCSS()
+		);
 
 		this.webview.addEventListener('did-finish-load', () => {
 			this.updateTitle();
@@ -125,7 +128,7 @@ export default class Tab {
 	}
 
 	async updateWebviewCSS() {
-		const darkViewer = resolveDarkMode(this.tabStore.settings),
+		const darkViewer = this.tabStore.themeMode.darkMode,
 			oldCssId = this.webviewCssId;
 
 		if (this.tabStore.settings.get('viewerUseTheme')) {
@@ -373,7 +376,7 @@ export default class Tab {
 		this.tabElement.remove();
 		this.webviewSubContainer.remove();
 		this.devtools.remove();
-		this.tabStore.settings.off('change', this.boundUpdateCSS);
+		this.removeCSSUpdateListener?.();
 	}
 	
 	getTabData(): TabData {

@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { popup } from './popup';
-import SettingStore from '../SettingStore';
+import SettingStore from '../../utils/SettingStore';
 import Tabs from '../Tabs';
 
 export default function promptUnsaved(tabs: Tabs, settings: SettingStore) {

@@ -1,7 +1,7 @@
 import './less/window.less';
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
-import SettingStore from './SettingStore';
+import SettingStore from '../utils/SettingStore';
 import ace from 'ace-builds';
 import 'ace-builds/src-noconflict/theme-clouds';
 import 'ace-builds/src-noconflict/theme-clouds_midnight';
@@ -13,17 +13,19 @@ import 'ace-builds/src-noconflict/ext-searchbox';
 import 'ace-builds/src-noconflict/snippets/html';
 import SplitElement from './SplitElement';
 import promptUnsaved from './popups/promptUnsaved';
-import { getEditorOptions, initializeSettings } from './applySettings';
+import { getEditorOptions, initializeSettings } from './userOptions';
 import Icon from '../icon/icon.ico';
 import WebDialogFactory from './popups/WebDialogFactory';
 import MenuActionProcessor from './MenuActionProcessor';
 import UpdateUI from './UpdateUI';
+import ThemeMode from './ThemeMode';
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
-	settings = new SettingStore(),
+	settings = new SettingStore(() => ipcRenderer.send('renderer-settings-updated')),
+	themeMode = new ThemeMode(),
 	editor = ace.edit(
 		document.querySelector<HTMLElement>('#editor-container')!,
-		getEditorOptions(settings)
+		getEditorOptions(settings, themeMode)
 	),
 	tabs = new Tabs(
 		document.getElementById('tabs')!,
@@ -31,7 +33,8 @@ const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 		document.getElementById('devtool-container')!,
 		editor,
 		webContentsIdPromise,
-		settings
+		settings,
+		themeMode
 	),
 	mainSplit = new SplitElement(
 		'editor',
@@ -75,7 +78,7 @@ document.getElementById('header')!.addEventListener('contextmenu', e => e.preven
 	document.getElementById(windowAction)!.addEventListener('click', () => ipcRenderer.send('perform-window-action', windowAction));
 });
 
-initializeSettings(settings, editor);
+initializeSettings(settings, themeMode, editor);
 
 const openFilePrefix = '--open-file=',
 	openFiles = process.argv
@@ -106,6 +109,8 @@ document.body.addEventListener('keyup', e => ipcRenderer.send(
 	e.altKey,
 	e.shiftKey
 ));
+
+ipcRenderer.on('settings-updated', () => settings.markExternalSet());
 
 ipcRenderer.on('release-tab-to', (_, localTabId: string, targetId: number, targetIndex?: number) => {
 	const tab = tabs.getTabById(localTabId);

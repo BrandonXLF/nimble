@@ -1,10 +1,11 @@
 import { ipcRenderer } from 'electron';
 import Tab from './Tab';
-import SettingStore from './SettingStore';
+import SettingStore from '../utils/SettingStore';
 import { Ace } from 'ace-builds';
 import { getFileType } from '../utils/fileTypes';
 import { popup } from './popups/popup';
 import { extname } from 'path';
+import ThemeMode from './ThemeMode';
 
 export default class Tabs {
 	tabs: Tab[] = [];
@@ -20,7 +21,8 @@ export default class Tabs {
 		public devtoolContainer: HTMLElement,
 		public editor: Ace.Editor,
 		public webContentsIdPromise: Promise<number>,
-		public settings: SettingStore
+		public settings: SettingStore,
+		public themeMode: ThemeMode
 	) {
 		this.baseRowX = tabRow.getBoundingClientRect().x;
 	}

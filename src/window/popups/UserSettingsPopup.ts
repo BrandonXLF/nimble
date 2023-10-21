@@ -1,4 +1,4 @@
-import SettingStore from '../SettingStore';
+import SettingStore from '../../utils/SettingStore';
 import { popup } from './popup';
 import '../less/userSettings.less';
 import { userSettingsData } from './userSettingsData';

@@ -12,13 +12,19 @@ import WindowFactory from './WindowFactory';
 import setUpTabTransferring from './setUpTabTransferring';
 import License from '../../LICENSE.md';
 import Updater from './Updater';
+import SettingStore from '../utils/SettingStore';
 
 const initialFiles = process.argv.slice(app.isPackaged ? 1 : 2),
 	gotLock = app.requestSingleInstanceLock(initialFiles);
 
 if (!gotLock) app.quit();
 
+function emitSettingsUpdate() {
+	BrowserWindow.getAllWindows().forEach(win => win.webContents.send('settings-updated'));
+}
+
 const store = new Store(),
+	settings = new SettingStore(emitSettingsUpdate, store),
 	fileHandler = new FileHandler(),
 	windowFactory = new WindowFactory(store, fileHandler),
 	updater = new Updater();
@@ -34,6 +40,11 @@ app.on('web-contents-created', (_, contents) => {
 	if (contents.getType() !== 'webview') return;
 	
 	contents.on('context-menu', (_, params) => showContextMenu(params, contents.hostWebContents, contents));
+});
+
+ipcMain.on('renderer-settings-updated', () => {
+	settings.markExternalSet();
+	emitSettingsUpdate();
 });
 
 ipcMain.on('show-license', () => fileHandler.openFiles(join(__dirname, License)));
@@ -110,7 +121,7 @@ ipcMain.handle('get-path', async (e, type: string, defaultPath: string) => {
 	return pathInfo.filePath;
 });
 
-ipcMain.on('update-native-theme', (_, theme: 'system' | 'light' | 'dark') => {
+settings.callAndListen('theme', (theme: 'system' | 'light' | 'dark') => {
 	nativeTheme.themeSource = theme;
 });
 

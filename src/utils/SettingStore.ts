@@ -1,7 +1,6 @@
-import { EventEmitter } from 'events';
 import Store from 'electron-store';
 
-export default class SettingStore extends EventEmitter {
+export default class SettingStore {
 	readonly defaults: Record<string, unknown> = {
 		// User settings
 		autoRun: true,
@@ -28,12 +27,10 @@ export default class SettingStore extends EventEmitter {
 		viewerHeight: '50%'
 	};
 	
-	store: Store;
-	
-	constructor() {
-		super();
-		this.store = new Store();
-	}
+	constructor(
+		public onSet: () => void,
+		public store = new Store()
+	) { }
 	
 	get<T>(name: string) {
 		return this.store.get(name, this.defaults[name]) as T;
@@ -41,13 +38,19 @@ export default class SettingStore extends EventEmitter {
 	
 	set<T>(name: string, value: T): void {
 		this.store.set(name, value);
-		
-		this.emit('change');
+		this.onSet();
 	}
-	
-	toggle(name: string, force?: boolean): boolean {
-		this.set<boolean>(name, force ?? !this.get<boolean>(name));
-		
-		return this.get<boolean>(name);
+
+	listen<T>(name: string, callback: (newValue: T) => void): () => void {
+		return this.store.onDidChange(name, callback);
+	}
+
+	callAndListen<T>(name: string, callback: (newValue: T) => void): () => void {
+		callback(this.get(name));
+		return this.store.onDidChange(name, callback);
+	}
+
+	markExternalSet() {
+		this.store.events.emit('change');
 	}
 }

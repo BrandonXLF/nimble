@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import showAbout from './popups/showAbout';
 import openFile from './openFile';
 import UserSettingsPopup from './popups/UserSettingsPopup';
-import SettingStore from './SettingStore';
+import SettingStore from '../utils/SettingStore';
 import SplitElement from './SplitElement';
 import Tabs from './Tabs';
 
