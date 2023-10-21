@@ -107,6 +107,8 @@ export default class WindowFactory {
                 webPreferences: {
                     webviewTag: true,
                     nodeIntegration: true,
+                    // BUG: Required to bypass https://github.com/electron/electron/issues/22582
+                    nodeIntegrationInSubFrames: true,
                     contextIsolation: false,
                     additionalArguments: files.map(file => '--open-file=' + file)
                 }
