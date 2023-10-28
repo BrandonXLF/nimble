@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, webContents, dialog, nativeTheme, Menu } f
 import { getOpenFilters, getSaveFilters } from '../utils/fileTypes';
 import { showContextMenu } from './contextMenu';
 import { join } from 'path';
-import interceptFileProtocol from './interceptFileProtocol';
+import SessionManager from './SessionManager';
 import showTopMenu from './showTopMenu';
 import { randomUUID } from 'crypto';
 import handleKeyboardShortcut from './handleKeyboardShortcut';
@@ -27,7 +27,8 @@ const store = new Store(),
 	settings = new SettingStore(emitSettingsUpdate, store),
 	fileHandler = new FileHandler(),
 	windowFactory = new WindowFactory(store, fileHandler),
-	updater = new Updater();
+	updater = new Updater(),
+	sessionManager = new SessionManager();
 
 Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 fileHandler.registerEvents(app);
@@ -125,7 +126,9 @@ settings.callAndListen('theme', (theme: 'system' | 'light' | 'dark') => {
 	nativeTheme.themeSource = theme;
 });
 
-ipcMain.on('intercept-file', interceptFileProtocol);
+ipcMain.on('set-session',(_, ...args: [string, string, string, string]) => sessionManager.set(...args));
+ipcMain.on('delete-session', (_, partition: string) => sessionManager.delete(partition));
+
 ipcMain.on('show-menu', showTopMenu);
 ipcMain.on('keyboard-input', handleKeyboardShortcut);
 

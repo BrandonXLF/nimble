@@ -216,7 +216,7 @@ export default class Tab {
 		
 		await this.webviewReady;
 		
-		ipcRenderer.send('intercept-file', this.partition, this.path, this.mode, value);
+		ipcRenderer.send('set-session', this.partition, this.path, this.mode, value);
 		
 		try {
 			await this.webview.loadURL(this.path ? pathToFileURL(this.path).href : `file://${this.partition}/`);
@@ -377,6 +377,7 @@ export default class Tab {
 		this.webviewSubContainer.remove();
 		this.devtools.remove();
 		this.removeCSSUpdateListener?.();
+		ipcRenderer.send('delete-session', this.partition);
 	}
 	
 	getTabData(): TabData {
