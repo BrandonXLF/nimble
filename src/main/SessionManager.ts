@@ -13,29 +13,38 @@ export default class SessionManager {
         });
     }
 
+    private defaultResponse(req: Request, ses: Session) {
+        // @ts-ignore bypassCustomProtocolHandlers is allowed
+        return ses.fetch(req, { bypassCustomProtocolHandlers: true });
+    }
+
     private configureIntercept(partition: string, ses: Session) {
         ses.protocol.handle('file', async (req) => {
             const { file, mode, text } = this.sessions[partition];
 
-            let requestFile: string | undefined;
-            
-            try {
-                requestFile = fileURLToPath(req.url);
-            } catch (_) {
-                // Not a valid file
-            }
-            
-            // Intercept the file being edited
-            if (req.url === `file://${partition}/` || (requestFile !== undefined && requestFile === file))
+            if (new URL(req.url).hostname === partition)
                 return this.textResponse(mode, text);
             
-            // Convert supported file types
-            if (requestFile !== undefined && getFileType(requestFile)) {
-                return this.textResponse(mode,  await fs.readFile(requestFile, 'utf8'));
+            let requestedFile: string;
+
+            try {
+                requestedFile = fileURLToPath(req.url);
+            } catch (_) {
+                return this.defaultResponse(req, ses);
             }
-    
-            // @ts-ignore bypassCustomProtocolHandlers is allowed
-            return ses.fetch(req, { bypassCustomProtocolHandlers: true })
+            
+            if (requestedFile === file)
+                return this.textResponse(mode, text);
+            
+            const requestedFileMode = getFileType(requestedFile);
+
+            if (!requestedFileMode)
+                return this.defaultResponse(req, ses);
+
+            return this.textResponse(
+                requestedFileMode,
+                await fs.readFile(requestedFile, 'utf8')
+            );
         });
     }
 
