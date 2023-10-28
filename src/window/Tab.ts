@@ -308,6 +308,7 @@ export default class Tab {
 			const loadedText = await fs.readFile(this.path, 'utf8');
 
 			this.editorSession.setValue(loadedText);
+			this.preview(loadedText);
 			this.savedText = loadedText;
 		} else {
 			await fs.writeFile(this.path, this.editorSession.getValue());
