@@ -31,11 +31,11 @@ for (const typeInfo of fileTypes) {
 	}
 }
 
-export function getDefaultExtension(fileType: string): string|undefined {
+export function getDefaultExtension(fileType: string): string | undefined {
 	return defaultExtensionMap[fileType];
 }
 
-export function getFileType(path: string): string|undefined {
+export function getFileType(path: string): string | undefined {
 	return fileTypeMap[extname(path).substring(1)];
 }
 
