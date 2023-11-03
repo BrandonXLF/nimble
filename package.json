@@ -18,7 +18,7 @@
 	"devDependencies": {
 		"@types/lodash.throttle": "^4.1.7",
 		"@types/showdown": "^2.0.1",
-		"@typescript-eslint/eslint-plugin": "^6.8.0",
+		"@typescript-eslint/eslint-plugin": "^6.9.0",
 		"@typescript-eslint/parser": "^6.8.0",
 		"css-loader": "^6.8.1",
 		"electron": "^27.0.0",
@@ -39,7 +39,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"ace-builds": "^1.30.0",
+		"ace-builds": "^1.31.0",
 		"electron-store": "^8.1.0",
 		"electron-updater": "^6.1.4",
 		"lodash.throttle": "^4.1.1",
