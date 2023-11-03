@@ -17,6 +17,7 @@
 	},
 	"devDependencies": {
 		"@types/lodash.throttle": "^4.1.7",
+		"@types/lodash.uniq": "^4.5.7",
 		"@types/showdown": "^2.0.1",
 		"@typescript-eslint/eslint-plugin": "^6.8.0",
 		"@typescript-eslint/parser": "^6.8.0",
@@ -43,6 +44,7 @@
 		"electron-store": "^8.1.0",
 		"electron-updater": "^6.1.4",
 		"lodash.throttle": "^4.1.1",
+		"lodash.uniq": "^4.5.0",
 		"showdown": "^2.1.0"
 	},
 	"//": "BUG: https://github.com/electron-userland/electron-builder/issues/7826",

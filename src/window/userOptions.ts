@@ -10,7 +10,9 @@ const aceSettings = {
 	tabSize: 'tabSize',
 	showGutter: 'gutter',
 	enableSnippets: 'enableSnippets',
-	showInvisibles: 'showInvisible'
+	showInvisibles: 'showInvisible',
+	fontSize: 'fontSize',
+	fontFamily: 'monospaceFont'
 } as const;
 
 export function initializeSettings(settings: SettingStore, themeMode: ThemeMode, editor: Ace.Editor) {
