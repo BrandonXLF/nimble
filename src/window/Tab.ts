@@ -147,8 +147,8 @@ export default class Tab {
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
-			const x = screenX + e.x - this.tabStore.baseRowX - this.dragStart![0],
-				y = screenY + e.y - this.dragStart![1];
+			const x = Math.round(screenX + e.x - this.tabStore.baseRowX - this.dragStart![0]),
+				y = Math.round(screenY + e.y - this.dragStart![1]);
 
 			delete this.dragStart;
 
