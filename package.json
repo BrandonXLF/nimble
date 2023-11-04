@@ -1,7 +1,7 @@
 {
 	"name": "nimble",
 	"description": "HTML, markdown, and SVG viewer and code editor.",
-	"version": "1.2.7",
+	"version": "1.2.8",
 	"author": "Brandon Fowler",
 	"license": "LGPL-3.0-or-later",
 	"main": "./build/main.js",
@@ -19,8 +19,8 @@
 		"@types/lodash.throttle": "^4.1.7",
 		"@types/lodash.uniq": "^4.5.7",
 		"@types/showdown": "^2.0.1",
-		"@typescript-eslint/eslint-plugin": "^6.8.0",
-		"@typescript-eslint/parser": "^6.8.0",
+		"@typescript-eslint/eslint-plugin": "^6.9.0",
+		"@typescript-eslint/parser": "^6.9.1",
 		"css-loader": "^6.8.1",
 		"electron": "^27.0.0",
 		"electron-builder": "^24.8.0",
@@ -40,7 +40,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"ace-builds": "^1.30.0",
+		"ace-builds": "^1.31.0",
 		"electron-store": "^8.1.0",
 		"electron-updater": "^6.1.4",
 		"lodash.throttle": "^4.1.1",
