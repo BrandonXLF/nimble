@@ -45,7 +45,6 @@
 		"lodash.throttle": "^4.1.1",
 		"showdown": "^2.1.0"
 	},
-	"//": "BUG: https://github.com/electron-userland/electron-builder/issues/7826",
 	"build": {
 		"appId": "me.brandonfowler.nimble",
 		"productName": "Nimble HTML and Markdown",
