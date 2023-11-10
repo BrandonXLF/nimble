@@ -1,7 +1,7 @@
 {
 	"name": "nimble",
 	"description": "HTML, markdown, and SVG viewer and code editor.",
-	"version": "1.2.9",
+	"version": "1.2.10",
 	"author": "Brandon Fowler",
 	"license": "LGPL-3.0-or-later",
 	"main": "./build/main.js",
