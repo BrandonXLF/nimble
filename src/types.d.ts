@@ -2,10 +2,10 @@ declare module '*.ico'
 declare module '*.md'
 declare module '*.png'
 
-declare const enum AskForPath {
-	Always,
-	WhenNeeded,
-	Never
+declare const enum SaveType {
+	SetName,
+	Standard,
+	Auto
 }
 
 declare interface TabData {
