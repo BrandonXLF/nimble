@@ -39,7 +39,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
-		"ace-builds": "^1.32.0",
+		"ace-builds": "^1.32.1",
 		"electron-store": "^8.1.0",
 		"electron-updater": "^6.1.7",
 		"lodash.throttle": "^4.1.1",
