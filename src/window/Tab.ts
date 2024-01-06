@@ -44,7 +44,7 @@ export default class Tab {
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
 		this.webview.preload = join(__dirname, 'preload.js');
-		this.webview.webpreferences = 'nodeIntegrationInSubFrames';
+		this.webview.webpreferences = 'transparent=no,nodeIntegrationInSubFrames';
 		
 		// Can be placed in preload if this breaks
 		this.webview.addEventListener('did-navigate', () => {
