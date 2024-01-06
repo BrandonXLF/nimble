@@ -14,7 +14,6 @@ export default class SessionManager {
     }
 
     private defaultResponse(req: Request, ses: Session) {
-        // @ts-ignore bypassCustomProtocolHandlers is allowed
         return ses.fetch(req, { bypassCustomProtocolHandlers: true });
     }
 

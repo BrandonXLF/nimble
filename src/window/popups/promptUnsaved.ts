@@ -8,7 +8,7 @@ export default function promptUnsaved(tabs: Tabs, settings: SettingStore) {
 		let unsaved = tabs.tabs.filter(tab => tab.unsaved);
 		
 		if (settings.get('autoSave')) {
-			await Promise.allSettled(unsaved.map(tab => tab.save(AskForPath.Never)));
+			await Promise.allSettled(unsaved.map(tab => tab.save(SaveType.Auto)));
 			unsaved = tabs.tabs.filter(tab => tab.unsaved);
 		}
 

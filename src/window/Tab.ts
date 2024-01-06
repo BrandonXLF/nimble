@@ -79,7 +79,7 @@ export default class Tab {
 		this.savedText = data.savedText ?? '';
 		this.miniPopupFactory = new MiniPopupFactory(this);
 		
-		this.autoSave = throttle(async () => this.save(AskForPath.Never), 500);
+		this.autoSave = throttle(async () => this.save(SaveType.Auto), 500);
 
 		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
 		this.editorSession.on('change', () => {
@@ -147,8 +147,8 @@ export default class Tab {
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
-			const x = screenX + e.x - this.tabStore.baseRowX - this.dragStart![0],
-				y = screenY + e.y - this.dragStart![1];
+			const x = Math.round(screenX + e.x - this.tabStore.baseRowX - this.dragStart![0]),
+				y = Math.round(screenY + e.y - this.dragStart![1]);
 
 			delete this.dragStart;
 
@@ -237,12 +237,16 @@ export default class Tab {
 		);
 	}
 	
-	async save(askForPath = AskForPath.WhenNeeded): Promise<boolean> {
+	async save(saveType = SaveType.Standard): Promise<boolean> {
 		const value = this.editorSession.getValue();
+
+		if (
+			saveType === SaveType.Auto && value === this.savedText
+		) return true;
 		
 		if (
-			askForPath === AskForPath.Always ||
-			(askForPath === AskForPath.WhenNeeded && !this.path)
+			saveType === SaveType.SetName ||
+			(saveType === SaveType.Standard && !this.path)
 		) await this.getPath();
 		
 		if (!this.path) return false;
@@ -250,7 +254,7 @@ export default class Tab {
 		try {
 			await fs.writeFile(this.path, value);
 		} catch (_) {
-			if (askForPath === AskForPath.Never) return false;
+			if (saveType === SaveType.Auto) return false;
 		
 			return new Promise(resolve => {
 				popup(
@@ -259,11 +263,11 @@ export default class Tab {
 					[
 						{
 							text: 'Retry',
-							click: () => resolve(this.save(AskForPath.WhenNeeded))
+							click: () => resolve(this.save(SaveType.Standard))
 						},
 						{
 							text: 'Save As',
-							click: () => resolve(this.save(AskForPath.Always))
+							click: () => resolve(this.save(SaveType.SetName))
 						},
 						{
 							text: 'Cancel',
@@ -328,10 +332,12 @@ export default class Tab {
 				const newValue = await fs.readFile(this.path, 'utf8');
 				
 				if (newValue !== this.savedText) {
-					if (!this.unsaved) this.editorSession.setValue(newValue);
+					const wasSaved = !this.unsaved;
 
 					this.savedText = newValue;
 					this.updateUnsaved();
+
+					if (wasSaved) this.editorSession.setValue(newValue);
 				}
 			}
 		} catch (err) {
@@ -342,7 +348,7 @@ export default class Tab {
 	close() {
 		(async () => {
 			if (this.unsaved && this.tabStore.settings.get('autoSave')) {
-				await this.save(AskForPath.Never);
+				await this.save(SaveType.Auto);
 			}
 
 			if (!this.unsaved) {

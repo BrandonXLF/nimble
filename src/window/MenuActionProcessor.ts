@@ -38,7 +38,7 @@ export default class MenuActionProcessor {
 				this.tabs.currentTab.save();
 				break;
 			case 'save-as':
-				this.tabs.currentTab.save(AskForPath.Always);
+				this.tabs.currentTab.save(SaveType.SetName);
 				break;
 			case 'settings':
 				new UserSettingsPopup(this.settings).show();
