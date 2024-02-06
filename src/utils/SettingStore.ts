@@ -17,6 +17,11 @@ export default class SettingStore {
 		defaultType: 'html',
 		autocomplete: true,
 		enableSnippets: true,
+		fontSize: 12,
+		standardFont: '',
+		monospaceFont: '',
+		sherifFont: '',
+		sansFont: '',
 		
 		// Layout settings
 		editorDirection: 'horizontal',

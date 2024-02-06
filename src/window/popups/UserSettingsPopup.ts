@@ -1,10 +1,11 @@
 import SettingStore from '../../utils/SettingStore';
 import { popup } from './popup';
 import '../less/userSettings.less';
-import { userSettingsData } from './userSettingsData';
+import getUserSettingData from './userSettingsData';
+import uniq from 'lodash.uniq';
 
-type Section = typeof userSettingsData[0];
-type Setting = typeof userSettingsData[0]['settings'][0];
+type Section = ReturnType<typeof getUserSettingData>[0];
+type Setting = ReturnType<typeof getUserSettingData>[0]['settings'][0];
 
 export default class UserSettingsPopup {
 	settings: SettingStore;
@@ -13,8 +14,13 @@ export default class UserSettingsPopup {
 		this.settings = settings;
 	}
 	
-	show() {
-		popup('Settings', userSettingsData.flatMap(section => this.createSection(section)));
+	async show() {
+		const fontFamilies = uniq((await queryLocalFonts()).map(x => x.family));
+
+		popup(
+			'Settings',
+			getUserSettingData(fontFamilies).flatMap(section => this.createSection(section))
+		);
 	}
 
 	createSection(section: Section) {
