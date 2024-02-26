@@ -19,7 +19,7 @@
 		"@types/lodash.throttle": "^4.1.7",
 		"@types/showdown": "^2.0.6",
 		"@typescript-eslint/eslint-plugin": "^6.16.0",
-		"@typescript-eslint/parser": "^6.13.2",
+		"@typescript-eslint/parser": "^7.0.2",
 		"css-loader": "^6.8.1",
 		"electron": "^28.0.0",
 		"electron-builder": "^24.9.1",
