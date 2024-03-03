@@ -1,0 +1,33 @@
+name: Test Pull Request
+
+on:
+  pull_request
+
+jobs:
+  pr:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
