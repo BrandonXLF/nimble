@@ -51,6 +51,6 @@ export default class SettingStore {
 	}
 
 	markExternalSet() {
-		this.store.events.emit('change');
+		this.store.events.dispatchEvent(new Event('change'));
 	}
 }
