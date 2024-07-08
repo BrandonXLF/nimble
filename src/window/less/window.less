@@ -57,20 +57,18 @@ button:hover {
 	display: flex;
 	flex-direction: column;
 	position: relative;
+	background-color: white;
 
 	webview {
 		flex: 1;
 	}
+}
 
-	.use-theme {
-		webiview {
-			background: --bg-color;
-		}
-	}
-
-	&:not(.use-theme) {
-		webview {
-			background: #fff;
+@media (prefers-color-scheme: dark) {
+	#webview-container {
+		&.use-theme {
+			// Mimic default webview background color while loading
+			background-color: #121212;
 		}
 	}
 }
