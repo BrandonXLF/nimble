@@ -23,6 +23,7 @@ export default class Tab {
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
 	unsavedIndicator = document.createElement('div');
+	onThemeChange: () => void;
 	removeCSSUpdateListener?: () => void;
 
 	editorSession: Ace.EditSession;
@@ -52,9 +53,12 @@ export default class Tab {
 			this.updateWebviewCSS();
 		});
 
+		this.onThemeChange = () => void this.updateWebviewCSS();
+		this.tabStore.themeMode.on('change', this.onThemeChange);
+
 		this.removeCSSUpdateListener = this.tabStore.settings.listen(
 			'viewerUseTheme',
-			() => void this.updateWebviewCSS()
+			this.onThemeChange
 		);
 
 		this.webview.addEventListener('did-finish-load', () => {
@@ -383,6 +387,7 @@ export default class Tab {
 		this.tabElement.remove();
 		this.webviewSubContainer.remove();
 		this.devtools.remove();
+		this.tabStore.themeMode.removeListener('change', this.onThemeChange);
 		this.removeCSSUpdateListener?.();
 		ipcRenderer.send('delete-session', this.partition);
 	}
