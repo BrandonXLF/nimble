@@ -96,8 +96,7 @@ if (openFiles.length) {
 window.addEventListener('beforeunload', e => {
 	if (!tabs.tabs.some(tab => tab.unsaved)) return;
 
-	e.returnValue = false;
-
+	e.preventDefault();
 	promptUnsaved(tabs, settings);
 });
 
