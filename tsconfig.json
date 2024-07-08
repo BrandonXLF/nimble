@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
-		"moduleResolution": "node",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"sourceMap": false,
@@ -9,14 +9,12 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"allowSyntheticDefaultImports": true,
-		"paths": {
-			"*": ["node_modules/*"]
-		},
 		"target": "ESNext",
 		"resolveJsonModule": true
 	},
-	"include": [
-		"src/**/*",
-		"webpack.config.ts"
-	]
+	"ts-node": {
+		"compilerOptions": {
+			"module": "CommonJS"
+		}
+	}
 }
