@@ -270,7 +270,7 @@ export default class Tab {
 							click: () => resolve(this.save(SaveType.Standard))
 						},
 						{
-							text: 'Save As',
+							text: 'Save As...',
 							click: () => resolve(this.save(SaveType.SetName))
 						},
 						{
