@@ -8,15 +8,15 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		template.push(
 			{
 				label: 'Back',
-				enabled: webview.canGoBack(),
+				enabled: webview.navigationHistory.canGoBack(),
 				accelerator: 'Alt+Left',
-				click: () => webview.goBack()
+				click: () => webview.navigationHistory.goBack()
 			},
 			{
 				label: 'Forward',
-				enabled: webview.canGoForward(),
+				enabled: webview.navigationHistory.canGoForward(),
 				accelerator: 'Alt+Right',
-				click: () => webview.goForward()
+				click: () => webview.navigationHistory.goForward()
 			},
 			{
 				type: 'separator'
