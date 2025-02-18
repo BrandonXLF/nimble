@@ -19,6 +19,13 @@ import WebDialogFactory from './popups/WebDialogFactory';
 import MenuActionProcessor from './MenuActionProcessor';
 import UpdateUI from './UpdateUI';
 import ThemeMode from './ThemeMode';
+import HTMLClipboard from './HTMLClipboard';
+
+declare global {
+	interface Window {
+		htmlClipboard: HTMLClipboard;
+	}
+}
 
 const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 	settings = new SettingStore(() => ipcRenderer.send('renderer-settings-updated')),
@@ -92,6 +99,8 @@ if (openFiles.length) {
 } else {
 	tabs.createTab();
 }
+
+window.htmlClipboard = new HTMLClipboard(editor);
 
 window.addEventListener('beforeunload', e => {
 	if (!tabs.tabs.some(tab => tab.unsaved)) return;

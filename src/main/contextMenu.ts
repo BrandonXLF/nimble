@@ -2,7 +2,8 @@ import { clipboard, ContextMenuParams, Menu, MenuItemConstructorOptions, session
 
 export function showContextMenu(params: ContextMenuParams, main: WebContents, webview?: WebContents) {
 	const template: MenuItemConstructorOptions[] = [],
-		focused = main || webview;
+		focused = webview ?? main,
+		hasSelection = params.selectionText.length > 0;
 	
 	if (webview) {
 		template.push(
@@ -54,8 +55,6 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		type: 'separator'
 	});
 	
-	const hasSelection = params.selectionText.length > 0;
-	
 	if (params.isEditable) {
 		template.push(
 			{
@@ -74,27 +73,72 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		);
 	}
 	
+	if (params.isEditable) {
+		template.push({
+			label: webview ? 'Cut' : 'Cut as text',
+			accelerator: 'CmdOrCtrl+Z',
+			visible: params.isEditable,
+			enabled: hasSelection,
+			click: () => focused.cut()
+		});
+	}
+
 	if (params.isEditable || hasSelection) {
-		template.push(
-			{
-				label: 'Cut',
-				accelerator: 'CmdOrCtrl+Z',
-				visible: params.isEditable,
+		template.push({
+			label: webview ? 'Copy' : 'Copy as text',
+			accelerator: 'CmdOrCtrl+C',
+			enabled: hasSelection,
+			click: () => focused.copy()
+		});
+	}
+
+	if (params.isEditable) {
+		template.push({
+			label: webview ? 'Paste' : 'Paste text',
+			accelerator: 'CmdOrCtrl+V',
+			enabled: clipboard.availableFormats().includes('text/plain'),
+			click: () => focused.paste()
+		});
+	}
+
+	if (!webview) {
+		if (params.isEditable) {
+			template.push(
+				{
+					type: 'separator'
+				},
+				{
+					label: 'Cut as HTML',
+					enabled: hasSelection,
+					click: () => void focused.executeJavaScript(`htmlClipboard.cut()`)
+				}
+			);
+		}
+
+		if (params.isEditable || hasSelection) {
+			template.push({
+				label: 'Copy as HTML',
 				enabled: hasSelection,
-				click: () => focused.cut()
-			},
-			{
-				label: 'Copy',
-				accelerator: 'CmdOrCtrl+C',
-				enabled: hasSelection,
-				click: () => focused.copy()
-			},
-			{
-				label: 'Paste',
-				accelerator: 'CmdOrCtrl+V',
-				visible: params.isEditable,
-				click: () => focused.paste()
-			},
+				click: () => void focused.executeJavaScript(`(async () => { try { await htmlClipboard.copy() } catch (e) { console.error(e) } })()`)
+			});
+		}
+
+		if (params.isEditable) {
+			template.push(
+				{
+					label: 'Paste HTML',
+					enabled: clipboard.availableFormats().includes('text/html'),
+					click: () => void focused.executeJavaScript(`htmlClipboard.paste()`)
+				},
+				{
+					type: 'separator'
+				}
+			);
+		}
+	}
+
+	if (params.isEditable || hasSelection) {
+			template.push(
 			{
 				label: 'Select All',
 				accelerator: 'CmdOrCtrl+A',
