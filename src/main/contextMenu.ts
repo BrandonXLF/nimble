@@ -108,13 +108,15 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	
 	if (webview) {
 		let mediaType;
-		
-		if (params.mediaType === 'image' || params.mediaType === 'canvas') {
-			mediaType = 'Image';
-		}
-		
-		if (params.mediaType === 'video' || params.mediaType === 'canvas') {
-			mediaType = 'Video';
+
+		switch (params.mediaType) {
+			case 'image':
+			case 'canvas':
+				mediaType = 'Image';
+				break;
+			case 'video':
+				mediaType = 'Video';
+				break;
 		}
 		
 		if (params.linkURL.length > 0) {
