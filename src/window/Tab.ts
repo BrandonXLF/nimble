@@ -88,8 +88,8 @@ export default class Tab {
 		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
 		this.editorSession.on('change', () => {
 			this.updateUnsaved();
-			this.tabStore.settings.get('autoRun') && this.preview();
-			this.tabStore.settings.get('autoSave') && this.autoSave();
+			if (this.tabStore.settings.get('autoRun')) this.preview();
+			if (this.tabStore.settings.get('autoSave')) this.autoSave();
 		});
 		
 		this.unsavedIndicator.append(useSVG('circle'));

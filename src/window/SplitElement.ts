@@ -73,9 +73,11 @@ export default class SplitElement extends EventEmitter {
 	toggleVisible(force?: boolean): boolean {
 		const visible = !this.element.classList.toggle('hidden', force !== undefined ? !force : undefined);
 		
-		visible
-			? document.body.setAttribute(`data-${this.identifier}`, '')
-			: document.body.removeAttribute(`data-${this.identifier}`);
+		if (visible) {
+			document.body.setAttribute(`data-${this.identifier}`, '');
+		} else {
+			document.body.removeAttribute(`data-${this.identifier}`);
+		}
 			
 		this.positionResize();
 		this.emit('visible', visible);
