@@ -18,11 +18,11 @@
 	"devDependencies": {
 		"@types/lodash.throttle": "^4.1.9",
 		"@types/showdown": "^2.0.6",
-		"@typescript-eslint/eslint-plugin": "^7.15.0",
-		"@typescript-eslint/parser": "^7.15.0",
+		"@typescript-eslint/eslint-plugin": "^8.24.1",
+		"@typescript-eslint/parser": "^8.24.1",
 		"css-loader": "^7.1.2",
 		"electron": "^34",
-		"electron-builder": "^24.13.3",
+		"electron-builder": "^26.0.7",
 		"eslint": "^8.57.0",
 		"eslint-plugin-deprecation": "^3.0.0",
 		"file-loader": "^6.2.0",
@@ -36,7 +36,7 @@
 		"ts-loader": "^9.5.1",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.5.3",
-		"webpack-cli": "^5.1.4"
+		"webpack-cli": "^6.0.1"
 	},
 	"dependencies": {
 		"@prettier/plugin-xml": "^3.4.1",
