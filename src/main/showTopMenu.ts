@@ -27,6 +27,14 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 		},
 		{
 			type: 'separator'
+
+		},
+		{
+			label: 'Format Code',
+			id: 'format'
+		},
+		{
+			type: 'separator'
 		},
 		{
 			label: 'Rotate Editor',

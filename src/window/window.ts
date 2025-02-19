@@ -20,10 +20,12 @@ import MenuActionProcessor from './MenuActionProcessor';
 import UpdateUI from './UpdateUI';
 import ThemeMode from './ThemeMode';
 import HTMLClipboard from './HTMLClipboard';
+import format from './format';
 
 declare global {
 	interface Window {
 		htmlClipboard: HTMLClipboard;
+		formatEditor: () => Promise<void>;
 	}
 }
 
@@ -101,6 +103,7 @@ if (openFiles.length) {
 }
 
 window.htmlClipboard = new HTMLClipboard(editor);
+window.formatEditor = () => format(editor, tabs.currentTab.mode, settings);
 
 window.addEventListener('beforeunload', e => {
 	if (!tabs.tabs.some(tab => tab.unsaved)) return;

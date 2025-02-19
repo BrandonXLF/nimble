@@ -18,9 +18,6 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 				enabled: webview.navigationHistory.canGoForward(),
 				accelerator: 'Alt+Right',
 				click: () => webview.navigationHistory.goForward()
-			},
-			{
-				type: 'separator'
 			}
 		);
 	}
@@ -32,23 +29,32 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	})
 	
 	if (webview) {
+		template.push(
+			{
+				type: 'separator'
+			},
+			{
+				label: 'Find...',
+				accelerator: 'CmdOrCtrl+F',
+				click: () => main.send('menu-action', 'find')
+			},
+			{
+				label: 'Zoom...',
+				accelerator: 'CmdOrCtrl+=',
+				click: () => main.send('menu-action', 'zoom')
+			},
+			{
+				label: 'Print...',
+				accelerator: 'CmdOrCtrl+P',
+				click: () => webview.print({ silent: false })
+			}
+		);
+	} else {
 		template.push({
-			label: 'Find...',
-			accelerator: 'CmdOrCtrl+F',
-			click: () => main.send('menu-action', 'find')
-		})
-		
-		template.push({
-			label: 'Zoom...',
-			accelerator: 'CmdOrCtrl+=',
-			click: () => main.send('menu-action', 'zoom')
-		})
-		
-		template.push({
-			label: 'Print...',
-			accelerator: 'CmdOrCtrl+P',
-			click: () => webview.print({ silent: false })
-		})
+			label: 'Format',
+			// TODO: Implement
+			click: () => void focused.executeJavaScript('formatEditor()')
+		});
 	}
 	
 	template.push({
@@ -119,7 +125,7 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 			template.push({
 				label: 'Copy as HTML',
 				enabled: hasSelection,
-				click: () => void focused.executeJavaScript(`(async () => { try { await htmlClipboard.copy() } catch (e) { console.error(e) } })()`)
+				click: () => void focused.executeJavaScript(`htmlClipboard.copy()`)
 			});
 		}
 

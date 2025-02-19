@@ -39,10 +39,12 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
+		"@prettier/plugin-xml": "^3.4.1",
 		"ace-builds": "^1.35.2",
 		"electron-store": "^10.0.0",
 		"electron-updater": "^6.2.1",
 		"lodash.throttle": "^4.1.1",
+		"prettier": "^3.5.1",
 		"showdown": "^2.1.0"
 	},
 	"build": {
