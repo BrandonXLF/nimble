@@ -7,17 +7,17 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 })[]> = {
 	options: [
 		{
-			label: 'Print',
+			label: 'Print...',
 			accelerator: 'CmdOrCtrl+P',
 			id: 'print'
 		},
 		{
-			label: 'Find',
+			label: 'Find...',
 			accelerator: 'CmdOrCtrl+F',
 			id: 'find'
 		},
 		{
-			label: 'Zoom',
+			label: 'Zoom...',
 			accelerator: 'CmdOrCtrl+=',
 			id: 'zoom'
 		},
@@ -55,7 +55,7 @@ const menus: Record<string, (Electron.MenuItemConstructorOptions & {
 			id: 'save'
 		},
 		{
-			label: 'Save As',
+			label: 'Save As...',
 			accelerator: 'CmdOrCtrl+Shift+S',
 			id: 'save-as'
 		},
