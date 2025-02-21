@@ -1,7 +1,7 @@
 {
 	"name": "burrow",
 	"description": "HTML, markdown, and SVG viewer and code editor with development tools.",
-	"version": "1.5.0",
+	"version": "1.6.0",
 	"author": "Brandon Fowler",
 	"license": "LGPL-3.0-or-later",
 	"main": "./build/main.js",
