@@ -52,7 +52,6 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	} else {
 		template.push({
 			label: 'Format',
-			// TODO: Implement
 			click: () => void focused.executeJavaScript('formatEditor()')
 		});
 	}
