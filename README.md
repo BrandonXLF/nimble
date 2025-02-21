@@ -1,8 +1,8 @@
-# Nimble HTML and Markdown
+# Burrow HTML and Markdown
 
 <img src="/src/icon/icon.png" width="100">
 
-Nimble is an HTML, markdown, and SVG viewer and code editor built on Electron. It aims to provide a quick way to switch between viewing, editing, and debugging files.
+Burrow is an HTML, markdown, and SVG viewer and code editor built on Electron. It aims to provide a quick way to switch between viewing, editing, and debugging files.
 
 ## Screenshot
 

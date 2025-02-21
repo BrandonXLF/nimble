@@ -147,7 +147,7 @@ export default class Tab {
 	
 		this.tabElement.addEventListener('dragstart', e => {
 			this.dragStart = [e.offsetX, e.offsetY];
-			e.dataTransfer!.setData('nimble-html-markdown/tab-id', this.tabId);
+			e.dataTransfer!.setData('burrow-html-markdown/tab-id', this.tabId);
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
@@ -180,7 +180,7 @@ export default class Tab {
 				return;
 			}
 			
-			const tabId = e.dataTransfer?.getData('nimble-html-markdown/tab-id');
+			const tabId = e.dataTransfer?.getData('burrow-html-markdown/tab-id');
 			
 			if (!tabId || tabId === this.tabId) return;
 			
