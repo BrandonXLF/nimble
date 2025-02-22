@@ -82,6 +82,15 @@
 		],
 		"publish": [
 			"github"
-		]
+		],
+		"snap": {
+			"publish": [
+				"github",
+				{
+					"provider": "snapStore",
+					"repo": "nimble"
+				}
+			]
+		}
 	}
 }
