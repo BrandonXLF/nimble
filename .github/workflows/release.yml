@@ -11,6 +11,7 @@ jobs:
       contents: write
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
 
     strategy:
       matrix:
