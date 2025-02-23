@@ -82,6 +82,11 @@
 		],
 		"publish": [
 			"github"
-		]
+		],
+		"snap": {
+			"publish": [
+				"github"
+			]
+		}
 	}
 }
