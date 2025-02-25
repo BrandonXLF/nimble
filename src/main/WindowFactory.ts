@@ -131,6 +131,12 @@ export default class WindowFactory {
 
             this.fileHandler.setCurrentWindow(win);
         });
+
+        win.webContents.on('will-attach-webview', (_, webPreferences) => {
+            webPreferences.defaultFontFamily = {
+                standard: 'Arial'
+            };
+        });
     
         return win;
     }

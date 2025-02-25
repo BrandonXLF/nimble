@@ -22,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@types/lodash.throttle": "^4.1.9",
+		"@types/lodash.uniq": "^4.5.7",
 		"@types/showdown": "^2.0.6",
 		"@typescript-eslint/eslint-plugin": "^8.24.1",
 		"@typescript-eslint/parser": "^8.24.1",
@@ -49,6 +50,7 @@
 		"electron-store": "^10.0.0",
 		"electron-updater": "^6.2.1",
 		"lodash.throttle": "^4.1.1",
+		"lodash.uniq": "^4.5.0",
 		"prettier": "^3.5.1",
 		"showdown": "^2.1.0"
 	},

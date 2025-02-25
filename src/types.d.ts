@@ -20,3 +20,12 @@ declare interface UpdateStatus {
     title: string;
     details: string;
 }
+
+declare interface FontData {
+	readonly family: string;
+	readonly fullName: string;
+	readonly postscriptName: string;
+	readonly style: string;
+}
+
+declare const queryLocalFonts: (() => Promise<ReadonlyArray<FontData>>)
