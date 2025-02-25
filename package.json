@@ -89,13 +89,13 @@
 			"github"
 		],
 		"win": {
-			"target": "nsis"
+			"target": ["nsis", "portable"]
 		},
 		"mac": {
 			"target": "default"
 		},
 		"linux": {
-			"target": ["AppImage", "deb", "rpm"],
+			"target": ["deb", "rpm", "AppImage"],
 			"category": "Development"
 		}
 	}
