@@ -40,7 +40,7 @@ export default function showAbout() {
 	addRow(icon);
 	addRow(npmPackage.build.productName);
 
-	addRow(`Copyright \u00A9 ${npmPackage.author}`);
+	addRow(`Copyright \u00A9 Brandon Fowler`);
 	addRow(`Version ${npmPackage.version}`);
 	addRow(`Chrome ${process.versions.chrome}`);
 
