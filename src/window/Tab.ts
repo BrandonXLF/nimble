@@ -23,6 +23,7 @@ export default class Tab {
 	titleElement = document.createElement('span');
 	closeButton = document.createElement('button');
 	unsavedIndicator = document.createElement('div');
+	onThemeChange: () => void;
 	removeCSSUpdateListener?: () => void;
 
 	editorSession: Ace.EditSession;
@@ -44,7 +45,7 @@ export default class Tab {
 		this.webview.src = 'about:blank';
 		this.webview.partition = this.partition;
 		this.webview.preload = join(__dirname, 'preload.js');
-		this.webview.webpreferences = 'nodeIntegrationInSubFrames';
+		this.webview.webpreferences = 'transparent=no,nodeIntegrationInSubFrames';
 		
 		// Can be placed in preload if this breaks
 		this.webview.addEventListener('did-navigate', () => {
@@ -52,9 +53,12 @@ export default class Tab {
 			this.updateWebviewCSS();
 		});
 
+		this.onThemeChange = () => void this.updateWebviewCSS();
+		this.tabStore.themeMode.on('change', this.onThemeChange);
+
 		this.removeCSSUpdateListener = this.tabStore.settings.listen(
 			'viewerUseTheme',
-			() => void this.updateWebviewCSS()
+			this.onThemeChange
 		);
 
 		this.webview.addEventListener('did-finish-load', () => {
@@ -84,8 +88,8 @@ export default class Tab {
 		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
 		this.editorSession.on('change', () => {
 			this.updateUnsaved();
-			this.tabStore.settings.get('autoRun') && this.preview();
-			this.tabStore.settings.get('autoSave') && this.autoSave();
+			if (this.tabStore.settings.get('autoRun')) this.preview();
+			if (this.tabStore.settings.get('autoSave')) this.autoSave();
 		});
 		
 		this.unsavedIndicator.append(useSVG('circle'));
@@ -143,7 +147,7 @@ export default class Tab {
 	
 		this.tabElement.addEventListener('dragstart', e => {
 			this.dragStart = [e.offsetX, e.offsetY];
-			e.dataTransfer!.setData('nimble-html-markdown/tab-id', this.tabId);
+			e.dataTransfer!.setData('burrow-html-markdown/tab-id', this.tabId);
 		});
 		
 		this.tabElement.addEventListener('dragend', e => {
@@ -176,7 +180,7 @@ export default class Tab {
 				return;
 			}
 			
-			const tabId = e.dataTransfer?.getData('nimble-html-markdown/tab-id');
+			const tabId = e.dataTransfer?.getData('burrow-html-markdown/tab-id');
 			
 			if (!tabId || tabId === this.tabId) return;
 			
@@ -266,7 +270,7 @@ export default class Tab {
 							click: () => resolve(this.save(SaveType.Standard))
 						},
 						{
-							text: 'Save As',
+							text: 'Save As...',
 							click: () => resolve(this.save(SaveType.SetName))
 						},
 						{
@@ -383,6 +387,7 @@ export default class Tab {
 		this.tabElement.remove();
 		this.webviewSubContainer.remove();
 		this.devtools.remove();
+		this.tabStore.themeMode.removeListener('change', this.onThemeChange);
 		this.removeCSSUpdateListener?.();
 		ipcRenderer.send('delete-session', this.partition);
 	}

@@ -1,6 +1,6 @@
 import { ipcRenderer, contextBridge, webFrame } from 'electron';
 
-const prefix = `NIMBLE_${(Math.random() + 1).toString(36).substring(2)}`;
+const prefix = `BURROW_${(Math.random() + 1).toString(36).substring(2)}`;
 
 function genFuncOverrides(...funcs: string[]) {
 	return funcs.map(func => `window.${func}=window.${prefix}_${func};`).join('');

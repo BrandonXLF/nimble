@@ -2,24 +2,22 @@ import { clipboard, ContextMenuParams, Menu, MenuItemConstructorOptions, session
 
 export function showContextMenu(params: ContextMenuParams, main: WebContents, webview?: WebContents) {
 	const template: MenuItemConstructorOptions[] = [],
-		focused = main || webview;
+		focused = webview ?? main,
+		hasSelection = params.selectionText.length > 0;
 	
 	if (webview) {
 		template.push(
 			{
 				label: 'Back',
-				enabled: webview.canGoBack(),
+				enabled: webview.navigationHistory.canGoBack(),
 				accelerator: 'Alt+Left',
-				click: () => webview.goBack()
+				click: () => webview.navigationHistory.goBack()
 			},
 			{
 				label: 'Forward',
-				enabled: webview.canGoForward(),
+				enabled: webview.navigationHistory.canGoForward(),
 				accelerator: 'Alt+Right',
-				click: () => webview.goForward()
-			},
-			{
-				type: 'separator'
+				click: () => webview.navigationHistory.goForward()
 			}
 		);
 	}
@@ -31,30 +29,36 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	})
 	
 	if (webview) {
+		template.push(
+			{
+				type: 'separator'
+			},
+			{
+				label: 'Find...',
+				accelerator: 'CmdOrCtrl+F',
+				click: () => main.send('menu-action', 'find')
+			},
+			{
+				label: 'Zoom...',
+				accelerator: 'CmdOrCtrl+=',
+				click: () => main.send('menu-action', 'zoom')
+			},
+			{
+				label: 'Print...',
+				accelerator: 'CmdOrCtrl+P',
+				click: () => webview.print({ silent: false })
+			}
+		);
+	} else {
 		template.push({
-			label: 'Find...',
-			accelerator: 'CmdOrCtrl+F',
-			click: () => main.send('menu-action', 'find')
-		})
-		
-		template.push({
-			label: 'Zoom...',
-			accelerator: 'CmdOrCtrl+=',
-			click: () => main.send('menu-action', 'zoom')
-		})
-		
-		template.push({
-			label: 'Print...',
-			accelerator: 'CmdOrCtrl+P',
-			click: () => webview.print({ silent: false })
-		})
+			label: 'Format',
+			click: () => void focused.executeJavaScript('formatEditor()')
+		});
 	}
 	
 	template.push({
 		type: 'separator'
 	});
-	
-	const hasSelection = params.selectionText.length > 0;
 	
 	if (params.isEditable) {
 		template.push(
@@ -74,27 +78,72 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 		);
 	}
 	
+	if (params.isEditable) {
+		template.push({
+			label: webview ? 'Cut' : 'Cut as text',
+			accelerator: 'CmdOrCtrl+Z',
+			visible: params.isEditable,
+			enabled: hasSelection,
+			click: () => focused.cut()
+		});
+	}
+
 	if (params.isEditable || hasSelection) {
-		template.push(
-			{
-				label: 'Cut',
-				accelerator: 'CmdOrCtrl+Z',
-				visible: params.isEditable,
+		template.push({
+			label: webview ? 'Copy' : 'Copy as text',
+			accelerator: 'CmdOrCtrl+C',
+			enabled: hasSelection,
+			click: () => focused.copy()
+		});
+	}
+
+	if (params.isEditable) {
+		template.push({
+			label: webview ? 'Paste' : 'Paste text',
+			accelerator: 'CmdOrCtrl+V',
+			enabled: clipboard.availableFormats().includes('text/plain'),
+			click: () => focused.paste()
+		});
+	}
+
+	if (!webview) {
+		if (params.isEditable) {
+			template.push(
+				{
+					type: 'separator'
+				},
+				{
+					label: 'Cut as HTML',
+					enabled: hasSelection,
+					click: () => void focused.executeJavaScript(`htmlClipboard.cut()`)
+				}
+			);
+		}
+
+		if (params.isEditable || hasSelection) {
+			template.push({
+				label: 'Copy as HTML',
 				enabled: hasSelection,
-				click: () => focused.cut()
-			},
-			{
-				label: 'Copy',
-				accelerator: 'CmdOrCtrl+C',
-				enabled: hasSelection,
-				click: () => focused.copy()
-			},
-			{
-				label: 'Paste',
-				accelerator: 'CmdOrCtrl+V',
-				visible: params.isEditable,
-				click: () => focused.paste()
-			},
+				click: () => void focused.executeJavaScript(`htmlClipboard.copy()`)
+			});
+		}
+
+		if (params.isEditable) {
+			template.push(
+				{
+					label: 'Paste HTML',
+					enabled: clipboard.availableFormats().includes('text/html'),
+					click: () => void focused.executeJavaScript(`htmlClipboard.paste()`)
+				},
+				{
+					type: 'separator'
+				}
+			);
+		}
+	}
+
+	if (params.isEditable || hasSelection) {
+			template.push(
 			{
 				label: 'Select All',
 				accelerator: 'CmdOrCtrl+A',
@@ -108,13 +157,15 @@ export function showContextMenu(params: ContextMenuParams, main: WebContents, we
 	
 	if (webview) {
 		let mediaType;
-		
-		if (params.mediaType === 'image' || params.mediaType === 'canvas') {
-			mediaType = 'Image';
-		}
-		
-		if (params.mediaType === 'video' || params.mediaType === 'canvas') {
-			mediaType = 'Video';
+
+		switch (params.mediaType) {
+			case 'image':
+			case 'canvas':
+				mediaType = 'Image';
+				break;
+			case 'video':
+				mediaType = 'Video';
+				break;
 		}
 		
 		if (params.linkURL.length > 0) {

@@ -40,7 +40,7 @@ export default function showAbout() {
 	addRow(icon);
 	addRow(npmPackage.build.productName);
 
-	addRow(`Copyright \u00A9 ${npmPackage.author}`);
+	addRow(`Copyright \u00A9 Brandon Fowler`);
 	addRow(`Version ${npmPackage.version}`);
 	addRow(`Chrome ${process.versions.chrome}`);
 
@@ -49,7 +49,7 @@ export default function showAbout() {
 	addActionLink('Check for updates', () => updateStatusPopup(true));
 	addActionLink(
 		'Open code repository',
-		() => shell.openExternal('https://github.com/BrandonXLF/nimble')
+		() => shell.openExternal('https://github.com/BrandonXLF/burrow')
 	);
 	addActionLink('View license', () => ipcRenderer.send('show-license'));
 	addActionLink('Show app devtools', () => ipcRenderer.send('show-window-devtools'));

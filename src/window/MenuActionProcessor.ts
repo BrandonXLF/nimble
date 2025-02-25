@@ -28,6 +28,9 @@ export default class MenuActionProcessor {
 			case 'terminate':
 				ipcRenderer.send('crash-renderer', this.tabs.currentTab.webview.getWebContentsId());
 				break;
+			case 'format':
+				window.formatEditor();
+				break;
 			case 'rotate-editor':
 				this.settings.set('editorDirection', this.mainSplit.toggleDirection());
 				break;

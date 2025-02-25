@@ -26,15 +26,15 @@ export default function getUserSettingData(fontFamilies: string[]) {
 					name: 'autoSave',
 					label: 'Autosave'
 				},
-					{
+				{
 					type: 'checkbox',
 					name: 'autoEdit',
-					label: 'Show editor by default'
+					label: 'Show editor on launch with file'
 				},
 				{
 					type: 'checkbox',
 					name: 'autoDevtools',
-					label: 'Show devtools by default'
+					label: 'Show devtools on launch'
 				},
 				{
 					type: 'select',

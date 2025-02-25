@@ -1,17 +1,11 @@
-name: Release
+name: Test Pull Request
 
 on:
-  push:
-    branches:
-      - main
+  pull_request
 
 jobs:
-  release:
-    permissions:
-      contents: write
-
+  pr:
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
 
     strategy:
       matrix:
@@ -29,18 +23,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v2
-        if: startsWith(matrix.os, 'ubuntu')
-
       - name: Install dependencies
         run: npm install
 
       - name: Lint
         run: npm run lint
 
-      - name: Deploy app
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
-        run: npm run release
+      - name: Build
+        run: npm run build

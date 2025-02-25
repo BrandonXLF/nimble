@@ -37,7 +37,12 @@ export function popup(
 		popupElement.append(titleElement);
 	}
 
-	Array.isArray(msg) ? text.append(...msg) : text.append(msg);
+	if (Array.isArray(msg)) {
+		text.append(...msg);
+	} else {
+		text.append(msg)
+	}
+
 	popupElement.append(text);
 
 	buttonCnt.style.textAlign = 'right';
