@@ -29,7 +29,11 @@ declare global {
 	}
 }
 
-const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
+const openFilePrefix = '--open-file=',
+	openFiles = process.argv
+		.filter(arg => arg.startsWith(openFilePrefix))
+		.map(arg => arg.substring(openFilePrefix.length)),
+	webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 	settings = new SettingStore(() => ipcRenderer.send('renderer-settings-updated')),
 	themeMode = new ThemeMode(),
 	editor = ace.edit(
@@ -49,7 +53,7 @@ const webContentsIdPromise = ipcRenderer.invoke('get-webcontents-id'),
 		'editor',
 		document.getElementById('main-container')!,
 		settings.get('editorDirection'),
-		settings.get('autoEdit'),
+		openFiles.length == 0 || settings.get('autoEdit'),
 		settings.get('editorWidth'),
 		settings.get('editorHeight')
 	),
@@ -88,11 +92,6 @@ document.getElementById('header')!.addEventListener('contextmenu', e => e.preven
 });
 
 initializeSettings(settings, themeMode, editor);
-
-const openFilePrefix = '--open-file=',
-	openFiles = process.argv
-		.filter(arg => arg.startsWith(openFilePrefix))
-		.map(arg => arg.substring(openFilePrefix.length));
 
 if (openFiles.length) {
 	for (const file of openFiles) {
