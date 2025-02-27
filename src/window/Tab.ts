@@ -100,7 +100,7 @@ export default class Tab {
 		
 		this.closeButton.append(useSVG('x'));
 		this.closeButton.classList.add('tab-close');
-		this.closeButton.title = 'Close tab (Ctrl+W)'
+		this.closeButton.title = 'Close Tab (Ctrl+W)'
 		this.closeButton.addEventListener('click', e => {
 			e.stopPropagation();
 
