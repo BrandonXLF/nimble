@@ -91,7 +91,7 @@ document.getElementById('header')!.addEventListener('contextmenu', e => e.preven
 	document.getElementById(windowAction)!.addEventListener('click', () => ipcRenderer.send('perform-window-action', windowAction));
 });
 
-initializeSettings(settings, themeMode, editor);
+initializeSettings(settings, themeMode, editor, tabs);
 
 if (openFiles.length) {
 	for (const file of openFiles) {

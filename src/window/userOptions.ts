@@ -1,22 +1,43 @@
 import { Ace } from 'ace-builds';
 import SettingStore from '../utils/SettingStore';
 import ThemeMode from './ThemeMode';
+import Tabs from './Tabs';
 
-const aceSettings = {
+type SessionlessSettings = Exclude<keyof Ace.EditorOptions, keyof Ace.EditSessionOptions>;
+
+const editorSettings: Partial<Record<SessionlessSettings, string>> = {
 	enableBasicAutocompletion: 'autocomplete',
 	enableLiveAutocompletion: 'autocomplete',
-	useSoftTabs: 'softTabs',
-	wrap: 'wordWrap',
-	tabSize: 'tabSize',
 	showGutter: 'gutter',
 	enableSnippets: 'enableSnippets',
 	showInvisibles: 'showInvisible'
-} as const;
+};
 
-export function initializeSettings(settings: SettingStore, themeMode: ThemeMode, editor: Ace.Editor) {
-	for (const [aceSetting, storeSetting] of Object.entries(aceSettings)) {
-		settings.listen<string | boolean | number>(storeSetting,
+const sessionSettings: Partial<Record< keyof Ace.EditSessionOptions, string>> = {
+	useSoftTabs: 'softTabs',
+	wrap: 'wordWrap',
+	tabSize: 'tabSize',
+};
+
+export function initializeSettings(
+	settings: SettingStore,
+	themeMode: ThemeMode,
+	editor: Ace.Editor,
+	tabs: Tabs
+) {
+	for (const [aceSetting, storeSetting] of Object.entries(editorSettings)) {
+		settings.listen<string | boolean | number>(
+			storeSetting,
 			value => editor.setOption(aceSetting as keyof Ace.EditorOptions, value)
+		);
+	}
+
+	for (const [aceSetting, storeSetting] of Object.entries(sessionSettings)) {
+		settings.listen<string | boolean | number>(
+			storeSetting,
+			value => tabs.tabs.forEach(tab => {
+				tab.editorSession.setOption(aceSetting as keyof Ace.EditSessionOptions, value);
+			})
 		);
 	}
 
@@ -29,13 +50,21 @@ export function initializeSettings(settings: SettingStore, themeMode: ThemeMode,
 	});
 }
 
-export function getEditorOptions(settings: SettingStore, themeMode: ThemeMode): Partial<Ace.EditorOptions> {
+export function getEditorOptions(settings: SettingStore, themeMode: ThemeMode): Partial<Omit<Ace.EditorOptions, keyof Ace.EditSessionOptions>> {
+	return {
+		showPrintMargin: false,
+		theme: 'ace/theme/' + (themeMode.darkMode ? 'clouds_midnight' : 'clouds'),
+		...Object.fromEntries(Object.entries(editorSettings).map(([aceSetting, storeSetting]) => {
+			return [aceSetting, settings.get(storeSetting)];
+		}))
+	};
+}
+
+export function getSessionOptions(settings: SettingStore): Partial<Ace.EditSessionOptions> {
 	return {
 		useWorker: false,
-		showPrintMargin: false,
-		...Object.fromEntries(Object.entries(aceSettings).map(([aceSettings, storeSetting]) => {
-			return [aceSettings, settings.get(storeSetting)];
-		})),
-		theme: 'ace/theme/' + (themeMode.darkMode ? 'clouds_midnight' : 'clouds'),
+		...Object.fromEntries(Object.entries(sessionSettings).map(([aceSetting, storeSetting]) => {
+			return [aceSetting, settings.get(storeSetting)];
+		}))
 	};
 }

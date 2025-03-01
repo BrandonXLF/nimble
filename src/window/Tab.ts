@@ -10,6 +10,7 @@ import { popup } from './popups/popup';
 import { emittedOnce } from '../utils/emittedOnce';
 import { useSVG } from './useSVG';
 import MiniPopupFactory from './popups/MiniPopupFactory';
+import { getSessionOptions } from './userOptions';
 
 export default class Tab {
 	webview = document.createElement('webview');
@@ -86,8 +87,9 @@ export default class Tab {
 		this.autoSave = throttle(async () => this.save(SaveType.Auto), 500);
 
 		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
+		this.editorSession.setOptions(getSessionOptions(this.tabStore.settings));	
+		
 		let microtaskQueued = false;
-
 		this.editorSession.on('change', () => {
 			// Aggregate all updates from this JS execution stack run
 			if (microtaskQueued) return;
