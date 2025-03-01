@@ -1,16 +1,18 @@
 import './less/window.less';
+
+import ace from 'ace-builds';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/ext-searchbox';
+import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-markdown';
+import 'ace-builds/src-noconflict/mode-svg';
+import 'ace-builds/src-noconflict/theme-clouds';
+import 'ace-builds/src-noconflict/theme-clouds_midnight';
+import 'ace-builds/src-noconflict/snippets/html';
+
 import { ipcRenderer } from 'electron';
 import Tabs from './Tabs';
 import SettingStore from '../utils/SettingStore';
-import ace from 'ace-builds';
-import 'ace-builds/src-noconflict/theme-clouds';
-import 'ace-builds/src-noconflict/theme-clouds_midnight';
-import 'ace-builds/src-noconflict/mode-html';
-import 'ace-builds/src-noconflict/mode-svg';
-import 'ace-builds/src-noconflict/mode-markdown';
-import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/src-noconflict/ext-searchbox';
-import 'ace-builds/src-noconflict/snippets/html';
 import SplitElement from './SplitElement';
 import promptUnsaved from './popups/promptUnsaved';
 import { getEditorOptions, initializeSettings } from './userOptions';
