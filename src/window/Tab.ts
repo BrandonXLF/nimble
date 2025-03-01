@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import { join, extname, basename } from 'path';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, webUtils } from 'electron';
 import Tabs from './Tabs';
 import { getDefaultExtension, getFileType } from '../utils/fileTypes';
 import ace, { Ace } from 'ace-builds';
@@ -86,10 +86,25 @@ export default class Tab {
 		this.autoSave = throttle(async () => this.save(SaveType.Auto), 500);
 
 		this.editorSession = ace.createEditSession(data.text ?? '', `ace/mode/${this.mode}` as unknown as Ace.SyntaxMode);
+		let microtaskQueued = false;
+
 		this.editorSession.on('change', () => {
-			this.updateUnsaved();
-			if (this.tabStore.settings.get('autoRun')) this.preview();
-			if (this.tabStore.settings.get('autoSave')) this.autoSave();
+			// Aggregate all updates from this JS execution stack run
+			if (microtaskQueued) return;
+
+			queueMicrotask(() => {
+				this.updateUnsaved();
+
+				if (this.tabStore.settings.get('autoRun'))
+					this.preview();
+
+				if (this.tabStore.settings.get('autoSave'))
+					this.autoSave();
+
+				microtaskQueued = false;
+			});
+
+			microtaskQueued = true;
 		});
 		
 		this.unsavedIndicator.append(useSVG('circle'));
